@@ -262,12 +262,45 @@
             x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
             @foreach ($datapresensi as $d)
                 @php
-                    $jam_masuk_schedule = date('Y-m-d H:i', strtotime($d->tanggal . ' ' . $d->jam_masuk));
-                    $terlambat = hitungjamterlambat($d->jam_in, $jam_masuk_schedule);
+                    $jam_in_minute_ts = strtotime(date('Y-m-d H:i', strtotime($d->jam_in)));
+                    $jam_masuk_minute_ts = strtotime(date('Y-m-d H:i', strtotime($d->tanggal . ' ' . $d->jam_masuk)));
+                    
+                    $jam_out_minute_ts = $d->jam_out ? strtotime(date('Y-m-d H:i', strtotime($d->jam_out))) : null;
+                    $jam_pulang_minute_ts = strtotime(date('Y-m-d H:i', strtotime($d->tanggal . ' ' . $d->jam_pulang)));
+                    
+                    $is_late = $jam_in_minute_ts > $jam_masuk_minute_ts;
+                    $is_early_out = $jam_out_minute_ts && $jam_out_minute_ts < $jam_pulang_minute_ts;
+                    
+                    $late_msg = '';
+                    if ($is_late) {
+                        $delay_seconds = $jam_in_minute_ts - $jam_masuk_minute_ts;
+                        $delay_hours = floor($delay_seconds / 3600);
+                        $delay_minutes = floor(($delay_seconds % 3600) / 60);
+                        
+                        $late_msg = 'Telat ';
+                        if ($delay_hours > 0) {
+                            $late_msg .= $delay_hours . 'j ';
+                        }
+                        $late_msg .= $delay_minutes . 'm';
+                    }
+                    
+                    $early_msg = '';
+                    if ($is_early_out) {
+                        $early_seconds = $jam_pulang_minute_ts - $jam_out_minute_ts;
+                        $early_hours = floor($early_seconds / 3600);
+                        $early_minutes = floor(($early_seconds % 3600) / 60);
+                        
+                        $early_msg = 'Awal ';
+                        if ($early_hours > 0) {
+                            $early_msg .= $early_hours . 'j ';
+                        }
+                        $early_msg .= $early_minutes . 'm';
+                    }
                 @endphp
                 <div
-                    class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm flex items-center justify-between hover:bg-slate-50 transition-colors">
-                    <div class="flex items-center gap-3">
+                    class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm flex items-top justify-between hover:bg-slate-50 transition-colors gap-3">
+                    <!-- Icon -->
+                    <div class="shrink-0 mt-0.5">
                         <div
                             class="h-10 w-10 rounded-lg {{ $d->jam_in ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600' }} flex items-center justify-center">
                             @if ($d->status == 'h')
@@ -280,61 +313,72 @@
                                 <ion-icon name="calendar-outline" class="text-xl"></ion-icon>
                             @endif
                         </div>
-                        <div>
-                            <h4 class="font-bold text-slate-800 text-sm">{{ DateToIndo($d->tanggal) }}</h4>
-                            <p class="text-xs text-slate-500 line-clamp-1">
-                                {{ $d->nama_jam_kerja ?? 'Jam Kerja' }}
-                            </p>
-                            <div class="flex items-center gap-2 mt-1 flex-wrap">
-                                @if ($d->status == 'h')
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="flex-1">
+                        <h4 class="font-bold text-slate-800 text-sm leading-tight">{{ DateToIndo($d->tanggal) }}</h4>
+                        <p class="text-[10px] text-slate-500 font-bold uppercase mb-1.5">{{ $d->nama_jam_kerja ?? 'Shift Umum' }}</p>
+
+                        @if ($d->status == 'h')
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                                <!-- IN Row -->
+                                <div class="flex items-center gap-1.5 align-middle">
                                     @if ($d->jam_in)
-                                        <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded">
+                                        <span
+                                            class="{{ $is_late ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border">
                                             IN: {{ date('H:i', strtotime($d->jam_in)) }}
                                         </span>
-                                        @if ($terlambat && $terlambat['desimal_terlambat'] > 0)
-                                            <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded font-bold">
-                                                Telat {{ $terlambat['menitterlambat'] }}m
+                                        @if ($is_late && $late_msg)
+                                            <span
+                                                class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">
+                                                {{ $late_msg }}
                                             </span>
                                         @endif
                                     @else
-                                        <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
-                                            Belum Absen
-                                        </span>
+                                        <span class="bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded text-[10px] font-bold border border-rose-100">Belum Absen</span>
                                     @endif
+                                </div>
 
-                                    <span class="text-[10px] text-slate-300">|</span>
+                                <!-- Separator -->
+                                <div class="hidden sm:block w-[1.5px] h-3.5 bg-slate-200 mx-0.5"></div>
 
+                                <!-- OUT Row -->
+                                <div class="flex items-center gap-1.5 align-middle">
                                     @if ($d->jam_out)
-                                        <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded">
+                                        <span
+                                            class="{{ $is_early_out ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border">
                                             OUT: {{ date('H:i', strtotime($d->jam_out)) }}
                                         </span>
+                                        @if ($is_early_out && $early_msg)
+                                            <span
+                                                class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">
+                                                {{ $early_msg }}
+                                            </span>
+                                        @endif
                                     @else
-                                        <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
-                                            Belum Pulang
-                                        </span>
+                                        <span class="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200">Belum Pulang</span>
                                     @endif
-                                @elseif($d->status == 'i')
-                                    <span class="text-[10px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded">Izin</span>
-                                    <span class="text-[10px] text-slate-500">{{ $d->keterangan_izin ?? '-' }}</span>
-                                @elseif($d->status == 's')
-                                    <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">Sakit</span>
-                                    <span class="text-[10px] text-slate-500">{{ $d->keterangan_sakit ?? '-' }}</span>
-                                @elseif($d->status == 'c')
-                                    <span class="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Cuti</span>
-                                    <span class="text-[10px] text-slate-500">{{ $d->keterangan_cuti ?? '-' }}</span>
-                                @endif
+                                </div>
                             </div>
-                        </div>
+                        @else
+                             <!-- Non-Presence Status -->
+                            <p class="text-sm font-medium text-slate-600 mt-1">
+                                @if ($d->status == 'i') Izin: {{ $d->keterangan_izin }}
+                                @elseif ($d->status == 's') Sakit: {{ $d->keterangan_sakit }}
+                                @elseif ($d->status == 'c') Cuti: {{ $d->keterangan_cuti }}
+                                @endif
+                            </p>
+                        @endif
                     </div>
-                    @if ($d->status == 'h')
-                        <div class="text-right pl-2">
-                            <span class="block text-[10px] font-bold text-slate-500 mb-1">Jadwal</span>
-                            <span class="text-xs font-medium text-slate-700">
-                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
-                                {{ $d->jam_pulang ? date('H:i', strtotime($d->jam_pulang)) : '??' }}
-                            </span>
-                        </div>
-                    @endif
+
+                    <!-- Right Schedule -->
+                    <div class="text-right shrink-0">
+                         <span class="block text-[10px] font-bold text-slate-400 mb-0.5">Jadwal</span>
+                         <span class="text-[10px] font-bold text-slate-700 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
+                            {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ $d->jam_pulang ? date('H:i', strtotime($d->jam_pulang)) : '??' }}
+                        </span>
+                    </div>
                 </div>
             @endforeach
         </div>

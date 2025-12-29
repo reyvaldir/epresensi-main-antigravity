@@ -107,7 +107,7 @@
                 <div class="text-2xl transition-transform group-active:scale-90 leading-none">
                     <ion-icon name="calendar-outline"></ion-icon>
                 </div>
-                <span class="text-[10px] font-medium leading-none mt-1">Izin</span>
+                <span class="text-[10px] font-medium leading-none mt-1">Pengajuan Izin</span>
             </a>
 
             <a href="{{ route('users.editpassword', Crypt::encrypt(Auth::id())) }}"
