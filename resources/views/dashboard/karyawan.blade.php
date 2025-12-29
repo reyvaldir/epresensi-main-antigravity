@@ -1,1286 +1,445 @@
-@extends('layouts.mobile.app')
+@extends('layouts.mobile_modern')
+
+@section('header', 'Dashboard')
+@section('subheader', date('l, d F Y'))
+
 @section('content')
-    <style>
-        :root {
-            --bg-body: #dff9fb;
-            --bg-nav: #ffffff;
-            --color-nav: #32745e;
-            --color-nav-active: #58907D;
-            --bg-indicator: #32745e;
-            --color-nav-hover: #3ab58c;
-        }
+    <!-- User Welcome -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 mb-6 relative overflow-hidden">
+        <div class="relative z-10 flex flex-col items-center text-center">
 
-
-        #header-section {
-            height: auto;
-            padding: 20px;
-            position: relative;
-
-        }
-
-        #section-logout {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-        }
-
-        .logout-btn {
-            color: var(--bg-indicator);
-            font-size: 30px;
-            text-decoration: none;
-        }
-
-        .logout-btn:hover {
-            color: var(--color-nav-hover);
-
-        }
-
-
-
-        #section-user {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between
-        }
-
-        #user-info {
-            margin-left: 0px !important;
-            line-height: 2px;
-        }
-
-        #user-info h3 {
-            color: var(--bg-indicator);
-        }
-
-        #user-info span {
-            color: var(--color-nav);
-        }
-
-        #section-presensi {
-            margin-top: 15px;
-        }
-
-        #presensi-today {
-            display: flex;
-            justify-content: space-between
-        }
-
-        #presensi-today h4 {
-            color: #32745e;
-            font-weight: bold;
-            margin: 0
-        }
-
-        #presensi-today #presensi-text {
-            color: #12855f;
-        }
-
-        #presensi-data {
-            display: flex;
-            justify-content: space-around
-        }
-
-        #presensi-icon {
-            font-size: 30px;
-            margin-right: 10px;
-        }
-
-
-        #rekap-section {
-
-            margin-top: 50px;
-            padding: 20px;
-            position: relative;
-        }
-
-        #rekap-section #title {
-            color: var(--bg-indicator);
-        }
-
-        #histori-section {
-            padding: 0px 20px;
-            position: relative;
-        }
-
-        #app-section {
-
-
-            padding: 20px;
-
-        }
-
-        #app-section #title {
-            color: var(--bg-indicator);
-        }
-
-        .iconpresence {
-            color: #32745e
-        }
-
-        #jam {
-            color: var(--bg-indicator);
-            font-weight: bold;
-            font-size: 48px;
-
-        }
-    </style>
-    <div id="header-section">
-        <div id="section-logout">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a href="#" class="logout-btn"
-                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                    <ion-icon name="exit-outline"></ion-icon>
-                </a>
-            </form>
-        </div>
-        <div id="section-user">
-            <div id="user-info">
-                <h3 id="user-name">{{ $karyawan->nama_karyawan }}👋</h3>
-                <span id="user-role">{{ $karyawan->nama_jabatan }}</span>
-                <span id="user-role">({{ $karyawan->nama_dept }})</span>
-
+            <!-- Card Header: Clock & Logout -->
+            <div class="w-full flex justify-between items-start mb-4">
+                <div class="text-left">
+                    <h3 class="text-lg font-bold text-slate-800 leading-none" id="jam-card">
+                        {{ date('H:i') }}
+                    </h3>
+                    <p class="text-[10px] text-slate-500 font-medium mt-0.5">
+                        {{ DateToIndo(date('Y-m-d')) }}
+                    </p>
+                </div>
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="text-slate-400 hover:text-red-500 transition-colors">
+                        <ion-icon name="log-out-outline" class="text-2xl"></ion-icon>
+                    </button>
+                </form>
             </div>
-            <a href="{{ route('profile.index') }}">
-                @if (!empty($karyawan->foto))
-                    @if (Storage::disk('public')->exists('/karyawan/' . $karyawan->foto))
-                        <div
-                            style="width: 80px; height: 80px; background-image: url({{ getfotoKaryawan($karyawan->foto) }}); background-size: cover; background-position: center; border-radius: 50%;">
 
-
-                        </div>
-                    @else
-                        <div class="avatar avatar-xs me-2">
-                            <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}" alt="avatar" class="imaged w64 rounded">
-                        </div>
-                    @endif
+            <a href="{{ route('profile.index') }}" class="flex flex-col items-center group">
+                @if (!empty($karyawan->foto) && Storage::disk('public')->exists('/karyawan/' . $karyawan->foto))
+                    <div class="h-20 w-20 rounded-full border-4 border-white shadow-md bg-cover bg-center mb-3 group-hover:scale-105 transition-transform"
+                        style="background-image: url('{{ getfotoKaryawan($karyawan->foto) }}')">
+                    </div>
                 @else
-                    <div class="avatar avatar-xs me-2">
-                        <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}" alt="avatar" class="imaged w64 rounded">
+                    <div
+                        class="h-20 w-20 rounded-full border-4 border-white shadow-md bg-slate-200 flex items-center justify-center text-slate-400 mb-3 group-hover:scale-105 transition-transform">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                clip-rule="evenodd" />
+                        </svg>
                     </div>
                 @endif
+
+                <h2 class="text-xl font-bold text-slate-800 group-hover:text-primary transition-colors">Hi,
+                    {{ formatName2($karyawan->nama_karyawan) }} 👋</h2>
+                <p class="text-slate-500 text-sm mb-4">{{ $karyawan->nama_jabatan }} • {{ $karyawan->nama_dept }}</p>
             </a>
-        </div>
-        <div id="section-jam " class="text-center mt-1 mb-2">
-            <h2 id="jam" class="mb-2" style="text-shadow: 0px 0px 2px #04ab86b7; line-height: 1rem"></h2>
-            <span class="">Hari ini : {{ getNamaHari(date('D')) }}, {{ DateToIndo(date('Y-m-d')) }}</span>
-        </div>
-        <div id="section-presensi">
-            <div class="card">
-                <div class="card-body" id="presensi-today">
-                    <div id="presensi-data">
-                        <div id="presensi-icon">
-                            @php
-                                $jam_in = $presensi && $presensi->jam_in != null ? $presensi->jam_in : null;
-                            @endphp
-                            @if ($presensi && $presensi->foto_in != null)
-                                @php
-                                    $path = Storage::url('uploads/absensi/' . $presensi->foto_in . '?v=' . time());
-                                @endphp
-                                <img src="{{ url($path) }}" alt="" class="imaged w48">
-                            @else
-                                <ion-icon name="camera"></ion-icon>
-                            @endif
-                        </div>
-                        <div id="presensi-detail">
-                            <h4>Jam Masuk</h4>
-                            <span class="presensi-text">
-                                @if ($jam_in != null)
-                                    {{ date('H:i', strtotime($jam_in)) }}
-                                @else
-                                    <ion-icon name="hourglass-outline"></ion-icon> Belum Absen
-                                @endif
-                            </span>
-                        </div>
 
-                    </div>
-                    <div class="outer">
-                        <div class="inner"></div>
-                    </div>
-                    <div id="presensi-data">
-                        <div id="presensi-icon">
-                            @php
-                                $jam_out = $presensi && $presensi->jam_out != null ? $presensi->jam_out : null;
-                            @endphp
-                            @if ($presensi && $presensi->foto_out != null)
-                                @php
-                                    $path = Storage::url('uploads/absensi/' . $presensi->foto_out . '?v=' . time());
-                                @endphp
-                                <img src="{{ url($path) }}" alt="" class="imaged w48">
-                            @else
-                                <ion-icon name="camera"></ion-icon>
-                            @endif
-                        </div>
-                        <div id="presensi-detail">
-                            <h4>Jam Pulang</h4>
-                            <span class="presensi-text">
-                                @if ($jam_out != null)
-                                    {{ date('H:i', strtotime($jam_out)) }}
-                                @else
-                                    <i class="ti ti-hourglass-low text-warning"></i> Belum Absen
-                                @endif
-                            </span>
-                        </div>
 
-                    </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 gap-3 w-full border-t border-slate-100 pt-4">
+                <div class="flex flex-col">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Jam Masuk</span>
+                    <span class="text-lg font-bold text-slate-800">
+                        @if ($presensi && $presensi->jam_in)
+                            {{ date('H:i', strtotime($presensi->jam_in)) }}
+                        @else
+                            --:--
+                        @endif
+                    </span>
+                </div>
+                <div class="flex flex-col border-l border-slate-100">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Jam Pulang</span>
+                    <span class="text-lg font-bold text-slate-800">
+                        @if ($presensi && $presensi->jam_out)
+                            {{ date('H:i', strtotime($presensi->jam_out)) }}
+                        @else
+                            --:--
+                        @endif
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="app-section">
-        <div class="row">
-            <div class="col-3">
-                <div class="card">
-                    <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/hadir.webp') }}" alt="" style="width: 50px" class="mb-1">
-                        <br>
-                        <span style="font-size: 0.8rem; font-weight:500">
-                            Hadir
-                        </span>
-                        <span class="badge bg-success" style="position: absolute; top: 5px; right: 5px">
-                            {{ $rekappresensi ? $rekappresensi->hadir : 0 }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="card">
-                    <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/sakit.png') }}" alt="" style="width: 50px" class="mb-1">
-                        <br>
-                        <span style="font-size: 0.8rem; font-weight:500">Sakit</span>
-                        <span class="badge bg-success" style="position: absolute; top: 5px; right: 5px">
-                            {{ $rekappresensi ? $rekappresensi->sakit : 0 }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="card">
-                    <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/izin.webp') }}" alt="" style="width: 50px" class="mb-1">
-                        <br>
-                        <span style="font-size: 0.8rem; font-weight:500">Izin</span>
-                        <span class="badge bg-success" style="position: absolute; top: 5px; right: 5px">
-                            {{ $rekappresensi ? $rekappresensi->izin : 0 }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="card">
-                    <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                        <img src="{{ asset('assets/template/img/3d/cuti.png') }}" alt="" style="width: 50px" class="mb-1">
-                        <br>
-                        <span style="font-size: 0.8rem; font-weight:500">Cuti</span>
-                        <span class="badge bg-success" style="position: absolute; top: 5px; right: 5px">
-                            {{ $rekappresensi ? $rekappresensi->cuti : 0 }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col-3">
-                <a href="{{ route('karyawan.idcard', Crypt::encrypt($karyawan->nik)) }}">
-                    <div class="card">
-                        <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                            <img src="{{ asset('assets/template/img/3d/card.webp') }}" alt="" style="width: 50px" class="mb-0">
-                            <br>
-                            <span style="font-size: 0.8rem; font-weight:500" class="mb-2">
-                                ID Card
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-3">
-                <a href="{{ route('presensiistirahat.create') }}">
-                    <div class="card">
-                        <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                            <img src="{{ asset('assets/template/img/3d/alarm.png') }}" alt="" style="width: 50px" class="mb-0">
-                            <br>
-                            <span style="font-size: 0.8rem; font-weight:500" class="mb-2">
-                                Istirahat
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-3">
-                <a href="{{ route('lembur.index') }}">
-                    <div class="card">
-                        <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                            <img src="{{ asset('assets/template/img/3d/clock.png') }}" alt="" style="width: 50px" class="mb-0">
-                            <br>
-                            <span style="font-size: 0.8rem; font-weight:500" class="mb-2">
-                                Lembur
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            </div>
 
-            <div class="col-3">
-                <a href="{{ route('slipgaji.index') }}">
-                    <div class="card">
-                        <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                            <img src="{{ asset('assets/template/img/3d/slipgaji.png') }}" alt="" style="width: 50px" class="mb-0">
-                            <br>
-                            <span style="font-size: 0.8rem; font-weight:500" class="mb-2">
-                                Slip Gaji
-                            </span>
-                        </div>
-                    </div>
-                </a>
-            </div>
+    <!-- Attendance Action Area (MASSIVE BUTTONS) -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <!-- Clock In -->
+        @if ($presensi && $presensi->jam_in)
+            <button disabled
+                class="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-400 cursor-not-allowed opacity-75">
+                <div class="h-12 w-12 rounded-full bg-slate-200 flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <span class="font-bold">Sudah Masuk</span>
+            </button>
+        @else
+            <a href="/presensi/create"
+                class="flex flex-col items-center justify-center p-6 rounded-2xl bg-emerald-50 border-2 border-emerald-100 text-emerald-600 shadow-sm active:scale-95 transition-transform hover:bg-emerald-100">
+                <div
+                    class="h-14 w-14 rounded-full bg-emerald-500 text-white flex items-center justify-center mb-3 shadow-lg shadow-emerald-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                    </svg>
+                </div>
+                <span class="font-bold text-lg">Absen Masuk</span>
+            </a>
+        @endif
+
+        <!-- Clock Out -->
+        @if ($presensi && $presensi->jam_out)
+            <button disabled
+                class="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-400 cursor-not-allowed opacity-75">
+                <div class="h-12 w-12 rounded-full bg-slate-200 flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <span class="font-bold">Sudah Pulang</span>
+            </button>
+        @else
+            <a href="/presensi/create"
+                class="flex flex-col items-center justify-center p-6 rounded-2xl bg-rose-50 border-2 border-rose-100 text-rose-600 shadow-sm active:scale-95 transition-transform hover:bg-rose-100">
+                <div
+                    class="h-14 w-14 rounded-full bg-rose-500 text-white flex items-center justify-center mb-3 shadow-lg shadow-rose-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                </div>
+                <span class="font-bold text-lg">Absen Pulang</span>
+            </a>
+        @endif
+    </div>
+
+    <!-- Monthly Stats Summary -->
+    <div class="grid grid-cols-4 gap-2 mb-6">
+        <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
+            <span
+                class="block text-2xl font-bold text-emerald-500 mb-1">{{ $rekappresensi ? $rekappresensi->hadir : 0 }}</span>
+            <span class="text-[10px] text-slate-400 font-bold uppercase">Hadir</span>
         </div>
-        <div class="row mt-2">
-            @can('aktivitaskaryawan.index')
-                <div class="col-3">
-                    <a href="{{ route('aktivitaskaryawan.index') }}">
-                        <div class="card">
-                            <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                                <img src="{{ asset('assets/template/img/3d/activity.png') }}" alt="" style="width: 50px" class="mb-0">
-                                <br>
-                                <span style="font-size: 0.8rem; font-weight:500" class="mb-2">
-                                    Aktivitas
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            @endcan
-            @can('kunjungan.index')
-                <div class="col-3">
-                    <a href="{{ route('kunjungan.index') }}">
-                        <div class="card">
-                            <div class="card-body text-center" style="padding: 5px 5px !important; line-height:0.8rem">
-                                <img src="{{ asset('assets/template/img/3d/maps.png') }}" alt="" style="width: 50px" class="mb-0">
-                                <br>
-                                <span style="font-size: 0.8rem; font-weight:500" class="mb-2">
-                                    Kunjungan
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            @endcan
+        <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
+            <span
+                class="block text-2xl font-bold text-rose-500 mb-1">{{ $rekappresensi ? $rekappresensi->sakit : 0 }}</span>
+            <span class="text-[10px] text-slate-400 font-bold uppercase">Sakit</span>
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
+            <span
+                class="block text-2xl font-bold text-amber-500 mb-1">{{ $rekappresensi ? $rekappresensi->izin : 0 }}</span>
+            <span class="text-[10px] text-slate-400 font-bold uppercase">Izin</span>
+        </div>
+        <div class="bg-white p-3 rounded-xl border border-slate-100 text-center shadow-sm">
+            <span class="block text-2xl font-bold text-blue-500 mb-1">{{ $rekappresensi ? $rekappresensi->cuti : 0 }}</span>
+            <span class="text-[10px] text-slate-400 font-bold uppercase">Cuti</span>
         </div>
     </div>
-    <div id="histori-section">
-        <div class="tab-pane fade show active" id="pilled" role="tabpanel">
-            <ul class="nav nav-tabs style1" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" href="#historipresensi" role="tab">
-                        30 Hari terakhir
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#lembur" role="tab">
-                        Lembur <span class="badge badge-danger ml-1">{{ $notiflembur }}</span>
-                    </a>
-                </li>
-            </ul>
+
+    <!-- Quick Menu -->
+    <h3 class="font-bold text-slate-800 text-lg mb-3">Menu Cepat</h3>
+    <div class="grid grid-cols-4 gap-3 mb-6">
+        <a href="{{ route('karyawan.idcard', Crypt::encrypt($karyawan->nik)) }}"
+            class="flex flex-col items-center gap-2 group">
+            <div
+                class="h-14 w-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center transition-colors group-hover:bg-indigo-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a3 3 0 006 0h3a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm2.5 7a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm2.45 4a2.5 2.5 0 10-4.9 0h4.9zM12 9a1 1 0 100 2h3a1 1 0 100-2h-3zm-1 4a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <span class="text-xs font-medium text-slate-600 text-center">ID Card</span>
+        </a>
+
+        <a href="{{ route('presensiistirahat.create') }}" class="flex flex-col items-center gap-2 group">
+            <div
+                class="h-14 w-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center transition-colors group-hover:bg-orange-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <span class="text-xs font-medium text-slate-600 text-center">Istirahat</span>
+        </a>
+
+        <a href="{{ route('lembur.index') }}" class="flex flex-col items-center gap-2 group">
+            <div
+                class="h-14 w-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center transition-colors group-hover:bg-purple-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <span class="text-xs font-medium text-slate-600 text-center">Lembur</span>
+        </a>
+
+        <a href="{{ route('slipgaji.index') }}" class="flex flex-col items-center gap-2 group">
+            <div
+                class="h-14 w-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center transition-colors group-hover:bg-teal-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a1 1 0 100-2 1 1 0 000 2z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <span class="text-xs font-medium text-slate-600 text-center">Slip Gaji</span>
+        </a>
+
+        @can('aktivitaskaryawan.index')
+            <a href="{{ route('aktivitaskaryawan.index') }}" class="flex flex-col items-center gap-2 group">
+                <div
+                    class="h-14 w-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center transition-colors group-hover:bg-red-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                </div>
+                <span class="text-xs font-medium text-slate-600 text-center">Aktivitas</span>
+            </a>
+        @endcan
+
+        @can('kunjungan.index')
+            <a href="{{ route('kunjungan.index') }}" class="flex flex-col items-center gap-2 group">
+                <div
+                    class="h-14 w-14 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center transition-colors group-hover:bg-sky-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </div>
+                <span class="text-xs font-medium text-slate-600 text-center">Kunjungan</span>
+            </a>
+        @endcan
+    </div>
+
+    <!-- History Preview -->
+    <!-- History Preview with Tabs -->
+    <div x-data="{ activeTab: 'presensi' }">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-slate-800 text-lg">Aktivitas Terakhir</h3>
+            <a href="/presensi/histori" class="text-sm text-primary font-medium hover:underline">Lihat Semua</a>
         </div>
-        <div class="tab-content mt-2" style="margin-bottom:100px;">
-            <div class="tab-pane fade show active" id="historipresensi" role="tabpanel">
-                <div class="row mb-1">
-                    <div class="col">
-                        {{-- {{ $d->jam_out != null ? 'historibordergreen' : 'historiborderred' }} --}}
-                        @foreach ($datapresensi as $d)
+
+        <!-- Tabs Navigation -->
+        <div class="flex bg-slate-100 p-1 rounded-xl mb-4">
+            <button @click="activeTab = 'presensi'"
+                :class="activeTab === 'presensi' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                class="flex-1 py-2 text-sm font-medium rounded-lg transition-all">
+                Presensi
+            </button>
+            <button @click="activeTab = 'lembur'"
+                :class="activeTab === 'lembur' ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                class="flex-1 py-2 text-sm font-medium rounded-lg transition-all">
+                Lembur
+            </button>
+        </div>
+
+        <!-- Presensi Content -->
+        <div x-show="activeTab === 'presensi'" class="space-y-3" x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+            @foreach ($datapresensi as $d)
+                @php
+                    $jam_masuk_schedule = date('Y-m-d H:i', strtotime($d->tanggal . ' ' . $d->jam_masuk));
+                    $terlambat = hitungjamterlambat($d->jam_in, $jam_masuk_schedule);
+                @endphp
+                <div
+                    class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm flex items-center justify-between hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="h-10 w-10 rounded-lg {{ $d->jam_in ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600' }} flex items-center justify-center">
                             @if ($d->status == 'h')
-                                @php
-                                    $jam_in = date('Y-m-d H:i', strtotime($d->jam_in));
-                                    $jam_masuk = date('Y-m-d H:i', strtotime($d->tanggal . ' ' . $d->jam_masuk));
-                                @endphp
-                                <div class="card historicard historibordergreen mb-1">
-                                    <div class="historicontent">
-                                        <div class="historidetail1">
-                                            <div class="iconpresence">
-                                                <ion-icon name="finger-print-outline" style="font-size: 48px"></ion-icon>
-                                            </div>
-                                            <div class="datepresence">
-                                                <h4>{{ DateToIndo($d->tanggal) }}</h4>
-                                                <span class="timepresence">
-                                                    @if ($d->jam_in != null)
-                                                        {{ date('H:i', strtotime($d->jam_in)) }}
-                                                    @else
-                                                        <span class="text-danger">
-                                                            <ion-icon name="hourglass-outline"></ion-icon> Belum Absen
-                                                        </span>
-                                                    @endif
-                                                    -
-                                                    @if ($d->jam_out != null)
-                                                        {{ date('H:i', strtotime($d->jam_out)) }}
-                                                    @else
-                                                        <span class="text-danger">
-                                                            <ion-icon name="hourglass-outline"></ion-icon> Belum Absen
-                                                        </span>
-                                                    @endif
-                                                </span>
-
-                                                @if ($d->istirahat_in != null)
-                                                    <br>
-                                                    <span class="timepresence text-info">
-                                                        {{ date('H:i', strtotime($d->istirahat_in)) }} -
-                                                        @if ($d->istirahat_out != null)
-                                                            {{ date('H:i', strtotime($d->istirahat_out)) }}
-                                                        @else
-                                                            <ion-icon name="hourglass-outline"></ion-icon>
-                                                        @endif
-                                                    </span>
-                                                @endif
-                                                <br>
-                                                @if ($d->jam_in != null)
-                                                    @php
-                                                        $terlambat = hitungjamterlambat(
-                                                            date('H:i', strtotime($jam_in)),
-                                                            date('H:i', strtotime($jam_masuk)),
-                                                        );
-
-                                                    @endphp
-                                                    {!! $terlambat['show'] !!}
-                                                @endif
-
-
-                                            </div>
-                                        </div>
-                                        <div class="historidetail2">
-                                            <h4>{{ $d->nama_jam_kerja }}</h4>
-                                            <span class="timepresence">
-                                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
-                                                {{ date('H:i', strtotime($d->jam_pulang)) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ion-icon name="finger-print-outline" class="text-xl"></ion-icon>
                             @elseif($d->status == 'i')
-                                <div class="card historicard historibordergreen mb-1">
-                                    <div class="historicontent">
-                                        <div class="historidetail1">
-                                            <div class="iconpresence">
-                                                <ion-icon name="document-text-outline" style="font-size: 48px; color: #1f7ee4"></ion-icon>
-                                            </div>
-                                            <div class="datepresence">
-                                                <h4>{{ DateToIndo($d->tanggal) }}</h4>
-                                                <h4 class="timepresence">
-                                                    Izin Absen
-                                                </h4>
-                                                <span>{{ $d->keterangan_izin }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="historidetail2">
-                                            <h4>{{ $d->nama_jam_kerja }}</h4>
-                                            <span class="timepresence">
-                                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
-                                                {{ date('H:i', strtotime($d->jam_pulang)) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @elseif($d->status == 'i')
-                                <div class="card historicard historibordergreen mb-1">
-                                    <div class="historicontent">
-                                        <div class="historidetail1">
-                                            <div class="iconpresence">
-                                                <ion-icon name="document-text-outline" style="font-size: 48px; color: #1f7ee4"></ion-icon>
-                                            </div>
-                                            <div class="datepresence">
-                                                <h4>{{ DateToIndo($d->tanggal) }}</h4>
-                                                <h4 class="timepresence">
-                                                    Izin Cuti
-                                                </h4>
-                                                <span>{{ $d->keterangan_cuti }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="historidetail2">
-                                            <h4>{{ $d->nama_jam_kerja }}</h4>
-                                            <span class="timepresence">
-                                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
-                                                {{ date('H:i', strtotime($d->jam_pulang)) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ion-icon name="document-text-outline" class="text-xl"></ion-icon>
                             @elseif($d->status == 's')
-                                <div class="card historicard historibordergreen mb-1">
-                                    <div class="historicontent">
-                                        <div class="historidetail1">
-                                            <div class="iconpresence">
-                                                <ion-icon name="bag-add-outline" style="font-size: 48px; color: #d4095a"></ion-icon>
-                                            </div>
-                                            <div class="datepresence">
-                                                <h4>{{ DateToIndo($d->tanggal) }}</h4>
-                                                <h4 class="timepresence">
-                                                    Izin Sakit
-                                                </h4>
-                                                <span>{{ $d->keterangan_sakit }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="historidetail2">
-                                            <h4>{{ $d->nama_jam_kerja }}</h4>
-                                            <span class="timepresence">
-                                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
-                                                {{ date('H:i', strtotime($d->jam_pulang)) }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <ion-icon name="medkit-outline" class="text-xl"></ion-icon>
+                            @elseif($d->status == 'c')
+                                <ion-icon name="calendar-outline" class="text-xl"></ion-icon>
                             @endif
-                        @endforeach
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">{{ DateToIndo($d->tanggal) }}</h4>
+                            <p class="text-xs text-slate-500 line-clamp-1">
+                                {{ $d->nama_jam_kerja ?? 'Jam Kerja' }}
+                            </p>
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                @if ($d->status == 'h')
+                                    @if ($d->jam_in)
+                                        <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded">
+                                            IN: {{ date('H:i', strtotime($d->jam_in)) }}
+                                        </span>
+                                        @if ($terlambat && $terlambat['desimal_terlambat'] > 0)
+                                            <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded font-bold">
+                                                Telat {{ $terlambat['menitterlambat'] }}m
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
+                                            Belum Absen
+                                        </span>
+                                    @endif
+
+                                    <span class="text-[10px] text-slate-300">|</span>
+
+                                    @if ($d->jam_out)
+                                        <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded">
+                                            OUT: {{ date('H:i', strtotime($d->jam_out)) }}
+                                        </span>
+                                    @else
+                                        <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
+                                            Belum Pulang
+                                        </span>
+                                    @endif
+                                @elseif($d->status == 'i')
+                                    <span class="text-[10px] bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded">Izin</span>
+                                    <span class="text-[10px] text-slate-500">{{ $d->keterangan_izin ?? '-' }}</span>
+                                @elseif($d->status == 's')
+                                    <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">Sakit</span>
+                                    <span class="text-[10px] text-slate-500">{{ $d->keterangan_sakit ?? '-' }}</span>
+                                @elseif($d->status == 'c')
+                                    <span class="text-[10px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">Cuti</span>
+                                    <span class="text-[10px] text-slate-500">{{ $d->keterangan_cuti ?? '-' }}</span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
+                    @if ($d->status == 'h')
+                        <div class="text-right pl-2">
+                            <span class="block text-[10px] font-bold text-slate-500 mb-1">Jadwal</span>
+                            <span class="text-xs font-medium text-slate-700">
+                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
+                                {{ $d->jam_pulang ? date('H:i', strtotime($d->jam_pulang)) : '??' }}
+                            </span>
+                        </div>
+                    @endif
                 </div>
-            </div>
-            <div class="tab-pane fade" id="lembur" role="tabpanel">
+            @endforeach
+        </div>
+
+        <!-- Lembur Content -->
+        <!-- Lembur Content -->
+        <div x-show="activeTab === 'lembur'" class="space-y-3" style="display: none;"
+            x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0">
+            @if (isset($lembur) && count($lembur) > 0)
                 @foreach ($lembur as $d)
-                    <a href="{{ route('lembur.createpresensi', Crypt::encrypt($d->id)) }}">
-                        <div class="card historicard historibordergreen mb-1">
-                            <div class="historicontent">
-                                <div class="historidetail1">
-                                    <div class="iconpresence">
-                                        <ion-icon name="timer-outline" style="font-size: 48px; color: #1f7ee4"></ion-icon>
-                                    </div>
-                                    <div class="datepresence">
-                                        <h4>{{ DateToIndo($d->tanggal) }}</h4>
-                                        <h4 class="timepresence">
-                                            Lembur
-                                        </h4>
-
-                                        <p>{{ $d->keterangan }}</p>
+                    <a href="{{ route('lembur.createpresensi', Crypt::encrypt($d->id)) }}" class="block">
+                        <div
+                            class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm flex items-center justify-between hover:bg-slate-50 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+                                    <ion-icon name="timer-outline" class="text-xl"></ion-icon>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-sm">{{ DateToIndo($d->tanggal) }}</h4>
+                                    <p class="text-xs text-slate-500 line-clamp-1">{{ $d->keterangan }}</p>
+                                    <div class="flex items-center gap-2 mt-1">
                                         @if ($d->lembur_in != null)
-                                            <span class="badge badge-success">
-                                                <ion-icon name="timer-outline"></ion-icon>
-                                                {{ date('H:i', strtotime($d->lembur_in)) }}
+                                            <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded">
+                                                IN: {{ date('H:i', strtotime($d->lembur_in)) }}
                                             </span>
                                         @else
-                                            <span class="badge badge-danger">
-                                                <ion-icon name="timer-outline"></ion-icon>
+                                            <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
                                                 Belum Absen
                                             </span>
                                         @endif
-                                        -
+                                        <span class="text-[10px] text-slate-300">|</span>
                                         @if ($d->lembur_out != null)
-                                            <span class="badge badge-success">
-                                                <ion-icon name="timer-outline"></ion-icon>
-                                                {{ date('H:i', strtotime($d->lembur_out)) }}
+                                            <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded">
+                                                OUT: {{ date('H:i', strtotime($d->lembur_out)) }}
                                             </span>
                                         @else
-                                            <span class="badge badge-danger">
-                                                <ion-icon name="timer-outline"></ion-icon>
+                                            <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
                                                 Belum Absen
                                             </span>
                                         @endif
                                     </div>
                                 </div>
-                                <div class="historidetail2">
-                                    {{-- <h4>{{ $d->nama_jam_kerja }}</h4>
-
-                                    {{ date('H:i', strtotime($d->jam_masuk)) }} -
-                                    {{ date('H:i', strtotime($d->jam_pulang)) }}
-                                </span> --}}
-                                    <span class="timepresence">
-                                        {{ date('H:i', strtotime($d->lembur_mulai)) }} -
-                                        {{ date('H:i', strtotime($d->lembur_selesai)) }}
-                                        @if (date('Y-m-d', strtotime($d->lembur_selesai)) > date('Y-m-d', strtotime($d->lembur_mulai)))
-                                            <ion-icon name="caret-up-outline" style="color: green"></ion-icon>
-                                        @endif
-                                    </span>
-                                </div>
+                            </div>
+                            <div class="text-right pl-2">
+                                <span class="block text-[10px] font-bold text-slate-500 mb-1">Jadwal</span>
+                                <span class="text-xs font-medium text-slate-700">
+                                    {{ date('H:i', strtotime($d->lembur_mulai)) }} -
+                                    {{ date('H:i', strtotime($d->lembur_selesai)) }}
+                                </span>
                             </div>
                         </div>
                     </a>
                 @endforeach
-            </div>
+            @else
+                <div class="text-center py-8">
+                    <div
+                        class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-3">
+                        <ion-icon name="file-tray-outline" class="text-3xl"></ion-icon>
+                    </div>
+                    <p class="text-sm text-slate-500">Belum ada data lembur bulan ini.</p>
+                </div>
+            @endif
         </div>
     </div>
 
-    <!-- Modal Ucapan Ulang Tahun -->
+    <!-- Birthday Modal Logic (Preserved) -->
     @if (isset($is_birthday) && $is_birthday)
-        <!-- Custom Overlay Backdrop -->
-        <div class="birthday-overlay" id="birthdayOverlay"></div>
-
-        <!-- Confetti Container -->
-        <div id="confetti-container"></div>
-
-        <div class="modal fade" id="birthdayModal" tabindex="-1" role="dialog" aria-labelledby="birthdayModalLabel" aria-hidden="true"
-            data-bs-backdrop="false" data-bs-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content birthday-modal-content">
-                    <!-- Close Button -->
-                    <button type="button" class="birthday-close-btn" data-bs-dismiss="modal" aria-label="Close">
-                        <ion-icon name="close-circle-outline"></ion-icon>
-                    </button>
-
-                    <div class="modal-body birthday-modal-body">
-                        <!-- Icons Section -->
-                        <div class="birthday-icons">
-                            <span style="font-size: 70px; filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3)); animation: bounce 2s infinite;">🎂</span>
-                            {{-- <ion-icon name="balloon-outline" class="birthday-icon birthday-icon-balloon"></ion-icon> --}}
-                        </div>
-
-                        <!-- Title Section -->
-                        <div class="birthday-title-section">
-
-                            <h2 class="birthday-title">Selamat Ulang Tahun!</h2>
-                            <h3 class="birthday-name">{{ $karyawan->nama_karyawan }}</h3>
-                            @if ($umur)
-                                <p class="birthday-age">Selamat ulang tahun yang ke-<strong>{{ $umur }}</strong> tahun! 🎊</p>
-                            @endif
-                        </div>
-
-                        <!-- Wishes Section -->
-                        <div class="birthday-wishes">
-                            <div class="birthday-wish-item">
-                                <ion-icon name="star" class="wish-icon"></ion-icon>
-                                <span>Panjang umur & sehat selalu</span>
-                            </div>
-                            <div class="birthday-wish-item">
-                                <ion-icon name="star" class="wish-icon"></ion-icon>
-                                <span>Bahagia selalu dalam pekerjaan</span>
-                            </div>
-                            <div class="birthday-wish-item">
-                                <ion-icon name="star" class="wish-icon"></ion-icon>
-                                <span>Sukses dalam karir</span>
-                            </div>
-                            <div class="birthday-wish-item">
-                                <ion-icon name="star" class="wish-icon"></ion-icon>
-                                <span>Diberkahi rezeki yang berlimpah</span>
-                            </div>
-                        </div>
-
-                        <!-- Button Section -->
-                        <button type="button" class="btn btn-light btn-lg birthday-button" data-bs-dismiss="modal">
-                            Terima Kasih! 🙏
-                        </button>
-                    </div>
-                </div>
+        <div x-data="{ open: true }" x-show="open"
+            class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden text-center p-6 relative">
+                <button @click="open = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                <div class="text-6xl animate-bounce mb-4">🎂</div>
+                <h2 class="text-xl font-bold text-slate-800 mb-2">Selamat Ulang Tahun!</h2>
+                <p class="text-slate-600 mb-4">Hi <span class="font-bold text-primary">{{ $karyawan->nama_karyawan }}</span>,
+                    semoga panjang umur dan sehat selalu! 🎉</p>
+                <button @click="open = false"
+                    class="w-full py-3 bg-primary text-white rounded-xl font-bold hover:bg-blue-700 transition">Terima
+                    Kasih!</button>
+            </div>
+            <!-- Confetti Effect -->
+            <div class="fixed inset-0 pointer-events-none overflow-hidden" style="z-index: 59;">
+                <!-- Simple CSS confetti can be added here if needed -->
             </div>
         </div>
     @endif
 
-    <style>
-        /* Confetti Styles */
-        #confetti-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1060;
-            overflow: hidden;
-        }
-
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #ffd700;
-            position: absolute;
-            animation: confetti-fall linear forwards;
-        }
-
-        .confetti:nth-child(1n) {
-            background: #ffd700;
-        }
-
-        .confetti:nth-child(2n) {
-            background: #ff6b6b;
-        }
-
-        .confetti:nth-child(3n) {
-            background: #4ecdc4;
-        }
-
-        .confetti:nth-child(4n) {
-            background: #95e1d3;
-        }
-
-        .confetti:nth-child(5n) {
-            background: #ffe66d;
-        }
-
-        @keyframes confetti-fall {
-            0% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 1;
-            }
-
-            100% {
-                transform: translateY(100vh) rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        /* Birthday Modal Styles */
-        .birthday-modal-content {
-            border-radius: 20px !important;
-            border: none !important;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
-            overflow: hidden;
-        }
-
-        .birthday-modal-body {
-            padding: 40px 30px !important;
-            background: linear-gradient(135deg, #32745e 0%, #58907D 100%) !important;
-            border-radius: 20px !important;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Close Button */
-        .birthday-close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .birthday-close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
-        }
-
-        .birthday-close-btn ion-icon {
-            font-size: 28px;
-            color: #fff;
-            filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3));
-        }
-
-        /* Icons Section */
-        .birthday-icons {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin: 0 auto 25px auto;
-            width: 100%;
-            text-align: center;
-            padding: 0;
-            position: relative;
-        }
-
-        .birthday-icon {
-            font-size: 70px;
-            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-            animation: bounce 2s infinite;
-            flex-shrink: 0;
-            display: block;
-            margin: 0;
-            line-height: 1;
-        }
-
-        .birthday-icon-cake {
-            color: #fff;
-        }
-
-        .birthday-icon-balloon {
-            font-size: 70px;
-            color: #ff6b6b;
-            animation-delay: 0.2s;
-        }
-
-        /* Pastikan icons benar-benar centered */
-        @media (max-width: 575px) {
-            .birthday-icons {
-                justify-content: center;
-                align-items: center;
-                gap: 15px;
-                padding: 0;
-                margin: 0 auto 20px auto;
-                width: 100%;
-            }
-
-            .birthday-icon {
-                font-size: 60px;
-                margin: 0;
-            }
-        }
-
-        /* Title Section */
-        .birthday-title-section {
-            margin-bottom: 25px;
-        }
-
-        .birthday-title {
-            color: #fff;
-            font-weight: bold;
-            font-size: 28px;
-            margin-bottom: 12px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .birthday-name {
-            color: #fff;
-            font-weight: 600;
-            font-size: 22px;
-            margin-bottom: 15px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .birthday-age {
-            color: #fff;
-            font-size: 18px;
-            margin-bottom: 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Wishes Section */
-        .birthday-wishes {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            backdrop-filter: blur(10px);
-        }
-
-        .birthday-wish-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #fff;
-            font-size: 16px;
-            margin: 8px 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-            justify-content: flex-start;
-        }
-
-        .wish-icon {
-            font-size: 18px;
-            color: #ffd700;
-            flex-shrink: 0;
-        }
-
-        /* Button Section */
-        .birthday-button {
-            border-radius: 25px !important;
-            padding: 12px 40px !important;
-            font-weight: 600 !important;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
-        }
-
-        /* Bounce Animation */
-        @keyframes bounce {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        /* Modal Dialog */
-        #birthdayModal .modal-dialog {
-            max-width: 90%;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            min-height: 100%;
-            padding: 15px;
-        }
-
-        /* Memastikan modal benar-benar centered di mobile */
-        @media (max-width: 575px) {
-            #birthdayModal .modal-dialog {
-                max-width: 90%;
-                margin: 0 auto;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: calc(100vh - 30px);
-                padding: 15px;
-                position: relative;
-            }
-
-            #birthdayModal.modal.show .modal-dialog {
-                transform: translateY(0);
-                margin: auto;
-            }
-
-            .birthday-modal-body {
-                padding: 30px 20px !important;
-            }
-        }
-
-        @media (min-width: 576px) {
-            #birthdayModal .modal-dialog {
-                max-width: 500px;
-                margin: 0 auto;
-                display: flex;
-                align-items: center;
-                min-height: calc(100vh - 60px);
-                padding: 30px;
-            }
-
-            .birthday-title {
-                font-size: 32px;
-            }
-
-            .birthday-name {
-                font-size: 24px;
-            }
-        }
-
-        /* Custom Overlay Backdrop untuk modal ulang tahun */
-        .birthday-overlay {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            min-height: 100vh !important;
-            min-height: -webkit-fill-available !important;
-            z-index: 1040 !important;
-            background-color: rgba(0, 0, 0, 0.6) !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            cursor: pointer;
-        }
-
-        .birthday-overlay.show {
-            opacity: 1 !important;
-            visibility: visible !important;
-        }
-
-        /* Pastikan modal muncul DI ATAS overlay */
-        #birthdayModal {
-            z-index: 1050 !important;
-            position: fixed !important;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            margin: 0;
-        }
-
-        #birthdayModal.show {
-            z-index: 1050 !important;
-            display: flex !important;
-        }
-
-        #birthdayModal .modal-dialog {
-            z-index: 1051 !important;
-            position: relative !important;
-            margin: auto !important;
-        }
-
-        #birthdayModal .modal-content {
-            z-index: 1052 !important;
-            position: relative !important;
-        }
-
-        /* Pastikan backdrop menutupi semua elemen termasuk status bar dan bottom nav */
-        body.modal-open {
-            overflow: hidden !important;
-            padding-right: 0 !important;
-        }
-
-        body.modal-open .appHeader,
-        body.modal-open .bottomMenu,
-        body.modal-open #appCapsule {
-            position: relative;
-            z-index: 1 !important;
-        }
-
-        /* Untuk mobile, pastikan overlay menutupi seluruh viewport termasuk safe area */
-        @media (max-width: 768px) {
-            .birthday-overlay {
-                height: 100vh !important;
-                height: -webkit-fill-available !important;
-                min-height: 100vh !important;
-                min-height: -webkit-fill-available !important;
-            }
-
-            /* Pastikan modal tetap di atas overlay */
-            #birthdayModal {
-                z-index: 1050 !important;
-                position: fixed !important;
-            }
-
-            #birthdayModal.show {
-                z-index: 1050 !important;
-            }
-
-            #birthdayModal .modal-dialog {
-                z-index: 1051 !important;
-                position: relative !important;
-            }
-
-            #birthdayModal .modal-content {
-                z-index: 1052 !important;
-                position: relative !important;
-            }
-        }
-    </style>
 @endsection
+
 @push('myscript')
-    <script type="text/javascript">
-        window.onload = function() {
-            jam();
+    <script>
+        // Real-time Clock for Card Header
+        function updateClock() {
+            var now = new Date();
+            var hours = String(now.getHours()).padStart(2, '0');
+            var minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('jam-card').textContent = hours + ":" + minutes;
         }
 
-        function jam() {
-            var e = document.getElementById('jam'),
-                d = new Date(),
-                h, m, s;
-            h = d.getHours();
-            m = set(d.getMinutes());
-            s = set(d.getSeconds());
-
-            e.innerHTML = h + ':' + m + ':' + s;
-
-            setTimeout('jam()', 1000);
-        }
-
-        function set(e) {
-            e = e < 10 ? '0' + e : e;
-            return e;
-        }
-
-        // Tampilkan modal ulang tahun jika ada
-        @if (isset($is_birthday) && $is_birthday)
-            $(document).ready(function() {
-                // Fungsi untuk membuat confetti
-                function createConfetti() {
-                    var container = $('#confetti-container');
-                    if (container.length === 0) return;
-
-                    var colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#95e1d3', '#ffe66d'];
-                    var confettiCount = 100;
-
-                    for (var i = 0; i < confettiCount; i++) {
-                        var confetti = $('<div class="confetti"></div>');
-                        var left = Math.random() * 100;
-                        var delay = Math.random() * 3;
-                        var duration = 3 + Math.random() * 2;
-                        var size = 8 + Math.random() * 8;
-                        var color = colors[Math.floor(Math.random() * colors.length)];
-
-                        confetti.css({
-                            'left': left + '%',
-                            'background': color,
-                            'width': size + 'px',
-                            'height': size + 'px',
-                            'animation-delay': delay + 's',
-                            'animation-duration': duration + 's',
-                            'border-radius': Math.random() > 0.5 ? '50%' : '0%'
-                        });
-
-                        container.append(confetti);
-
-                        // Hapus confetti setelah animasi selesai
-                        setTimeout(function() {
-                            confetti.remove();
-                        }, (duration + delay) * 1000);
-                    }
-                }
-
-                // Fungsi untuk menampilkan custom overlay
-                function showBirthdayOverlay() {
-                    var overlay = $('#birthdayOverlay');
-                    if (overlay.length > 0) {
-                        // Gunakan window.innerHeight untuk mendapatkan tinggi layar yang tepat
-                        var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-
-                        overlay.css({
-                            'position': 'fixed',
-                            'top': '0',
-                            'left': '0',
-                            'right': '0',
-                            'bottom': '0',
-                            'width': '100%',
-                            'height': screenHeight + 'px',
-                            'min-height': '100vh',
-                            'z-index': '1040'
-                        });
-                        overlay.addClass('show');
-                    }
-                }
-
-                // Fungsi untuk menyembunyikan custom overlay
-                function hideBirthdayOverlay() {
-                    $('#birthdayOverlay').removeClass('show');
-                    $('#confetti-container').empty();
-                }
-
-                // Fungsi untuk menutup modal - metode langsung dan sederhana
-                function closeBirthdayModal() {
-                    var modal = $('#birthdayModal');
-                    var modalElement = document.getElementById('birthdayModal');
-
-                    // Sembunyikan overlay terlebih dahulu
-                    hideBirthdayOverlay();
-
-                    // Metode langsung: sembunyikan semua dengan cara yang pasti
-                    // 1. Hapus semua class Bootstrap modal
-                    modal.removeClass('show fade in');
-                    modal.addClass('fade');
-
-                    // 2. Sembunyikan modal dengan CSS langsung
-                    modal.css({
-                        'display': 'none !important',
-                        'visibility': 'hidden',
-                        'opacity': '0',
-                        'padding-right': ''
-                    });
-
-                    // 3. Sembunyikan modal dialog
-                    modal.find('.modal-dialog').css('display', 'none');
-                    modal.find('.modal-content').css('display', 'none');
-
-                    // 4. Hapus class modal-open dari body
-                    $('body').removeClass('modal-open');
-                    $('body').css({
-                        'padding-right': '',
-                        'overflow': ''
-                    });
-
-                    // 5. Hapus semua backdrop
-                    $('.modal-backdrop').remove();
-                    $('#birthdayOverlay').removeClass('show');
-
-                    // 6. Set atribut style langsung pada element
-                    if (modalElement) {
-                        modalElement.style.display = 'none';
-                        modalElement.style.visibility = 'hidden';
-                        modalElement.style.opacity = '0';
-                        modalElement.classList.remove('show');
-                        modalElement.classList.remove('fade');
-                    }
-
-                    // 7. Trigger event hidden untuk kompatibilitas
-                    modal.trigger('hidden.bs.modal');
-
-                    // 8. Pastikan sekali lagi setelah beberapa saat
-                    setTimeout(function() {
-                        modal.hide();
-                        modal.css('display', 'none');
-                        if (modalElement) {
-                            modalElement.style.display = 'none';
-                        }
-                    }, 50);
-                }
-
-                // Event handler menggunakan event delegation untuk memastikan terikat
-                $(document).on('click', '.birthday-close-btn', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    closeBirthdayModal();
-                });
-
-                // Event handler untuk klik overlay/backdrop - tutup modal saat klik di overlay
-                $(document).on('click', '#birthdayOverlay', function(e) {
-                    if (e.target === this) {
-                        closeBirthdayModal();
-                    }
-                });
-
-                // Mencegah modal tutup saat klik di dalam modal content
-                $(document).on('click', '#birthdayModal .modal-content', function(e) {
-                    e.stopPropagation();
-                });
-
-                // Event handler untuk tombol "Terima Kasih"
-                $(document).on('click', '.birthday-button', function(e) {
-                    e.preventDefault();
-                    closeBirthdayModal();
-                });
-
-                // Coba Bootstrap 5 API dulu, jika tidak ada gunakan jQuery
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var birthdayModal = new bootstrap.Modal(document.getElementById('birthdayModal'), {
-                        backdrop: false,
-                        keyboard: false
-                    });
-
-                    // Tampilkan overlay sebelum modal
-                    showBirthdayOverlay();
-
-                    // Buat confetti
-                    createConfetti();
-
-                    // Tampilkan modal
-                    birthdayModal.show();
-
-                    // Pastikan overlay tetap muncul setelah modal muncul
-                    $('#birthdayModal').on('shown.bs.modal', function() {
-                        showBirthdayOverlay();
-                        // Buat confetti lagi setelah beberapa detik
-                        setTimeout(function() {
-                            createConfetti();
-                        }, 2000);
-                    });
-
-                    // Sembunyikan overlay saat modal ditutup
-                    $('#birthdayModal').on('hidden.bs.modal', function() {
-                        hideBirthdayOverlay();
-                    });
-                } else {
-                    $('#birthdayModal').modal({
-                        backdrop: false,
-                        keyboard: false
-                    });
-
-                    // Tampilkan overlay sebelum modal
-                    showBirthdayOverlay();
-
-                    // Buat confetti
-                    createConfetti();
-
-                    // Tampilkan modal
-                    $('#birthdayModal').modal('show');
-
-                    // Pastikan overlay tetap muncul setelah modal muncul
-                    $('#birthdayModal').on('shown.bs.modal', function() {
-                        showBirthdayOverlay();
-                        // Buat confetti lagi setelah beberapa detik
-                        setTimeout(function() {
-                            createConfetti();
-                        }, 2000);
-                    });
-
-                    // Sembunyikan overlay saat modal ditutup
-                    $('#birthdayModal').on('hidden.bs.modal', function() {
-                        hideBirthdayOverlay();
-                    });
-                }
-
-                // Update overlay saat window resize
-                $(window).on('resize', function() {
-                    if ($('#birthdayModal').hasClass('show')) {
-                        showBirthdayOverlay();
-                    }
-                });
-            });
-        @endif
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
     </script>
 @endpush
