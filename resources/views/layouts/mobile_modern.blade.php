@@ -37,6 +37,10 @@
 
     <!-- Map & Webcam Styles -->
     <style>
+        html {
+            scrollbar-gutter: stable;
+        }
+
         .webcam-capture,
         #camera video {
             width: 100% !important;
@@ -134,6 +138,23 @@
                     });
             });
         }
+    </script>
+
+    <!-- Critical Dependencies for Attendance Feature -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Face API (Local Asset) -->
+    <script src="{{ asset('assets/vendor/face-api.min.js') }}"></script>
+
+    <!-- CSRF Token Setup -->
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
     </script>
 
     @stack('scripts')
