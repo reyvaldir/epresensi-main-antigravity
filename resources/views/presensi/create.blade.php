@@ -231,9 +231,9 @@
 
                     <!-- Toggle Handle Area (Click to toggle) -->
                     <div @click="isOpen = !isOpen"
-                        class="absolute top-0 left-0 right-0 h-10 w-full z-10 cursor-pointer flex justify-center items-center">
+                        class="absolute top-[-15px] left-0 right-0 h-6 w-full z-10 cursor-pointer flex justify-center items-center mt-3">
                         <!-- Drag Handle Visual -->
-                        <div class="w-12 h-1 bg-slate-200 rounded-full transition-colors group-hover:bg-slate-300"></div>
+                        <div class="w-16 h-1.5 bg-slate-400 rounded-full hover:bg-slate-500 transition-colors"></div>
                     </div>
 
                     <!-- Main Content Container with Padding -->
@@ -271,7 +271,7 @@
 
                         <!-- Floating Location Capsule (Sitting on top edge) -->
                         <div
-                            class="absolute -top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden">
+                            class="w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden mx-auto -mt-2 mb-4">
                             <div class="flex items-center gap-3 flex-1 min-w-0">
                                 <div
                                     class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
@@ -281,8 +281,15 @@
                                     <span
                                         class="text-[9px] text-slate-400 uppercase tracking-wider font-bold leading-tight">Lokasi
                                         Anda</span>
+                                    @php
+                                        $nama_lokasi = $lokasi_kantor->nama_cabang;
+                                        if ($general_setting->multi_lokasi) {
+                                            $cabang_terpilih = $cabang->where('kode_cabang', $karyawan->kode_cabang)->first();
+                                            $nama_lokasi = $cabang_terpilih ? $cabang_terpilih->nama_cabang : 'Pilih Lokasi';
+                                        }
+                                    @endphp
                                     <span class="text-xs font-bold truncate leading-tight"
-                                        id="location-display">{{ $general_setting->multi_lokasi ? ($item->nama_cabang ?? 'Pilih Lokasi') : $lokasi_kantor->nama_cabang }}</span>
+                                        id="location-display">{{ $nama_lokasi }}</span>
                                 </div>
                             </div>
 
@@ -291,10 +298,12 @@
                                     <ion-icon name="chevron-down-outline" class="text-slate-400 text-xl"></ion-icon>
                                 </div>
                                 <select name="cabang" id="cabang"
-                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50 text-xs"
                                     onchange="document.getElementById('location-display').innerText = this.options[this.selectedIndex].text">
                                     @foreach ($cabang as $item)
-                                        <option value="{{ $item->lokasi_cabang }}" {{ $item->kode_cabang == $karyawan->kode_cabang ? 'selected' : '' }}>
+                                        <option value="{{ $item->lokasi_cabang }}"
+                                            {{ $item->kode_cabang == $karyawan->kode_cabang ? 'selected' : '' }}
+                                            class="text-black bg-white text-xs">
                                             {{ $item->nama_cabang }}
                                         </option>
                                     @endforeach
@@ -707,11 +716,11 @@
                     const loadingIndicator = document.createElement('div');
                     loadingIndicator.id = 'face-recognition-loading';
                     loadingIndicator.innerHTML = `
-                                                                                                                                                                                                                        <div class="spinner-border text-light" role="status">
-                                                                                                                                                                                                                            <span class="sr-only">Memuat pengenalan wajah...</span>
-                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                        <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                                                                                                                                                                                                                                                      `;
+                                                                                                                                                                                                                                    <div class="spinner-border text-light" role="status">
+                                                                                                                                                                                                                                        <span class="sr-only">Memuat pengenalan wajah...</span>
+                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                                                                                                                                                                                                                                                  `;
                     loadingIndicator.style.position = 'absolute';
                     loadingIndicator.style.top = '50%';
                     loadingIndicator.style.left = '50%';
@@ -786,11 +795,11 @@
                         const faceDataLoading = document.createElement('div');
                         faceDataLoading.id = 'face-data-loading';
                         faceDataLoading.innerHTML = `
-                                                                                                                                                                                                                            <div class="spinner-border text-light" role="status">
-                                                                                                                                                                                                                                <span class="sr-only">Memuat data wajah...</span>
-                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                            <div class="mt-2 text-light">Memuat data wajah...</div>
-                                                                                                                                                                                                                        `;
+                                                                                                                                                                                                                                        <div class="spinner-border text-light" role="status">
+                                                                                                                                                                                                                                            <span class="sr-only">Memuat data wajah...</span>
+                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                        <div class="mt-2 text-light">Memuat data wajah...</div>
+                                                                                                                                                                                                                                    `;
                         faceDataLoading.style.position = 'absolute';
                         faceDataLoading.style.top = '50%';
                         faceDataLoading.style.left = '50%';
