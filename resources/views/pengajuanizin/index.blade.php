@@ -1,154 +1,212 @@
-@extends('layouts.mobile.app')
+@extends('layouts.mobile_modern')
+
 @section('content')
-    <style>
-        .avatar {
-            position: relative;
-            width: 2.5rem;
-            height: 2.5rem;
-            cursor: pointer;
-        }
-
-        /* Tambahkan style untuk header dan content */
-        #header-section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        #content-section {
-            margin-top: 70px;
-            padding-top: 5px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .avatar-sm {
-            width: 2rem;
-            height: 2rem;
-        }
-
-        .avatar-sm .avatar-initial {
-            font-size: .8125rem;
-        }
-
-        .avatar .avatar-initial {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            background-color: #eeedf0;
-            font-size: .9375rem;
-        }
-
-        .rounded-circle {
-            border-radius: 50% !important;
-        }
-    </style>
-    <div id="header-section">
-        <div class="appHeader bg-primary text-light">
-            <div class="left">
-                <a href="{{ route('dashboard.index') }}" class="headerButton goBack">
-                    <ion-icon name="chevron-back-outline"></ion-icon>
-                </a>
-            </div>
-            <div class="pageTitle">Pengajuan Izin</div>
-            <div class="right"></div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-5 mt-2">
+        <div class="flex items-center gap-3">
+            <a href="{{ route('dashboard.index') }}"
+                class="flex items-center justify-center h-10 w-10 bg-white rounded-full shadow-sm text-slate-500 border border-slate-100 hover:bg-slate-50 transition-colors">
+                <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Data Izin / Sakit</h1>
         </div>
     </div>
-    <div id="content-section">
-        <div class="row" style="margin-top: 30px">
-            <div class="col">
-                <div class="transactions">
-                    @foreach ($pengajuan_izin as $d)
-                        @php
-                            if ($d->ket == 'i') {
-                                $route = 'izinabsen.delete';
-                            } elseif ($d->ket == 's') {
-                                $route = 'izinsakit.delete';
-                            } elseif ($d->ket == 'c') {
-                                $route = 'izincuti.delete';
-                            } elseif ($d->ket == 'd') {
-                                $route = 'izindinas.delete';
-                            }
-                        @endphp
-                        <form method="POST" name="deleteform" class="deleteform me-1 mb-1" action="{{ route($route, Crypt::encrypt($d->kode)) }}">
-                            @csrf
-                            @method('DELETE')
-                            <a href="#" class="item {{ $d->status_izin == 0 ? 'cancel-confirm' : '' }}">
-                                <div class="detail">
-                                    <div class="avatar avatar-sm me-4"><span class="avatar-initial rounded-circle bg-success">
-                                            {{ textUpperCase($d->ket) }}
-                                        </span></div>
-                                    <div>
-                                        <strong>
-                                            @php
-                                                if ($d->ket == 'i') {
-                                                    $ket = 'Izin Absen';
-                                                } elseif ($d->ket == 's') {
-                                                    $ket = 'Izin Sakit';
-                                                } elseif ($d->ket == 'c') {
-                                                    $ket = 'Izin Cuti';
-                                                } elseif ($d->ket == 'd') {
-                                                    $ket = 'Izin Dinas';
-                                                }
-                                            @endphp
-                                            {{ $ket }}
-                                        </strong>
-                                        <p>{{ DateToIndo($d->dari) }} - {{ DateToIndo($d->sampai) }}</p>
-                                        <p>{{ $d->keterangan }}</p>
-                                    </div>
-                                </div>
-                                <div class="right">
-                                    <div class="price">
-                                        @if ($d->status_izin == '0')
-                                            <span class="badge bg-warning">Pending</span>
-                                        @elseif ($d->status_izin == '1')
-                                            <span class="badge bg-success">Disetujui</span>
-                                        @elseif ($d->status_izin == '2')
-                                            <span class="badge bg-danger">Ditolak</span>
-                                        @endif
-                                    </div>
-                                    <div class="status">
 
-                                    </div>
-                                </div>
-                            </a>
-                        </form>
-                    @endforeach
+    <!-- Content -->
+    <div class="space-y-3 pb-24">
+        @foreach ($pengajuan_izin as $d)
+            @php
+                if ($d->ket == 'i') {
+                    $route = 'izinabsen.delete';
+                    $icon = 'document-text-outline';
+                    $color = 'text-blue-600 bg-blue-50';
+                    $label = 'Izin Absen';
+                } elseif ($d->ket == 's') {
+                    $route = 'izinsakit.delete';
+                    $icon = 'medkit-outline';
+                    $color = 'text-pink-600 bg-pink-50';
+                    $label = 'Izin Sakit';
+                } elseif ($d->ket == 'c') {
+                    $route = 'izincuti.delete';
+                    $icon = 'briefcase-outline';
+                    $color = 'text-amber-600 bg-amber-50';
+                    $label = 'Izin Cuti';
+                } elseif ($d->ket == 'd') {
+                    $route = 'izindinas.delete';
+                    $icon = 'airplane-outline';
+                    $color = 'text-emerald-600 bg-emerald-50';
+                    $label = 'Izin Dinas';
+                }
+
+                $statusBadge = '';
+                if ($d->status_izin == '0') {
+                    $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">Pending</span>';
+                } elseif ($d->status_izin == '1') {
+                    $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">Disetujui</span>';
+                } elseif ($d->status_izin == '2') {
+                    $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold border border-red-200">Ditolak</span>';
+                }
+            @endphp
+
+            <div
+                class="relative bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all group overflow-hidden">
+                <!-- Swipe Actions/Delete Button -->
+                <form method="POST" action="{{ route($route, Crypt::encrypt($d->kode)) }}" class="absolute top-4 right-4 z-20">
+                    @csrf
+                    @method('DELETE')
+                    @if ($d->status_izin == 0)
+                        <button type="submit"
+                            class="delete-btn flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
+                            <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                    @endif
+                </form>
+
+                <div class="flex items-start gap-4 pr-10">
+                    <!-- Icon -->
+                    <div class="flex-shrink-0 w-12 h-12 rounded-xl {{ $color }} flex items-center justify-center">
+                        <ion-icon name="{{ $icon }}" class="text-2xl"></ion-icon>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <h3 class="font-bold text-slate-800 text-base truncate">{{ $label }}</h3>
+                            {!! $statusBadge !!}
+                        </div>
+
+                        <p class="text-xs text-slate-500 font-medium flex items-center gap-1 mb-1.5">
+                            <ion-icon name="calendar-outline" class="text-slate-400"></ion-icon>
+                            {{ DateToIndo($d->dari) }} s/d {{ DateToIndo($d->sampai) }}
+                        </p>
+
+                        @if($d->keterangan)
+                            <div class="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
+                                <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">"{{ $d->keterangan }}"</p>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="fab-button animate bottom-left dropdown" style="margin-bottom:70px">
-            <a href="#" class="fab bg-primary" data-toggle="dropdown">
-                <ion-icon name="add-outline" role="img" class="md hydrated" aria-label="add outline"></ion-icon>
-            </a>
-            <div class="dropdown-menu">
-                <a class="dropdown-item bg-primary" href="{{ route('izinabsen.create') }}">
-                    <ion-icon name="document-outline" role="img" class="md hydrated" aria-label="image outline"></ion-icon>
-                    <p>Izin Absen</p>
-                </a>
+        @endforeach
+    </div>
 
-                <a class="dropdown-item bg-primary" href="{{ route('izinsakit.create') }}">
-                    <ion-icon name="bag-add-outline"></ion-icon>
-                    <p>Izin Sakit</p>
-                </a>
-                <a class="dropdown-item bg-primary" href="{{ route('izincuti.create') }}">
-                    <ion-icon name="document-outline" role="img" class="md hydrated" aria-label="videocam outline"></ion-icon>
-                    <p>Izin Cuti</p>
-                </a>
-                <a class="dropdown-item bg-primary" href="{{ route('izindinas.create') }}">
-                    <ion-icon name="airplane-outline"></ion-icon>
-                    <p>Izin Dinas</p>
-                </a>
-            </div>
+    <!-- Floating Action Button -->
+    <div x-data="{ open: false }" class="fixed bottom-24 right-6 z-50">
+        <!-- Main Button -->
+        <button @click="open = !open"
+            class="w-14 h-14 bg-primary text-white rounded-full shadow-xl shadow-blue-500/40 flex items-center justify-center transform transition-transform duration-200 hover:scale-105 active:scale-95"
+            :class="{ 'rotate-45': open }">
+            <ion-icon name="add-outline" class="text-3xl font-bold"></ion-icon>
+        </button>
+
+        <!-- Menu Items -->
+        <div x-show="open" @click.away="open = false" x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 translate-y-4 scale-90"
+            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+            x-transition:leave-end="opacity-0 translate-y-4 scale-90"
+            class="absolute bottom-16 right-0 space-y-3 min-w-[160px] pb-2">
+
+            <a href="{{ route('izindinas.create') }}" class="flex items-center justify-end gap-3 group">
+                <span
+                    class="bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-slate-100 group-hover:bg-slate-50 transition-colors">Izin
+                    Dinas</span>
+                <div
+                    class="w-10 h-10 bg-emerald-500 text-white rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-all">
+                    <ion-icon name="airplane-outline" class="text-lg"></ion-icon>
+                </div>
+            </a>
+
+            <a href="{{ route('izincuti.create') }}" class="flex items-center justify-end gap-3 group">
+                <span
+                    class="bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-slate-100 group-hover:bg-slate-50 transition-colors">Izin
+                    Cuti</span>
+                <div
+                    class="w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-all">
+                    <ion-icon name="briefcase-outline" class="text-lg"></ion-icon>
+                </div>
+            </a>
+
+            <a href="{{ route('izinsakit.create') }}" class="flex items-center justify-end gap-3 group">
+                <span
+                    class="bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-slate-100 group-hover:bg-slate-50 transition-colors">Izin
+                    Sakit</span>
+                <div
+                    class="w-10 h-10 bg-pink-500 text-white rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-all">
+                    <ion-icon name="medkit-outline" class="text-lg"></ion-icon>
+                </div>
+            </a>
+
+            <a href="{{ route('izinabsen.create') }}" class="flex items-center justify-end gap-3 group">
+                <span
+                    class="bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-slate-100 group-hover:bg-slate-50 transition-colors">Izin
+                    Absen</span>
+                <div
+                    class="w-10 h-10 bg-blue-500 text-white rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-all">
+                    <ion-icon name="document-text-outline" class="text-lg"></ion-icon>
+                </div>
+            </a>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <style>
+        .swal2-confirm-custom {
+            background-color: #5b50e3 !important;
+            border-color: #5b50e3 !important;
+            box-shadow: 0 4px 6px -1px rgba(91, 80, 227, 0.2), 0 2px 4px -1px rgba(91, 80, 227, 0.1);
+        }
+
+        .swal2-confirm-custom:hover {
+            background-color: #4a41c5 !important;
+            border-color: #4a41c5 !important;
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(91, 80, 227, 0.3), 0 4px 6px -2px rgba(91, 80, 227, 0.1);
+        }
+
+        .swal2-cancel-custom {
+            background-color: #ef4444 !important;
+            /* Red-500 */
+            border-color: #ef4444 !important;
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2), 0 2px 4px -1px rgba(239, 68, 68, 0.1);
+        }
+
+        .swal2-cancel-custom:hover {
+            background-color: #dc2626 !important;
+            /* Red-600 */
+            border-color: #dc2626 !important;
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3), 0 4px 6px -2px rgba(239, 68, 68, 0.1);
+        }
+    </style>
+    <script>
+        // Handle Delete Confirmation
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.delete-btn')) {
+                e.preventDefault();
+                const form = e.target.closest('form');
+
+                Swal.fire({
+                    title: 'Apakah Anda Yakin Ingin Membatalkan Data Ini ?',
+                    text: "Data ini akan dibatalkan.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Batalkan Saja Saja!',
+                    cancelButtonText: 'Cancel',
+                    customClass: {
+                        confirmButton: 'swal2-confirm-custom',
+                        cancelButton: 'swal2-cancel-custom'
+                    },
+                    buttonsStyling: true // Enable default styling base, but we override colors
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                })
+            }
+        });
+    </script>
+@endpush
