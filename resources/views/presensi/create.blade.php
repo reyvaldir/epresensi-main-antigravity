@@ -141,14 +141,6 @@
         <!-- Top Section: Camera (70% to give more room) -->
         <div class="relative w-full h-[70%] shrink-0">
 
-            <!-- Real Time Clock Badge -->
-            <div class="absolute top-4 right-4 z-40">
-                <div
-                    class="bg-black/30 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-mono font-bold shadow-lg flex items-center gap-2 border border-white/10">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    <span id="jam">00:00:00</span>
-                </div>
-            </div>
             <!-- Main Container (Full Screen, No Scroll) -->
             <div class="relative w-full h-[calc(100vh-70px)] bg-slate-900 overflow-hidden font-inter">
 
@@ -160,13 +152,10 @@
                         <ion-icon name="arrow-back-outline" class="text-xl"></ion-icon>
                     </a>
                     <!-- Page Title -->
-                    <div class="px-4 py-1.5 bg-black/20 backdrop-blur-md rounded-full">
-                        <h1 class="text-white text-xs font-semibold tracking-wide uppercase">E-Presensi</h1>
-                    </div>
-                    <!-- Notification/Profile (Placeholder) -->
-                    <div
-                        class="w-10 h-10 flex items-center justify-center bg-black/20 backdrop-blur-md rounded-full text-white pointer-events-auto">
-                        <ion-icon name="notifications-outline" class="text-xl"></ion-icon>
+                    <div class="absolute left-1/2 -translate-x-1/2 px-4 py-1.5 bg-black/20 backdrop-blur-md rounded-full">
+                        <h1 class="text-white text-xs font-semibold tracking-wide uppercase whitespace-nowrap">
+                            E-Presensi
+                        </h1>
                     </div>
                 </div>
 
@@ -236,9 +225,9 @@
 
 
                 <!-- 3. BOTTOM SHEET (Panel Control) -->
-                <div x-data="{ isOpen: true }"
+                <div x-data="{ isOpen: false }"
                     class="absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
-                    :class="isOpen ? 'translate-y-0' : 'translate-y-[calc(100%-80px)]'">
+                    :class="isOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'">
 
                     <!-- Toggle Handle Area (Click to toggle) -->
                     <div @click="isOpen = !isOpen"
@@ -250,9 +239,39 @@
                     <!-- Main Content Container with Padding -->
                     <div class="pb-20 pt-8 px-6">
 
+
+                        <!-- Action Buttons (Attached to Sheet Top) -->
+                        <div class="absolute -top-[70px] left-0 right-0 z-[60] px-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <button id="absenmasuk"
+                                    class="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                    </div>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                        <ion-icon name="log-in-outline" class="text-white text-lg"></ion-icon>
+                                    </div>
+                                    <span class="text-white font-bold tracking-wide">Masuk</span>
+                                </button>
+
+                                <button id="absenpulang"
+                                    class="group relative overflow-hidden bg-rose-500 hover:bg-rose-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-rose-200 flex items-center justify-center gap-3">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                    </div>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                        <ion-icon name="log-out-outline" class="text-white text-lg"></ion-icon>
+                                    </div>
+                                    <span class="text-white font-bold tracking-wide">Pulang</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <!-- Floating Location Capsule (Sitting on top edge) -->
                         <div
-                            class="absolute -top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm">
+                            class="absolute -top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden">
                             <div class="flex items-center gap-3 flex-1 min-w-0">
                                 <div
                                     class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
@@ -268,18 +287,18 @@
                             </div>
 
                             @if ($general_setting->multi_lokasi)
-                                <div class="relative">
-                                    <ion-icon name="chevron-down-circle" class="text-slate-500 text-xl"></ion-icon>
-                                    <select name="cabang" id="cabang"
-                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                        onchange="document.getElementById('location-display').innerText = this.options[this.selectedIndex].text">
-                                        @foreach ($cabang as $item)
-                                            <option value="{{ $item->lokasi_cabang }}" {{ $item->kode_cabang == $karyawan->kode_cabang ? 'selected' : '' }}>
-                                                {{ $item->nama_cabang }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                <div>
+                                    <ion-icon name="chevron-down-outline" class="text-slate-400 text-xl"></ion-icon>
                                 </div>
+                                <select name="cabang" id="cabang"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50"
+                                    onchange="document.getElementById('location-display').innerText = this.options[this.selectedIndex].text">
+                                    @foreach ($cabang as $item)
+                                        <option value="{{ $item->lokasi_cabang }}" {{ $item->kode_cabang == $karyawan->kode_cabang ? 'selected' : '' }}>
+                                            {{ $item->nama_cabang }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             @else
                                 <div class="w-2"> <!-- Spacer -->
                                     <input type="hidden" id="cabang" value="{{ $lokasi_kantor->lokasi_cabang }}">
@@ -318,39 +337,21 @@
                             </div>
                         </div>
 
-                        <!-- Action Buttons (Big & Bold) -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <button id="absenmasuk"
-                                class="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>
-                                <div
-                                    class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                    <ion-icon name="log-in-outline" class="text-white text-lg"></ion-icon>
-                                </div>
-                                <span class="text-white font-bold tracking-wide">Masuk</span>
-                            </button>
-
-                            <button id="absenpulang"
-                                class="group relative overflow-hidden bg-rose-500 hover:bg-rose-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-rose-200 flex items-center justify-center gap-3">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                </div>
-                                <div
-                                    class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                    <ion-icon name="log-out-outline" class="text-white text-lg"></ion-icon>
-                                </div>
-                                <span class="text-white font-bold tracking-wide">Pulang</span>
-                            </button>
+                        <!-- MAP SECTION -->
+                        <div class="w-full text-center mt-2">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Lokasi Anda</p>
+                            <div id="map"
+                                class="w-full h-48 rounded-2xl border border-slate-200 shadow-sm overflow-hidden z-20 relative">
+                            </div>
                         </div>
 
                     </div>
                 </div>
             </div>
 
-            <!-- Map Hidden Container (Required for logic but not visual) -->
-            <div id="map" class="hidden"></div>
+
+
+            <!-- Removed hidden map container as it is moved above -->
             <div id="map-loading" class="hidden"></div>
 
             <!-- Realtime Clock Script -->
@@ -706,11 +707,11 @@
                     const loadingIndicator = document.createElement('div');
                     loadingIndicator.id = 'face-recognition-loading';
                     loadingIndicator.innerHTML = `
-                                                                                        <div class="spinner-border text-light" role="status">
-                                                                                            <span class="sr-only">Memuat pengenalan wajah...</span>
-                                                                                        </div>
-                                                                                        <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                                                                                                                      `;
+                                                                                                                                                                                                                        <div class="spinner-border text-light" role="status">
+                                                                                                                                                                                                                            <span class="sr-only">Memuat pengenalan wajah...</span>
+                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                        <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                                                                                                                                                                                                                                      `;
                     loadingIndicator.style.position = 'absolute';
                     loadingIndicator.style.top = '50%';
                     loadingIndicator.style.left = '50%';
@@ -785,11 +786,11 @@
                         const faceDataLoading = document.createElement('div');
                         faceDataLoading.id = 'face-data-loading';
                         faceDataLoading.innerHTML = `
-                                                                                            <div class="spinner-border text-light" role="status">
-                                                                                                <span class="sr-only">Memuat data wajah...</span>
-                                                                                            </div>
-                                                                                            <div class="mt-2 text-light">Memuat data wajah...</div>
-                                                                                        `;
+                                                                                                                                                                                                                            <div class="spinner-border text-light" role="status">
+                                                                                                                                                                                                                                <span class="sr-only">Memuat data wajah...</span>
+                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                            <div class="mt-2 text-light">Memuat data wajah...</div>
+                                                                                                                                                                                                                        `;
                         faceDataLoading.style.position = 'absolute';
                         faceDataLoading.style.top = '50%';
                         faceDataLoading.style.left = '50%';
@@ -1157,7 +1158,7 @@
 
                                                         // Square Logic with Compensation
                                                         // Scale Factor: 1.6x to cover more of the face (not just nose/mouth)
-                                                        const scaleFactor = 2.5;
+                                                        const scaleFactor = 1.7;
                                                         const squareSize = Math.min(box.width, box.height) * scaleFactor;
 
                                                         // Adjust internal height so that (Height * scaleY) == (Width * scaleX) -> Visual Square
