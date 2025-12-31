@@ -289,58 +289,61 @@
 
 
 
-                    <!-- Drag Handle (Replaced by interactive area above, invisible spacer) -->
-                    <div class="h-2"></div>
+                        <!-- Drag Handle (Replaced by interactive area above, invisible spacer) -->
+                        <div class="h-2"></div>
 
-                    <!-- Shift Info Card (Modern Glass) -->
-                    <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-6 flex items-center justify-between">
-                        <!-- Shift -->
-                        <div class="text-center">
-                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Shift Kerja</p>
-                            <div
-                                class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-100">
-                                <span class="text-xs font-bold">{{ $jam_kerja->nama_jam_kerja }}</span>
+                        <!-- Shift Info Card (Modern Glass) -->
+                        <div
+                            class="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-6 flex items-center justify-between">
+                            <!-- Shift -->
+                            <div class="text-center">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Shift Kerja</p>
+                                <div
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-100">
+                                    <span class="text-xs font-bold">{{ $jam_kerja->nama_jam_kerja }}</span>
+                                </div>
+                            </div>
+                            <!-- Divider -->
+                            <div class="w-px h-8 bg-slate-200"></div>
+                            <!-- Hours -->
+                            <div class="text-center">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Jam Kerja</p>
+                                <div class="flex items-center gap-1 text-slate-700">
+                                    <span
+                                        class="text-sm font-bold font-mono">{{ date('H:i', strtotime($jam_kerja->jam_masuk)) }}</span>
+                                    <span class="text-slate-300">-</span>
+                                    <span
+                                        class="text-sm font-bold font-mono">{{ $jam_kerja->jam_pulang ? date('H:i', strtotime($jam_kerja->jam_pulang)) : 'Selesai' }}</span>
+                                </div>
                             </div>
                         </div>
-                        <!-- Divider -->
-                        <div class="w-px h-8 bg-slate-200"></div>
-                        <!-- Hours -->
-                        <div class="text-center">
-                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Jam Kerja</p>
-                            <div class="flex items-center gap-1 text-slate-700">
-                                <span
-                                    class="text-sm font-bold font-mono">{{ date('H:i', strtotime($jam_kerja->jam_masuk)) }}</span>
-                                <span class="text-slate-300">-</span>
-                                <span
-                                    class="text-sm font-bold font-mono">{{ $jam_kerja->jam_pulang ? date('H:i', strtotime($jam_kerja->jam_pulang)) : 'Selesai' }}</span>
-                            </div>
+
+                        <!-- Action Buttons (Big & Bold) -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <button id="absenmasuk"
+                                class="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                </div>
+                                <div
+                                    class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                    <ion-icon name="log-in-outline" class="text-white text-lg"></ion-icon>
+                                </div>
+                                <span class="text-white font-bold tracking-wide">Masuk</span>
+                            </button>
+
+                            <button id="absenpulang"
+                                class="group relative overflow-hidden bg-rose-500 hover:bg-rose-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-rose-200 flex items-center justify-center gap-3">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                </div>
+                                <div
+                                    class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                    <ion-icon name="log-out-outline" class="text-white text-lg"></ion-icon>
+                                </div>
+                                <span class="text-white font-bold tracking-wide">Pulang</span>
+                            </button>
                         </div>
-                    </div>
-
-                    <!-- Action Buttons (Big & Bold) -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <button id="absenmasuk"
-                            class="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3">
-                            <div
-                                class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                            </div>
-                            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                <ion-icon name="log-in-outline" class="text-white text-lg"></ion-icon>
-                            </div>
-                            <span class="text-white font-bold tracking-wide">Masuk</span>
-                        </button>
-
-                        <button id="absenpulang"
-                            class="group relative overflow-hidden bg-rose-500 hover:bg-rose-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-rose-200 flex items-center justify-center gap-3">
-                            <div
-                                class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                            </div>
-                            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                                <ion-icon name="log-out-outline" class="text-white text-lg"></ion-icon>
-                            </div>
-                            <span class="text-white font-bold tracking-wide">Pulang</span>
-                        </button>
-                    </div>
 
                     </div>
                 </div>
@@ -703,11 +706,11 @@
                     const loadingIndicator = document.createElement('div');
                     loadingIndicator.id = 'face-recognition-loading';
                     loadingIndicator.innerHTML = `
-                                                    <div class="spinner-border text-light" role="status">
-                                                        <span class="sr-only">Memuat pengenalan wajah...</span>
-                                                    </div>
-                                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                                                `;
+                                                                                        <div class="spinner-border text-light" role="status">
+                                                                                            <span class="sr-only">Memuat pengenalan wajah...</span>
+                                                                                        </div>
+                                                                                        <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                                                                                                      `;
                     loadingIndicator.style.position = 'absolute';
                     loadingIndicator.style.top = '50%';
                     loadingIndicator.style.left = '50%';
@@ -782,11 +785,11 @@
                         const faceDataLoading = document.createElement('div');
                         faceDataLoading.id = 'face-data-loading';
                         faceDataLoading.innerHTML = `
-                                                        <div class="spinner-border text-light" role="status">
-                                                            <span class="sr-only">Memuat data wajah...</span>
-                                                        </div>
-                                                        <div class="mt-2 text-light">Memuat data wajah...</div>
-                                                    `;
+                                                                                            <div class="spinner-border text-light" role="status">
+                                                                                                <span class="sr-only">Memuat data wajah...</span>
+                                                                                            </div>
+                                                                                            <div class="mt-2 text-light">Memuat data wajah...</div>
+                                                                                        `;
                         faceDataLoading.style.position = 'absolute';
                         faceDataLoading.style.top = '50%';
                         faceDataLoading.style.left = '50%';
@@ -1135,10 +1138,8 @@
                                                             ctx.stroke();
                                                         }
 
-                                                        // Gambar kotak deteksi wajah selalu persegi (square) dan terpusat
-                                                        const squareSize = Math.min(box.width, box.height);
-                                                        const squareX = box.x + (box.width - squareSize) / 2;
-                                                        const squareY = box.y + (box.height - squareSize) / 2;
+                                                        // Gambar kotak deteksi wajah mengikuti ukuran asli (rectangular)
+                                                        // Gunakan dimensi box asli agar sesuai dengan grid lines dan bentuk wajah
 
                                                         // Kotak modern dengan efek glow
                                                         ctx.save();
@@ -1147,33 +1148,60 @@
                                                         ctx.shadowBlur = 18;
                                                         ctx.strokeStyle = boxColor;
                                                         ctx.lineWidth = 3;
-                                                        drawRoundedRect(ctx, squareX, squareY, squareSize, squareSize, 16);
+                                                        // Aspect Ratio Correction
+                                                        // Canvas is stretched by CSS (100% w/h), so we must compensate drawing dimensions
+                                                        const rect = canvas.getBoundingClientRect();
+                                                        const scaleX = rect.width / canvas.width;
+                                                        const scaleY = rect.height / canvas.height;
+                                                        const aspectCorrection = scaleX / scaleY;
+
+                                                        // Square Logic with Compensation
+                                                        // Scale Factor: 1.6x to cover more of the face (not just nose/mouth)
+                                                        const scaleFactor = 2.5;
+                                                        const squareSize = Math.min(box.width, box.height) * scaleFactor;
+
+                                                        // Adjust internal height so that (Height * scaleY) == (Width * scaleX) -> Visual Square
+                                                        // H_internal = W_internal * (scaleX / scaleY)
+                                                        const correctedHeight = squareSize * aspectCorrection;
+
+                                                        const squareX = box.x + (box.width - squareSize) / 2;
+                                                        const squareY = box.y + (box.height - correctedHeight) / 2;
+
+                                                        // Pass correctedHeight instead of squareSize for height
+                                                        drawRoundedRect(ctx, squareX, squareY, squareSize, correctedHeight, 16);
                                                         ctx.restore();
 
-                                                        // Garis pandu horizontal
+                                                        // Garis pandu horizontal (GRID)
                                                         ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
                                                         ctx.lineWidth = 1;
                                                         ctx.setLineDash([5, 5]);
 
+                                                        // Garis pandu horizontal (GRID)
+                                                        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                                                        ctx.lineWidth = 1;
+                                                        ctx.setLineDash([5, 5]);
+
+                                                        const gridHeight = correctedHeight; // Use corrected height
+
                                                         ctx.beginPath();
-                                                        ctx.moveTo(box.x, box.y + box.height / 3);
-                                                        ctx.lineTo(box.x + box.width, box.y + box.height / 3);
+                                                        ctx.moveTo(squareX, squareY + gridHeight / 3);
+                                                        ctx.lineTo(squareX + squareSize, squareY + gridHeight / 3);
                                                         ctx.stroke();
 
                                                         ctx.beginPath();
-                                                        ctx.moveTo(box.x, box.y + (box.height * 2) / 3);
-                                                        ctx.lineTo(box.x + box.width, box.y + (box.height * 2) / 3);
+                                                        ctx.moveTo(squareX, squareY + (gridHeight * 2) / 3);
+                                                        ctx.lineTo(squareX + squareSize, squareY + (gridHeight * 2) / 3);
                                                         ctx.stroke();
 
                                                         // Garis pandu vertikal
                                                         ctx.beginPath();
-                                                        ctx.moveTo(box.x + box.width / 3, box.y);
-                                                        ctx.lineTo(box.x + box.width / 3, box.y + box.height);
+                                                        ctx.moveTo(squareX + squareSize / 3, squareY);
+                                                        ctx.lineTo(squareX + squareSize / 3, squareY + gridHeight);
                                                         ctx.stroke();
 
                                                         ctx.beginPath();
-                                                        ctx.moveTo(box.x + (box.width * 2) / 3, box.y);
-                                                        ctx.lineTo(box.x + (box.width * 2) / 3, box.y + box.height);
+                                                        ctx.moveTo(squareX + (squareSize * 2) / 3, squareY);
+                                                        ctx.lineTo(squareX + (squareSize * 2) / 3, squareY + gridHeight);
                                                         ctx.stroke();
 
                                                         // Reset line style
@@ -1187,9 +1215,10 @@
                                                         // Background label lebih rapat dan proporsional
                                                         const labelPadding = 3;
                                                         const labelHeight = fontSize + labelPadding * 2;
+                                                        // Adjust label Y position based on corrected height
                                                         const labelWidth = Math.max(textWidth + labelPadding * 2, squareSize * 0.6);
                                                         const labelX = squareX + (squareSize - labelWidth) / 2;
-                                                        const labelY = squareY + squareSize + 4;
+                                                        const labelY = squareY + correctedHeight + 4;
 
                                                         // Gambar background label dengan sudut membulat
                                                         ctx.fillStyle = labelColor;
