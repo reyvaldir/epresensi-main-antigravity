@@ -111,7 +111,7 @@
 
             <a href="{{ route('izindinas.create') }}" class="flex items-center justify-end gap-3 group">
                 <span
-                    class="bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-slate-100 group-hover:bg-slate-50 transition-colors">Izin
+                    class="bg-primary text-white px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-blue-500 group-hover:bg-blue-600 transition-colors">Izin
                     Dinas</span>
                 <div
                     class="w-10 h-10 bg-emerald-500 text-white rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-all">
@@ -121,7 +121,7 @@
 
             <a href="{{ route('izincuti.create') }}" class="flex items-center justify-end gap-3 group">
                 <span
-                    class="bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-slate-100 group-hover:bg-slate-50 transition-colors">Izin
+                    class="bg-primary text-white px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-blue-500 group-hover:bg-blue-600 transition-colors">Izin
                     Cuti</span>
                 <div
                     class="w-10 h-10 bg-amber-500 text-white rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-all">
@@ -131,7 +131,7 @@
 
             <a href="{{ route('izinsakit.create') }}" class="flex items-center justify-end gap-3 group">
                 <span
-                    class="bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-slate-100 group-hover:bg-slate-50 transition-colors">Izin
+                    class="bg-primary text-white px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-blue-500 group-hover:bg-blue-600 transition-colors">Izin
                     Sakit</span>
                 <div
                     class="w-10 h-10 bg-pink-500 text-white rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-all">
@@ -141,7 +141,7 @@
 
             <a href="{{ route('izinabsen.create') }}" class="flex items-center justify-end gap-3 group">
                 <span
-                    class="bg-white text-slate-700 px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-slate-100 group-hover:bg-slate-50 transition-colors">Izin
+                    class="bg-primary text-white px-3 py-1.5 rounded-lg shadow-sm text-xs font-medium border border-blue-500 group-hover:bg-blue-600 transition-colors">Izin
                     Absen</span>
                 <div
                     class="w-10 h-10 bg-blue-500 text-white rounded-full shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-all">
