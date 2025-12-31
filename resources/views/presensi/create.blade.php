@@ -1167,7 +1167,7 @@
 
                                                         // Square Logic with Compensation
                                                         // Scale Factor: 1.6x to cover more of the face (not just nose/mouth)
-                                                        const scaleFactor = 1.7;
+                                                        const scaleFactor = 1.8;
                                                         const squareSize = Math.min(box.width, box.height) * scaleFactor;
 
                                                         // Adjust internal height so that (Height * scaleY) == (Width * scaleX) -> Visual Square
@@ -1218,15 +1218,15 @@
                                                         ctx.setLineDash([]);
 
                                                         // Label dengan style modern
-                                                        const fontSize = 13;
-                                                        ctx.font = `${fontSize}px 'Arial', sans-serif`;
+                                                        const fontSize = 20;
+                                                        ctx.font = `800 ${fontSize}px 'Inter', system-ui, -apple-system, sans-serif`;
                                                         const textWidth = ctx.measureText(labelText).width;
 
                                                         // Background label lebih rapat dan proporsional
-                                                        const labelPadding = 3;
+                                                        const labelPadding = 8;
                                                         const labelHeight = fontSize + labelPadding * 2;
                                                         // Adjust label Y position based on corrected height
-                                                        const labelWidth = Math.max(textWidth + labelPadding * 2, squareSize * 0.6);
+                                                        const labelWidth = Math.max(textWidth + labelPadding * 2 + 10, squareSize * 0.6);
                                                         const labelX = squareX + (squareSize - labelWidth) / 2;
                                                         const labelY = squareY + correctedHeight + 4;
 
