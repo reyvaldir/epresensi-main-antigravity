@@ -63,6 +63,17 @@
             z-index: 9999 !important;
         }
 
+        /* Prevent body scroll jump when SweetAlert opens */
+        body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
+
+        /* Prevent body from scrolling to top */
+        .swal2-shown {
+            height: auto !important;
+        }
+
         /* Popup styling */
         .swal2-popup {
             border-radius: 1.25rem !important;

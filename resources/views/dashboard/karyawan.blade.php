@@ -119,18 +119,35 @@
                 <span class="font-bold text-sm">Sudah Pulang</span>
             </button>
         @else
-            <a href="/presensi/create"
-                class="flex flex-col items-center justify-center p-3 rounded-2xl bg-rose-50 border-2 border-rose-100 text-rose-600 shadow-sm active:scale-95 transition-transform hover:bg-rose-100 h-full">
-                <div
-                    class="h-12 w-12 rounded-full bg-rose-500 text-white flex items-center justify-center mb-2 shadow-lg shadow-rose-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                </div>
-                <span class="font-bold text-base text-center">Pulang</span>
-            </a>
+            @if ($presensi && $presensi->jam_in)
+                {{-- User has clocked in - allow clicking Pulang --}}
+                <a href="/presensi/create"
+                    class="flex flex-col items-center justify-center p-3 rounded-2xl bg-rose-50 border-2 border-rose-100 text-rose-600 shadow-sm active:scale-95 transition-transform hover:bg-rose-100 h-full">
+                    <div
+                        class="h-12 w-12 rounded-full bg-rose-500 text-white flex items-center justify-center mb-2 shadow-lg shadow-rose-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </div>
+                    <span class="font-bold text-base text-center">Pulang</span>
+                </a>
+            @else
+                {{-- User has NOT clocked in - show warning and redirect --}}
+                <button type="button" onclick="showMasukDuluAlert()"
+                    class="flex flex-col items-center justify-center p-3 rounded-2xl bg-rose-50 border-2 border-rose-100 text-rose-600 shadow-sm active:scale-95 transition-transform hover:bg-rose-100 h-full w-full">
+                    <div
+                        class="h-12 w-12 rounded-full bg-rose-500 text-white flex items-center justify-center mb-2 shadow-lg shadow-rose-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </div>
+                    <span class="font-bold text-base text-center">Pulang</span>
+                </button>
+            @endif
         @endif
     </div>
 
@@ -174,17 +191,33 @@
             <span class="text-xs font-medium text-slate-600 text-center">ID Card</span>
         </a>
 
-        <a href="{{ route('presensiistirahat.create') }}" class="flex flex-col items-center gap-2 group">
-            <div
-                class="h-14 w-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center transition-colors group-hover:bg-orange-100">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                        clip-rule="evenodd" />
-                </svg>
-            </div>
-            <span class="text-xs font-medium text-slate-600 text-center">Istirahat</span>
-        </a>
+        @if ($presensi && $presensi->jam_in)
+            {{-- User has clocked in - allow clicking Istirahat --}}
+            <a href="{{ route('presensiistirahat.create') }}" class="flex flex-col items-center gap-2 group">
+                <div
+                    class="h-14 w-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center transition-colors group-hover:bg-orange-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <span class="text-xs font-medium text-slate-600 text-center">Istirahat</span>
+            </a>
+        @else
+            {{-- User has NOT clocked in - show warning and redirect --}}
+            <button type="button" onclick="showMasukDuluAlert()" class="flex flex-col items-center gap-2 group">
+                <div
+                    class="h-14 w-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center transition-colors group-hover:bg-orange-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <span class="text-xs font-medium text-slate-600 text-center">Istirahat</span>
+            </button>
+        @endif
 
         <a href="{{ route('lembur.index') }}" class="flex flex-col items-center gap-2 group">
             <div
@@ -683,6 +716,26 @@
             customClass: {
                 popup: 'rounded-2xl shadow-xl w-full max-w-sm p-0 overflow-hidden',
                 htmlContainer: '!m-0 !p-5'
+            }
+        });
+    }
+
+    // Function to show alert when user tries to access Pulang/Istirahat before Masuk
+    function showMasukDuluAlert() {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Belum Absen Masuk!',
+            text: 'Anda harus melakukan presensi masuk terlebih dahulu sebelum mengakses fitur ini.',
+            confirmButtonText: 'Presensi Masuk Sekarang',
+            confirmButtonColor: '#10B981',
+            showCancelButton: true,
+            cancelButtonText: 'Batal',
+            cancelButtonColor: '#6B7280',
+            scrollbarPadding: false,
+            heightAuto: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/presensi/create';
             }
         });
     }
