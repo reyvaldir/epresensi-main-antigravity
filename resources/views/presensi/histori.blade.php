@@ -330,8 +330,8 @@
                                 <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
                             </div>
                             <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">${statusLabel}</h3>
-                             <div class="mt-2 flex items-center justify-center gap-2 text-sm text-slate-600">
-                                <span class="bg-white px-2 py-0.5 rounded border border-slate-200 font-medium text-xs">
+                             <div class="mt-2 flex items-center justify-center gap-3 text-sm text-slate-600">
+                                <span class="bg-white px-3 py-1 rounded-lg border border-slate-200 font-medium text-xs shrink-0 whitespace-nowrap">
                                     <ion-icon name="calendar-outline" class="align-middle mb-0.5"></ion-icon> ${daysCount} Hari
                                 </span>
                             </div>
