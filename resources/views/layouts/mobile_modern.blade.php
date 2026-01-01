@@ -53,6 +53,176 @@
             height: 200px;
             border-radius: 1rem;
         }
+
+        /* =====================================================
+           SWEETALERT2 GLOBAL STYLING - Modern & Visible Buttons
+           ===================================================== */
+
+        /* Container z-index fix */
+        .swal2-container {
+            z-index: 9999 !important;
+        }
+
+        /* Popup styling */
+        .swal2-popup {
+            border-radius: 1.25rem !important;
+            padding: 1.5rem !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        }
+
+        /* Title styling */
+        .swal2-title {
+            font-weight: 700 !important;
+            color: #1e293b !important;
+        }
+
+        /* Icon styling - make them more vibrant */
+        .swal2-icon.swal2-error {
+            border-color: #ef4444 !important;
+            color: #ef4444 !important;
+        }
+
+        .swal2-icon.swal2-success {
+            border-color: #10b981 !important;
+            color: #10b981 !important;
+        }
+
+        .swal2-icon.swal2-success [class^='swal2-success-line'] {
+            background-color: #10b981 !important;
+        }
+
+        .swal2-icon.swal2-success .swal2-success-ring {
+            border-color: rgba(16, 185, 129, 0.3) !important;
+        }
+
+        .swal2-icon.swal2-warning {
+            border-color: #f59e0b !important;
+            color: #f59e0b !important;
+        }
+
+        .swal2-icon.swal2-info {
+            border-color: #3b82f6 !important;
+            color: #3b82f6 !important;
+        }
+
+        /* Button Actions Container */
+        .swal2-actions {
+            gap: 0.75rem !important;
+        }
+
+        /* ====== CONFIRM BUTTON - Primary Blue ====== */
+        .swal2-confirm {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 0.75rem !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.4) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .swal2-confirm:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+            box-shadow: 0 6px 20px 0 rgba(30, 64, 175, 0.6) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .swal2-confirm:active {
+            transform: translateY(0) !important;
+            box-shadow: 0 2px 10px 0 rgba(37, 99, 235, 0.4) !important;
+        }
+
+        .swal2-confirm:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4) !important;
+        }
+
+        /* ====== CANCEL BUTTON - Slate Gray ====== */
+        .swal2-cancel {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 0.75rem !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            box-shadow: 0 4px 14px 0 rgba(71, 85, 105, 0.3) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .swal2-cancel:hover {
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important;
+            box-shadow: 0 6px 20px 0 rgba(30, 41, 59, 0.6) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .swal2-cancel:active {
+            transform: translateY(0) !important;
+        }
+
+        /* ====== DENY BUTTON - Red ====== */
+        .swal2-deny {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 0.75rem !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+            box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.4) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .swal2-deny:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%) !important;
+            box-shadow: 0 6px 20px 0 rgba(153, 27, 27, 0.6) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* ====== SUCCESS SPECIFIC - Green Confirm Button ====== */
+        .swal2-icon-success~.swal2-actions .swal2-confirm {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+            box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.4) !important;
+        }
+
+        .swal2-icon-success~.swal2-actions .swal2-confirm:hover {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
+            box-shadow: 0 6px 20px 0 rgba(6, 95, 70, 0.6) !important;
+        }
+
+        /* ====== ERROR SPECIFIC - Red Confirm Button ====== */
+        .swal2-icon-error~.swal2-actions .swal2-confirm {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+            box-shadow: 0 4px 14px 0 rgba(220, 38, 38, 0.4) !important;
+        }
+
+        .swal2-icon-error~.swal2-actions .swal2-confirm:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%) !important;
+            box-shadow: 0 6px 20px 0 rgba(153, 27, 27, 0.6) !important;
+        }
+
+        /* ====== WARNING SPECIFIC - Amber Confirm Button ====== */
+        .swal2-icon-warning~.swal2-actions .swal2-confirm {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            box-shadow: 0 4px 14px 0 rgba(217, 119, 6, 0.4) !important;
+        }
+
+        .swal2-icon-warning~.swal2-actions .swal2-confirm:hover {
+            background: linear-gradient(135deg, #b45309 0%, #92400e 100%) !important;
+            box-shadow: 0 6px 20px 0 rgba(146, 64, 14, 0.6) !important;
+        }
+
+        /* ====== INFO SPECIFIC - Blue Confirm Button ====== */
+        .swal2-icon-info~.swal2-actions .swal2-confirm {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.4) !important;
+        }
+
+        .swal2-icon-info~.swal2-actions .swal2-confirm:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+            box-shadow: 0 6px 20px 0 rgba(30, 64, 175, 0.6) !important;
+        }
     </style>
 
     @stack('styles')
@@ -160,13 +330,13 @@
     <!-- Session Alert Handling -->
     <script>
         const swalConfig = {
-            confirmButtonColor: '#4F46E5', 
+            confirmButtonColor: '#4F46E5',
             confirmButtonText: 'OK',
             customClass: {
                 popup: 'rounded-2xl',
                 confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold w-full border-0 outline-none focus:outline-none ring-0 focus:ring-0 shadow-lg shadow-indigo-200'
             },
-            buttonsStyling: false 
+            buttonsStyling: false
         };
 
         @if (Session::get('success'))
@@ -184,7 +354,7 @@
                 icon: 'error',
                 title: 'Gagal',
                 text: "{!! Session::get('error') !!}",
-                confirmButtonColor: '#EF4444', 
+                confirmButtonColor: '#EF4444',
                 customClass: {
                     popup: 'rounded-2xl',
                     confirmButton: 'bg-rose-500 hover:bg-rose-600 text-white px-6 py-2.5 rounded-xl font-bold w-full border-0 outline-none focus:outline-none ring-0 focus:ring-0 shadow-lg shadow-rose-200'
@@ -198,7 +368,7 @@
                 icon: 'warning',
                 title: 'Peringatan',
                 text: "{!! Session::get('warning') !!}",
-                confirmButtonColor: '#F59E0B', 
+                confirmButtonColor: '#F59E0B',
                 customClass: {
                     popup: 'rounded-2xl',
                     confirmButton: 'bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-xl font-bold w-full border-0 outline-none focus:outline-none ring-0 focus:ring-0 shadow-lg shadow-amber-200'

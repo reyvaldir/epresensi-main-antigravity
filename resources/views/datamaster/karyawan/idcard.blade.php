@@ -1,8 +1,8 @@
 @extends('layouts.mobile_modern')
 @section('content')
-        @php
-            use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
-        @endphp
+    @php
+        use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
+    @endphp
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <!-- Header -->

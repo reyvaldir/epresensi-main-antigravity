@@ -370,6 +370,23 @@ class PresensiController extends Controller
             ->first();
 
         //dd($presensi_hariini);
+
+        // DEBUG: Log location validation variables
+        Log::info('Location Validation Debug', [
+            'nik' => $karyawan->nik,
+            'lock_location' => $status_lock_location,
+            'lokasi_user' => $lokasi,
+            'lokasi_kantor' => $lokasi_kantor,
+            'latitude_user' => $latitude_user,
+            'longitude_user' => $longitude_user,
+            'latitude_kantor' => $latitude_kantor,
+            'longitude_kantor' => $longitude_kantor,
+            'radius_user' => $radius,
+            'radius_cabang' => $cabang->radius_cabang,
+            'is_outside_radius' => $radius > $cabang->radius_cabang,
+            'izin_dinas' => $izin_dinas ? 'YES' : 'NO',
+        ]);
+
         if ($status_lock_location == 1 && $radius > $cabang->radius_cabang) {
             return response()->json(['status' => false, 'message' => 'Anda Berada Di Luar Radius Kantor, Jarak Anda ' . formatAngka($radius) . ' Meters Dari Kantor', 'notifikasi' => 'notifikasi_radius'], 400);
         } else {

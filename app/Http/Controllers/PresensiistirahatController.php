@@ -48,7 +48,7 @@ class PresensiistirahatController extends Controller
             ->where('nik', $karyawan->nik)
             ->first();
 
-        $ceklintashari_presensi = $cekpresensi_sebelumnya != null  ? $cekpresensi_sebelumnya->lintashari : 0;
+        $ceklintashari_presensi = $cekpresensi_sebelumnya != null ? $cekpresensi_sebelumnya->lintashari : 0;
 
         if ($ceklintashari_presensi == 1) {
             if ($jamsekarang < "08:00") {
@@ -60,7 +60,7 @@ class PresensiistirahatController extends Controller
 
         $kode_dept = $karyawan->kode_dept;
 
-
+        $general_setting = Pengaturanumum::where('id', 1)->first();
 
 
         $data['hariini'] = $hariini;
@@ -69,6 +69,7 @@ class PresensiistirahatController extends Controller
         $data['presensi'] = $presensi;
         $data['karyawan'] = $karyawan;
         $data['wajah'] = Facerecognition::where('nik', $karyawan->nik)->count();
+        $data['general_setting'] = $general_setting;
 
         return view('presensiistirahat.create', $data);
     }
@@ -107,21 +108,36 @@ class PresensiistirahatController extends Controller
         //Jika Presensi Kemarin Status Lintas Hari nya 1 Makan Tanggal Presensi Sekarang adalah Tanggal Kemarin
         $tanggal_presensi = $lintas_hari == 1 ? $tanggal_kemarin : $tanggal_sekarang;
 
-        //Get Lokasi User
-        $koordinat_user = explode(",", $lokasi);
-        $latitude_user = $koordinat_user[0];
-        $longitude_user = $koordinat_user[1];
+        //Get Lokasi User - validate first
+        if (empty($lokasi) || strpos($lokasi, ',') === false) {
+            return response()->json(['status' => false, 'message' => 'Lokasi tidak terdeteksi. Pastikan GPS aktif dan izinkan akses lokasi.', 'notifikasi' => 'notifikasi_radius'], 400);
+        }
 
-        //Get Lokasi Kantor
+        $koordinat_user = explode(",", $lokasi);
+        if (count($koordinat_user) < 2) {
+            return response()->json(['status' => false, 'message' => 'Format lokasi tidak valid. Silakan refresh halaman.', 'notifikasi' => 'notifikasi_radius'], 400);
+        }
+        $latitude_user = trim($koordinat_user[0]);
+        $longitude_user = trim($koordinat_user[1]);
+
+        //Get Lokasi Kantor - validate first
         $cabang = Cabang::where('kode_cabang', $karyawan->kode_cabang)->first();
-        // $lokasi_kantor = $cabang->lokasi_cabang;
         $lokasi_kantor = $request->lokasi_cabang;
 
-
+        if (empty($lokasi_kantor) || strpos($lokasi_kantor, ',') === false) {
+            // Fallback to cabang location
+            $lokasi_kantor = $cabang ? $cabang->lokasi_cabang : null;
+            if (empty($lokasi_kantor)) {
+                return response()->json(['status' => false, 'message' => 'Lokasi kantor tidak ditemukan. Hubungi administrator.', 'notifikasi' => 'notifikasi_radius'], 400);
+            }
+        }
 
         $koordinat_kantor = explode(",", $lokasi_kantor);
-        $latitude_kantor = $koordinat_kantor[0];
-        $longitude_kantor = $koordinat_kantor[1];
+        if (count($koordinat_kantor) < 2) {
+            return response()->json(['status' => false, 'message' => 'Format lokasi kantor tidak valid. Hubungi administrator.', 'notifikasi' => 'notifikasi_radius'], 400);
+        }
+        $latitude_kantor = trim($koordinat_kantor[0]);
+        $longitude_kantor = trim($koordinat_kantor[1]);
 
         $jarak = hitungjarak($latitude_kantor, $longitude_kantor, $latitude_user, $longitude_user);
 
@@ -132,9 +148,18 @@ class PresensiistirahatController extends Controller
 
         $in_out = $status == 1 ? "in" : "out";
         $image = $request->image;
+
+        // Validate image data
+        if (empty($image) || strpos($image, ';base64') === false) {
+            return response()->json(['status' => false, 'message' => 'Foto tidak berhasil diambil. Pastikan kamera aktif dan coba lagi.', 'notifikasi' => ''], 400);
+        }
+
         $folderPath = "public/uploads/istirahat/";
         $formatName = $karyawan->nik . "-" . $tanggal_presensi . "-" . $in_out;
         $image_parts = explode(";base64", $image);
+        if (count($image_parts) < 2) {
+            return response()->json(['status' => false, 'message' => 'Format foto tidak valid. Silakan refresh halaman dan coba lagi.', 'notifikasi' => ''], 400);
+        }
         $image_base64 = base64_decode($image_parts[1]);
         $fileName = $formatName . ".png";
         $file = $folderPath . $fileName;
@@ -151,7 +176,7 @@ class PresensiistirahatController extends Controller
         $jam_mulai_istirahat = $tanggal_presensi . " " . date('H:i', strtotime('-' . $batas_jam_absen . ' minutes', strtotime($jam_awal_istirahat)));
 
         //Jam Selesai Istirahat adalah 30 Menit Setelah Jam Istirahat
-        $jam_mulai_akhir_istirahat =  date('Y-m-d H:i', strtotime('+' . $batas_jam_absen . ' minutes', strtotime($jam_awal_istirahat)));
+        $jam_mulai_akhir_istirahat = date('Y-m-d H:i', strtotime('+' . $batas_jam_absen . ' minutes', strtotime($jam_awal_istirahat)));
         //return $jam_mulai_pulang;
         $jam_selesai_istirahat = $tanggal_selesai_istirahat . " " . $jam_kerja->jam_akhir_istirahat;
 
