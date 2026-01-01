@@ -48,82 +48,93 @@
 
     <!-- Content -->
     <div class="space-y-3 pb-24">
-        @foreach ($pengajuan_izin as $d)
-            @php
-                if ($d->ket == 'i') {
-                    $route = 'izinabsen.delete';
-                    $icon = 'document-text-outline';
-                    $color = 'text-blue-600 bg-blue-100';
-                    $label = 'Izin Absen';
-                } elseif ($d->ket == 's') {
-                    $route = 'izinsakit.delete';
-                    $icon = 'medkit-outline';
-                    $color = 'text-rose-600 bg-rose-100';
-                    $label = 'Izin Sakit';
-                } elseif ($d->ket == 'c') {
-                    $route = 'izincuti.delete';
-                    $icon = 'calendar-outline';
-                    $color = 'text-amber-600 bg-amber-100';
-                    $label = 'Izin Cuti';
-                } elseif ($d->ket == 'd') {
-                    $route = 'izindinas.delete';
-                    $icon = 'briefcase-outline';
-                    $color = 'text-purple-600 bg-purple-100';
-                    $label = 'Izin Dinas';
-                }
+        @if (count($pengajuan_izin) > 0)
+            @foreach ($pengajuan_izin as $d)
+                @php
+                    if ($d->ket == 'i') {
+                        $route = 'izinabsen.delete';
+                        $icon = 'document-text-outline';
+                        $color = 'text-blue-600 bg-blue-100';
+                        $label = 'Izin Absen';
+                    } elseif ($d->ket == 's') {
+                        $route = 'izinsakit.delete';
+                        $icon = 'medkit-outline';
+                        $color = 'text-rose-600 bg-rose-100';
+                        $label = 'Izin Sakit';
+                    } elseif ($d->ket == 'c') {
+                        $route = 'izincuti.delete';
+                        $icon = 'calendar-outline';
+                        $color = 'text-amber-600 bg-amber-100';
+                        $label = 'Izin Cuti';
+                    } elseif ($d->ket == 'd') {
+                        $route = 'izindinas.delete';
+                        $icon = 'briefcase-outline';
+                        $color = 'text-purple-600 bg-purple-100';
+                        $label = 'Izin Dinas';
+                    }
 
-                $statusBadge = '';
-                if ($d->status_izin == '0') {
-                    $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">Pending</span>';
-                } elseif ($d->status_izin == '1') {
-                    $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">Disetujui</span>';
-                } elseif ($d->status_izin == '2') {
-                    $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold border border-red-200">Ditolak</span>';
-                }
-            @endphp
+                    $statusBadge = '';
+                    if ($d->status_izin == '0') {
+                        $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">Pending</span>';
+                    } elseif ($d->status_izin == '1') {
+                        $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">Disetujui</span>';
+                    } elseif ($d->status_izin == '2') {
+                        $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold border border-red-200">Ditolak</span>';
+                    }
+                @endphp
 
-            <div onclick="showDetail(this)" data-detail="{{ json_encode($d) }}"
-                data-date="{{ DateToIndo($d->dari) }} s/d {{ DateToIndo($d->sampai) }}"
-                class="relative bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all group overflow-hidden cursor-pointer">
-                <!-- Swipe Actions/Delete Button -->
-                <form method="POST" action="{{ route($route, Crypt::encrypt($d->kode)) }}" class="absolute top-4 right-4 z-20">
-                    @csrf
-                    @method('DELETE')
-                    @if ($d->status_izin == 0)
-                        <button type="submit"
-                            class="delete-btn flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
-                            <ion-icon name="trash-outline"></ion-icon>
-                        </button>
-                    @endif
-                </form>
+                <div onclick="showDetail(this)" data-detail="{{ json_encode($d) }}"
+                    data-date="{{ DateToIndo($d->dari) }} s/d {{ DateToIndo($d->sampai) }}"
+                    class="relative bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all group overflow-hidden cursor-pointer">
+                    <!-- Swipe Actions/Delete Button -->
+                    <form method="POST" action="{{ route($route, Crypt::encrypt($d->kode)) }}" class="absolute top-4 right-4 z-20">
+                        @csrf
+                        @method('DELETE')
+                        @if ($d->status_izin == 0)
+                            <button type="submit"
+                                class="delete-btn flex items-center justify-center w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
+                                <ion-icon name="trash-outline"></ion-icon>
+                            </button>
+                        @endif
+                    </form>
 
-                <div class="flex items-start gap-4 pr-10">
-                    <!-- Icon -->
-                    <div class="flex-shrink-0 w-12 h-12 rounded-xl {{ $color }} flex items-center justify-center">
-                        <ion-icon name="{{ $icon }}" class="text-2xl"></ion-icon>
-                    </div>
-
-                    <!-- Content -->
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1">
-                            <h3 class="font-bold text-slate-800 text-base truncate">{{ $label }}</h3>
-                            {!! $statusBadge !!}
+                    <div class="flex items-start gap-4 pr-10">
+                        <!-- Icon -->
+                        <div class="flex-shrink-0 w-12 h-12 rounded-xl {{ $color }} flex items-center justify-center">
+                            <ion-icon name="{{ $icon }}" class="text-2xl"></ion-icon>
                         </div>
 
-                        <p class="text-xs text-slate-500 font-medium flex items-center gap-1 mb-1.5">
-                            <ion-icon name="calendar-outline" class="text-slate-400"></ion-icon>
-                            {{ DateToIndo($d->dari) }} s/d {{ DateToIndo($d->sampai) }}
-                        </p>
-
-                        @if($d->keterangan)
-                            <div class="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
-                                <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">"{{ $d->keterangan }}"</p>
+                        <!-- Content -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h3 class="font-bold text-slate-800 text-base truncate">{{ $label }}</h3>
+                                {!! $statusBadge !!}
                             </div>
-                        @endif
+
+                            <p class="text-xs text-slate-500 font-medium flex items-center gap-1 mb-1.5">
+                                <ion-icon name="calendar-outline" class="text-slate-400"></ion-icon>
+                                {{ DateToIndo($d->dari) }} s/d {{ DateToIndo($d->sampai) }}
+                            </p>
+
+                            @if($d->keterangan)
+                                <div class="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
+                                    <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">"{{ $d->keterangan }}"</p>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
+            @endforeach
+        @else
+            <div class="text-center py-12">
+                <div class="inline-flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 text-slate-300 mb-4">
+                    <ion-icon name="document-text-outline" class="text-4xl"></ion-icon>
+                </div>
+                <h3 class="font-bold text-slate-800 text-lg">Tidak Ada Data</h3>
+                <p class="text-slate-500 text-sm mt-1 max-w-[200px] mx-auto">Belum ada pengajuan izin yang ditemukan untuk
+                    periode ini.</p>
             </div>
-        @endforeach
+        @endif
     </div>
 
     <!-- Floating Action Button -->
@@ -277,16 +288,16 @@
                 iconName = 'medkit-outline';
                 if (data.doc_sid) {
                     extraHtml = `
-                                    <div class="mt-3 text-left">
-                                        <span class="text-xs font-bold text-slate-500 block mb-1">Surat Dokter (SID)</span>
-                                        <div onclick="event.stopPropagation(); Swal.fire({imageUrl: '/storage/uploads/sid/${data.doc_sid}', showCloseButton:true, showConfirmButton:false})" class="cursor-pointer relative group overflow-hidden rounded-lg border border-slate-200">
-                                            <img src="/storage/uploads/sid/${data.doc_sid}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
-                                            <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <ion-icon name="eye-outline" class="text-white text-2xl"></ion-icon>
+                                        <div class="mt-3 text-left">
+                                            <span class="text-xs font-bold text-slate-500 block mb-1">Surat Dokter (SID)</span>
+                                            <div onclick="event.stopPropagation(); Swal.fire({imageUrl: '/storage/uploads/sid/${data.doc_sid}', showCloseButton:true, showConfirmButton:false})" class="cursor-pointer relative group overflow-hidden rounded-lg border border-slate-200">
+                                                <img src="/storage/uploads/sid/${data.doc_sid}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <ion-icon name="eye-outline" class="text-white text-2xl"></ion-icon>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                 `;
+                                     `;
                 }
             } else if (data.ket === 'c') {
                 statusLabel = `Cuti: ${data.nama_cuti || 'Tahunan'}`;
@@ -309,33 +320,33 @@
             }
 
             const contentHtml = `
-                            <div class="bg-white text-center">
-                                 <div class="bg-${statusColor}-50 p-4 rounded-xl border border-${statusColor}-100">
-                                     <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-2">
-                                        <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
-                                    </div>
-                                    <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">${statusLabel}</h3>
-                                    <div class="mt-2 mb-1">
-                                        ${approvalBadge}
-                                    </div>
-                                 </div>
+                                <div class="bg-white text-center">
+                                     <div class="bg-${statusColor}-50 p-4 rounded-xl border border-${statusColor}-100">
+                                         <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-2">
+                                            <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
+                                        </div>
+                                        <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">${statusLabel}</h3>
+                                        <div class="mt-2 mb-1">
+                                            ${approvalBadge}
+                                        </div>
+                                     </div>
 
-                                 <div class="mt-4 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                    <div class="flex items-center gap-3 mb-2">
-                                         <span class="bg-white px-3 py-1 rounded-lg border border-slate-200 font-medium text-xs text-slate-600 shrink-0 whitespace-nowrap">
-                                            <ion-icon name="calendar-outline" class="align-middle mb-0.5"></ion-icon> ${daysCount} Hari
-                                        </span>
-                                        <span class="text-xs text-slate-500 font-medium">${dateRangeTitle}</span>
-                                    </div>
-                                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Keterangan</span>
-                                    <p class="text-slate-700 text-sm mt-0.5 font-medium leading-relaxed">
-                                        "${data.keterangan || '-'}"
-                                    </p>
-                                 </div>
+                                     <div class="mt-4 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                        <div class="flex items-center gap-3 mb-2">
+                                             <span class="bg-white px-3 py-1 rounded-lg border border-slate-200 font-medium text-xs text-slate-600 shrink-0 whitespace-nowrap">
+                                                <ion-icon name="calendar-outline" class="align-middle mb-0.5"></ion-icon> ${daysCount} Hari
+                                            </span>
+                                            <span class="text-xs text-slate-500 font-medium">${dateRangeTitle}</span>
+                                        </div>
+                                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Keterangan</span>
+                                        <p class="text-slate-700 text-sm mt-0.5 font-medium leading-relaxed">
+                                            "${data.keterangan || '-'}"
+                                        </p>
+                                     </div>
 
-                                 ${extraHtml}
-                            </div>
-                        `;
+                                     ${extraHtml}
+                                </div>
+                            `;
 
             Swal.fire({
                 html: contentHtml,
