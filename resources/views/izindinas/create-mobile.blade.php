@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-5 mt-2">
         <div class="flex items-center gap-3">
-            <a href="{{ route('dashboard.index') }}"
+            <a href="/pengajuanizin"
                 class="flex items-center justify-center h-10 w-10 bg-white rounded-full shadow-sm text-slate-500 border border-slate-100 hover:bg-slate-50 transition-colors">
                 <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
             </a>

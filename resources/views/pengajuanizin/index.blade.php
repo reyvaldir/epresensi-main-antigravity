@@ -196,6 +196,8 @@
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Batalkan Saja Saja!',
                     cancelButtonText: 'Cancel',
+                    heightAuto: false, // Prevent layout shift
+                    scrollbarPadding: false, // Prevent width jump
                     customClass: {
                         confirmButton: 'swal2-confirm-custom',
                         cancelButton: 'swal2-cancel-custom'
