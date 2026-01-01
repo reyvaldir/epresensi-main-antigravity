@@ -355,17 +355,21 @@ class IzincutiController extends Controller
         $kode_cuti = $request->kode_cuti;
         $cuti = Cuti::where('kode_cuti', $kode_cuti)->first();
         $jml_hari_max = $cuti->jumlah_hari;
-        if ($cuti->kode_cuti == "C01") {
-            $cek_cuti_dipakai = Approveizincuti::join('presensi', 'presensi_izincuti_approve.id_presensi', '=', 'presensi.id')
-                ->where('presensi.nik', $nik)
-                ->whereRaw("YEAR(presensi.tanggal) = $tahun_cuti")
-                ->count();
-            $sisa_cuti = $jml_hari_max - $cek_cuti_dipakai;
-            $message = 'Sisa Cuti ' . $cuti->jenis_cuti . ' Anda Adalah ' . $sisa_cuti . ' Hari Lagi';
+        $cek_cuti_dipakai = Approveizincuti::join('presensi_izincuti', 'presensi_izincuti_approve.kode_izin_cuti', '=', 'presensi_izincuti.kode_izin_cuti')
+            ->join('presensi', 'presensi_izincuti_approve.id_presensi', '=', 'presensi.id')
+            ->where('presensi_izincuti.nik', $nik)
+            ->where('presensi_izincuti.kode_cuti', $kode_cuti)
+            ->whereRaw("YEAR(presensi.tanggal) = $tahun_cuti")
+            ->count();
+
+        $sisa_cuti = $jml_hari_max - $cek_cuti_dipakai;
+        $message = "";
+        if ($sisa_cuti <= 0) {
+            $message = "Sisa/Jatah Cuti " . $cuti->jenis_cuti . " Anda Sudah Habis";
         } else {
-            $sisa_cuti = $jml_hari_max;
-            $message = "Batas Maksimal Cuti " . $cuti->jenis_cuti . " Anda Adalah " . $jml_hari_max . " Hari";
+            $message = "Sisa Cuti " . $cuti->jenis_cuti . " Anda Adalah " . $sisa_cuti . " Hari";
         }
+
         return response()->json(['status' => true, 'sisa_cuti' => $sisa_cuti, 'message' => $message]);
     }
 }
