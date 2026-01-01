@@ -157,6 +157,56 @@
         });
     </script>
 
+    <!-- Session Alert Handling -->
+    <script>
+        const swalConfig = {
+            confirmButtonColor: '#4F46E5', 
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'rounded-2xl',
+                confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold w-full border-0 outline-none focus:outline-none ring-0 focus:ring-0 shadow-lg shadow-indigo-200'
+            },
+            buttonsStyling: false 
+        };
+
+        @if (Session::get('success'))
+            Swal.fire({
+                ...swalConfig,
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{!! Session::get('success') !!}",
+            });
+        @endif
+
+        @if (Session::get('error'))
+            Swal.fire({
+                ...swalConfig,
+                icon: 'error',
+                title: 'Gagal',
+                text: "{!! Session::get('error') !!}",
+                confirmButtonColor: '#EF4444', 
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'bg-rose-500 hover:bg-rose-600 text-white px-6 py-2.5 rounded-xl font-bold w-full border-0 outline-none focus:outline-none ring-0 focus:ring-0 shadow-lg shadow-rose-200'
+                }
+            });
+        @endif
+
+        @if (Session::get('warning'))
+            Swal.fire({
+                ...swalConfig,
+                icon: 'warning',
+                title: 'Peringatan',
+                text: "{!! Session::get('warning') !!}",
+                confirmButtonColor: '#F59E0B', 
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-xl font-bold w-full border-0 outline-none focus:outline-none ring-0 focus:ring-0 shadow-lg shadow-amber-200'
+                }
+            });
+        @endif
+    </script>
+
     @stack('scripts')
     @stack('myscript')
 </body>
