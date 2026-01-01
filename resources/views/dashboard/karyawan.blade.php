@@ -368,14 +368,18 @@
                                 </div>
                             </div>
                         @else
-                             <!-- Non-Presence Status -->
-                            <p class="text-sm font-medium text-slate-600 mt-1">
-                                @if ($d->status == 'i') Izin: {{ $d->keterangan_izin }}
-                                @elseif ($d->status == 's') Sakit: {{ $d->keterangan_sakit }}
-                                @elseif ($d->status == 'c') Cuti: {{ $d->keterangan_cuti }}
-                                @elseif ($d->status == 'd') Dinas: {{ $d->keterangan_izin_dinas }}
+                            <!-- Non-Presence Status -->
+                             <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                                @if ($d->status == 'i')
+                                    <span class="bg-blue-50 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Izin Absen</span>
+                                @elseif ($d->status == 's')
+                                    <span class="bg-rose-50 text-rose-600 border border-rose-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Sakit</span>
+                                @elseif ($d->status == 'c')
+                                    <span class="bg-amber-50 text-amber-600 border border-amber-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Cuti {{ $d->nama_cuti }}</span>
+                                @elseif ($d->status == 'd')
+                                    <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Dinas Luar</span>
                                 @endif
-                            </p>
+                            </div>
                         @endif
                     </div>
 
@@ -500,6 +504,23 @@
 
             let contentHtml = '';
 
+            // Helper to count days
+            function countDays(start, end) {
+                if(!start || !end) return 1;
+                const date1 = new Date(start);
+                const date2 = new Date(end);
+                const diffTime = Math.abs(date2 - date1);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+                return diffDays;
+            }
+
+            // Helper to format date
+            function formatDate(dateString) {
+                if(!dateString) return '-';
+                const date = new Date(dateString);
+                return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            }
+
             if (data.status === 'h') {
                 contentHtml = `
                     <div class="grid grid-cols-2 gap-4 text-left">
@@ -539,33 +560,96 @@
                     </div>
                 `;
             } else {
-                // Izin/Sakit/Cuti
+                // Izin/Sakit/Cuti/Dinas
                 let statusLabel = '';
                 let statusColor = '';
+                let iconName = '';
                 let keterangan = '';
-                
-                if(data.status === 'i') { statusLabel = 'Izin'; statusColor = 'blue'; keterangan = data.keterangan_izin; }
-                else if(data.status === 's') { statusLabel = 'Sakit'; statusColor = 'rose'; keterangan = data.keterangan_sakit; }
-                else if(data.status === 'c') { statusLabel = 'Cuti'; statusColor = 'amber'; keterangan = data.keterangan_cuti; }
-                else if(data.status === 'd') { statusLabel = 'Dinas Luar'; statusColor = 'indigo'; keterangan = data.keterangan_izin_dinas; }
+                let dateRange = '';
+                let daysCount = 0;
+                let extraHtml = ''; // For SID or specific details
+
+                if(data.status === 'i') { 
+                    statusLabel = 'Izin (Absen)'; 
+                    statusColor = 'blue'; 
+                    iconName = 'document-text-outline';
+                    keterangan = data.keterangan_izin;
+                    daysCount = countDays(data.izin_dari, data.izin_sampai);
+                    dateRange = `${formatDate(data.izin_dari)} s/d ${formatDate(data.izin_sampai)}`;
+                }
+                else if(data.status === 's') { 
+                    statusLabel = 'Sakit'; 
+                    statusColor = 'rose'; 
+                    iconName = 'medkit-outline';
+                    keterangan = data.keterangan_izin_sakit;
+                    daysCount = countDays(data.sakit_dari, data.sakit_sampai);
+                    dateRange = `${formatDate(data.sakit_dari)} s/d ${formatDate(data.sakit_sampai)}`;
+
+                    // SID Logic
+                    if(data.sakit_sid) {
+                         extraHtml = `
+                            <div class="mt-3 text-left">
+                                <span class="text-xs font-bold text-slate-500 block mb-1">Surat Dokter (SID)</span>
+                                <div onclick="Swal.fire({imageUrl: '/storage/uploads/sid/${data.sakit_sid}', showCloseButton:true, showConfirmButton:false})" class="cursor-pointer relative group overflow-hidden rounded-lg border border-slate-200">
+                                    <img src="/storage/uploads/sid/${data.sakit_sid}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <ion-icon name="eye-outline" class="text-white text-2xl"></ion-icon>
+                                    </div>
+                                </div>
+                            </div>
+                         `;
+                    }
+                }
+                else if(data.status === 'c') { 
+                    statusLabel = `Cuti: ${data.nama_cuti || 'Tahunan'}`; 
+                    statusColor = 'amber'; 
+                    iconName = 'calendar-outline';
+                    keterangan = data.keterangan_izin_cuti;
+                    daysCount = countDays(data.cuti_dari, data.cuti_sampai);
+                    dateRange = `${formatDate(data.cuti_dari)} s/d ${formatDate(data.cuti_sampai)}`;
+                }
+                else if(data.status === 'd') { 
+                    statusLabel = 'Dinas Luar'; 
+                    statusColor = 'indigo'; 
+                    iconName = 'briefcase-outline';
+                    keterangan = data.keterangan_izin_dinas;
+                    daysCount = countDays(data.dinas_dari, data.dinas_sampai);
+                    dateRange = `${formatDate(data.dinas_dari)} s/d ${formatDate(data.dinas_sampai)}`;
+                }
 
                 contentHtml = `
-                    <div class="bg-${statusColor}-50 p-4 rounded-xl border border-${statusColor}-100 text-center">
-                        <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-3">
-                            <ion-icon name="briefcase-outline" class="text-3xl"></ion-icon>
-                        </div>
-                        <h3 class="text-lg font-bold text-${statusColor}-700 mb-1">${statusLabel}</h3>
-                        <p class="text-slate-600">${keterangan || 'Tidak ada keterangan'}</p>
+                    <div class="bg-white text-center">
+                         <div class="bg-${statusColor}-50 p-4 rounded-xl border border-${statusColor}-100">
+                             <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-2">
+                                <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
+                            </div>
+                            <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">${statusLabel}</h3>
+                             <div class="mt-2 flex items-center justify-center gap-2 text-sm text-slate-600">
+                                <span class="bg-white px-2 py-0.5 rounded border border-slate-200 font-medium text-xs">
+                                    <ion-icon name="calendar-outline" class="align-middle mb-0.5"></ion-icon> ${daysCount} Hari
+                                </span>
+                            </div>
+                             <p class="text-sm text-slate-500 mt-1 font-medium bg-white/50 py-1 rounded-lg">${dateRange}</p>
+                         </div>
+                         
+                         <div class="mt-4 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Keterangan</span>
+                            <p class="text-slate-700 text-sm mt-0.5 font-medium leading-relaxed">
+                                "${keterangan || '-'}"
+                            </p>
+                         </div>
+
+                         ${extraHtml}
                     </div>
                 `;
             }
 
             Swal.fire({
                 html: `
-                    <div class="text-center mb-6">
-                        <h3 class="text-lg font-bold text-slate-800 mb-1">${dateIndo}</h3>
-                        <span class="inline-block px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full border border-slate-200">
-                            ${data.nama_jam_kerja || 'Shift Umum'}
+                    <div class="text-center mb-5 pb-3 border-b border-slate-100">
+                        <h3 class="text-lg font-bold text-slate-800 mb-0.5">${dateIndo}</h3>
+                        <span class="inline-block px-2.5 py-0.5 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full border border-slate-200 uppercase tracking-wide">
+                            ${data.nama_jam_kerja || 'Status Harian'}
                         </span>
                     </div>
                     ${contentHtml}
@@ -574,7 +658,7 @@
                 showCloseButton: true,
                 background: '#ffffff',
                 customClass: {
-                    popup: 'rounded-2xl shadow-xl w-full max-w-md p-0 overflow-hidden',
+                    popup: 'rounded-2xl shadow-xl w-full max-w-sm p-0 overflow-hidden',
                     htmlContainer: '!m-0 !p-5'
                 }
             });

@@ -45,6 +45,8 @@ class DashboardController extends Controller
 
                 ->leftJoin('presensi_izincuti_approve', 'presensi.id', '=', 'presensi_izincuti_approve.id_presensi')
                 ->leftJoin('presensi_izincuti', 'presensi_izincuti_approve.kode_izin_cuti', '=', 'presensi_izincuti.kode_izin_cuti')
+                // Join Master Cuti for Name
+                ->leftJoin('cuti', 'presensi_izincuti.kode_cuti', '=', 'cuti.kode_cuti')
                 ->select(
                     'presensi.*',
                     'presensi_jamkerja.nama_jam_kerja',
@@ -55,6 +57,18 @@ class DashboardController extends Controller
                     'presensi_izinabsen.keterangan as keterangan_izin',
                     'presensi_izinsakit.keterangan as keterangan_izin_sakit',
                     'presensi_izincuti.keterangan as keterangan_izin_cuti',
+
+                    // Extra fields for Detail Modal
+                    'presensi_izinabsen.dari as izin_dari',
+                    'presensi_izinabsen.sampai as izin_sampai',
+
+                    'presensi_izinsakit.dari as sakit_dari',
+                    'presensi_izinsakit.sampai as sakit_sampai',
+                    'presensi_izinsakit.doc_sid as sakit_sid',
+
+                    'presensi_izincuti.dari as cuti_dari',
+                    'presensi_izincuti.sampai as cuti_sampai',
+                    'cuti.jenis_cuti as nama_cuti'
                 )
                 ->orderBy('tanggal', 'desc')
                 ->limit(30)
@@ -90,6 +104,20 @@ class DashboardController extends Controller
                         $obj->foto_out = null;
                         $obj->lokasi_in = null;
                         $obj->lokasi_out = null;
+
+                        // Extra fields for Dinas
+                        $obj->izin_dari = null;
+                        $obj->izin_sampai = null;
+                        $obj->sakit_dari = null;
+                        $obj->sakit_sampai = null;
+                        $obj->sakit_sid = null;
+                        $obj->cuti_dari = null;
+                        $obj->cuti_sampai = null;
+                        $obj->nama_cuti = null;
+
+                        // Dinas Date Range
+                        $obj->dinas_dari = $d->dari;
+                        $obj->dinas_sampai = $d->sampai;
 
                         $data['datapresensi']->push($obj);
                     }
