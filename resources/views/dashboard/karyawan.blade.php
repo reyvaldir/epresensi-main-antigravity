@@ -336,7 +336,7 @@
                     @endphp
                     <div onclick="showHistoryDetail(this)" data-detail="{{ json_encode($d) }}"
                         data-date="{{ DateToIndo($d->tanggal) }}"
-                        class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm flex items-top justify-between hover:bg-slate-50 transition-colors gap-3 cursor-pointer">
+                        class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm flex items-start gap-3 hover:bg-slate-50 transition-colors cursor-pointer">
                         <!-- Icon -->
                         <div class="shrink-0 mt-0.5">
                             @php
@@ -387,7 +387,7 @@
                                                 </span>
                                             @endif
                                         @else
-                                            <span class="bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded text-[10px] font-bold border border-rose-100">Belum Absen</span>
+                                            <span class="bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">Belum Absen</span>
                                         @endif
                                     </div>
 
@@ -408,7 +408,7 @@
                                                 </span>
                                             @endif
                                         @else
-                                            <span class="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px] font-bold border border-slate-200">Belum Pulang</span>
+                                            <span class="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-slate-200">Belum Pulang</span>
                                         @endif
                                     </div>
                                 </div>
@@ -416,13 +416,13 @@
                                 <!-- Non-Presence Status -->
                                 <div class="mt-1 flex items-center gap-1.5 flex-wrap">
                                     @if ($d->status == 'i')
-                                        <span class="bg-blue-100 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Izin Absen</span>
+                                        <span class="bg-blue-100 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none">Izin Absen</span>
                                     @elseif ($d->status == 's')
-                                        <span class="bg-rose-100 text-rose-600 border border-rose-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Sakit</span>
+                                        <span class="bg-rose-100 text-rose-600 border border-rose-100 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none">Sakit</span>
                                     @elseif ($d->status == 'c')
-                                        <span class="bg-amber-100 text-amber-600 border border-amber-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Cuti {{ $d->nama_cuti ?? '' }}</span>
+                                        <span class="bg-amber-100 text-amber-600 border border-amber-100 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none">Cuti {{ $d->nama_cuti ?? '' }}</span>
                                     @elseif ($d->status == 'd')
-                                        <span class="bg-indigo-100 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Dinas Luar</span>
+                                        <span class="bg-indigo-100 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none">Dinas Luar</span>
                                     @endif
                                 </div>
                             @endif

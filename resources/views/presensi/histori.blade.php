@@ -136,38 +136,46 @@
                     <div class="flex-1 flex justify-between items-start gap-2">
                         <!-- Left Column -->
                         <div class="flex flex-col gap-1 grow">
-                            <h3 class="font-bold text-slate-800 text-sm leading-tight">{{ DateToIndo($d->tanggal) }}</h3>
+                            <h4 class="font-bold text-slate-800 text-sm leading-tight">{{ DateToIndo($d->tanggal) }}</h4>
 
                             @if ($d->status == 'h')
-                                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-0.5">
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 mt-0.5">
                                     <!-- IN Row -->
                                     <div class="flex items-center gap-1.5 align-middle">
-                                        <span
-                                            class="{{ $is_late ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border">
-                                            IN: {{ date('H:i', strtotime($d->jam_in)) }}
-                                        </span>
-                                        @if ($is_late && $late_msg)
+                                        @if ($d->jam_in)
                                             <span
-                                                class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">
-                                                {{ $late_msg }}
+                                                class="{{ $is_late ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border">
+                                                IN: {{ date('H:i', strtotime($d->jam_in)) }}
                                             </span>
+                                            @if ($is_late && $late_msg)
+                                                <span
+                                                    class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">
+                                                    {{ $late_msg }}
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">Belum Absen</span>
                                         @endif
                                     </div>
 
-                                    <!-- Separator (Visible on wider screens) -->
-                                    <div class="hidden sm:block w-[1.5px] h-4 bg-slate-200 mx-1"></div>
+                                    <!-- Separator(Visible on wider screens) -->
+                                    <div class="hidden sm:block w-[1.5px] h-3.5 bg-slate-200 mx-0.5"></div>
 
                                     <!-- OUT Row -->
                                     <div class="flex items-center gap-1.5 align-middle">
-                                        <span
-                                            class="{{ $is_early_out ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border">
-                                            OUT: {{ $d->jam_out ? date('H:i', strtotime($d->jam_out)) : '--:--' }}
-                                        </span>
-                                        @if ($is_early_out && $early_msg)
+                                        @if ($d->jam_out)
                                             <span
-                                                class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">
-                                                {{ $early_msg }}
+                                                class="{{ $is_early_out ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border">
+                                                OUT: {{ date('H:i', strtotime($d->jam_out)) }}
                                             </span>
+                                            @if ($is_early_out && $early_msg)
+                                                <span
+                                                    class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">
+                                                    {{ $early_msg }}
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-slate-200">Belum Pulang</span>
                                         @endif
                                     </div>
                                 </div>
@@ -175,13 +183,13 @@
                                 <!-- Non-Presence Status -->
                                 <div class="mt-1 flex items-center gap-1.5 flex-wrap">
                                     @if ($d->status == 'i')
-                                        <span class="bg-blue-50 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Izin Absen</span>
+                                        <span class="bg-blue-100 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none">Izin Absen</span>
                                     @elseif ($d->status == 's')
-                                        <span class="bg-rose-50 text-rose-600 border border-rose-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Sakit</span>
+                                        <span class="bg-rose-100 text-rose-600 border border-rose-100 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none">Sakit</span>
                                     @elseif ($d->status == 'c')
-                                        <span class="bg-amber-100 text-amber-600 border border-amber-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Cuti {{ $d->nama_cuti ?? '' }}</span>
+                                        <span class="bg-amber-100 text-amber-600 border border-amber-100 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none">Cuti {{ $d->nama_cuti ?? '' }}</span>
                                     @elseif ($d->status == 'd')
-                                        <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Dinas Luar</span>
+                                        <span class="bg-indigo-100 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none">Dinas Luar</span>
                                     @endif
                                 </div>
                             @endif
@@ -189,10 +197,10 @@
 
                         <!-- Right Column -->
                         <div class="text-right flex flex-col gap-1 mt-0.5 shrink-0">
-                            <h3 class="font-bold text-slate-800 text-[10px] uppercase leading-tight">{{ $d->nama_jam_kerja }}</h3>
+                            <h3 class="font-bold text-slate-800 text-[10px] uppercase leading-tight">{{ $d->nama_jam_kerja ?? 'Shift Umum' }}</h3>
                             <p class="text-[10px] font-medium text-teal-500 whitespace-nowrap">
-                                {{ date('H:i', strtotime($d->jam_masuk)) }} -
-                                {{ $d->jam_pulang ? date('H:i', strtotime($d->jam_pulang)) : '??:??' }}
+                                {{ isset($d->jam_masuk) ? date('H:i', strtotime($d->jam_masuk)) : '--:--' }} -
+                                {{ isset($d->jam_pulang) ? date('H:i', strtotime($d->jam_pulang)) : '--:--' }}
                             </p>
                         </div>
                     </div>
@@ -235,15 +243,15 @@
                             <h4 class="font-bold text-emerald-700 text-sm mb-2 flex items-center gap-1">
                                 <ion-icon name="log-in-outline"></ion-icon> Masuk
                             </h4>
-                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_in ? data.jam_in.substring(0, 5) : '--:--'}</div>
+                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_in ? data.jam_in.substring(11, 16) : '--:--'}</div>
                             ${data.foto_in ?
-                    `<img src="/storage/uploads/absensi/${data.foto_in}" class="w-full h-24 object-cover rounded-lg shadow-sm border border-emerald-200 mt-2 mb-2">` :
-                    '<div class="w-full h-24 bg-emerald-100/50 rounded-lg flex items-center justify-center text-emerald-400 text-xs mt-2 mb-2">No Photo</div>'
+                    `<img src="/storage/uploads/absensi/${data.foto_in}" class="w-full h-auto aspect-[4/3] object-cover rounded-lg shadow-sm border border-emerald-200 mt-2 mb-2">` :
+                    '<div class="w-full aspect-[4/3] bg-emerald-100/50 rounded-lg flex items-center justify-center text-emerald-400 text-xs mt-2 mb-2">No Photo</div>'
                 }
                             ${data.lokasi_in ?
-                    `<a href="https://www.google.com/maps/search/?api=1&query=${data.lokasi_in}" target="_blank" class="block w-full text-center py-1.5 bg-white text-emerald-600 text-xs font-bold rounded-lg border border-emerald-200 hover:bg-emerald-50">
+                    `<button type="button" onclick="showLocationMap('${data.lokasi_in}', '${data.lokasi_cabang}', ${data.radius_cabang}, 'Lokasi Masuk', 'emerald')" class="block w-full text-center py-1.5 bg-white text-emerald-600 text-xs font-bold rounded-lg border border-emerald-200 hover:bg-emerald-50 transition-colors">
                                     <ion-icon name="map"></ion-icon> Lokasi
-                                </a>` : ''
+                                </button>` : ''
                 }
                         </div>
 
@@ -252,15 +260,15 @@
                             <h4 class="font-bold text-rose-700 text-sm mb-2 flex items-center gap-1">
                                 <ion-icon name="log-out-outline"></ion-icon> Pulang
                             </h4>
-                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_out ? data.jam_out.substring(0, 5) : '--:--'}</div>
+                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_out ? data.jam_out.substring(11, 16) : '--:--'}</div>
                             ${data.foto_out ?
-                    `<img src="/storage/uploads/absensi/${data.foto_out}" class="w-full h-24 object-cover rounded-lg shadow-sm border border-rose-200 mt-2 mb-2">` :
-                    '<div class="w-full h-24 bg-rose-100/50 rounded-lg flex items-center justify-center text-rose-400 text-xs mt-2 mb-2">No Photo</div>'
+                    `<img src="/storage/uploads/absensi/${data.foto_out}" class="w-full h-auto aspect-[4/3] object-cover rounded-lg shadow-sm border border-rose-200 mt-2 mb-2">` :
+                    '<div class="w-full aspect-[4/3] bg-rose-100/50 rounded-lg flex items-center justify-center text-rose-400 text-xs mt-2 mb-2">No Photo</div>'
                 }
                             ${data.lokasi_out ?
-                    `<a href="https://www.google.com/maps/search/?api=1&query=${data.lokasi_out}" target="_blank" class="block w-full text-center py-1.5 bg-white text-rose-600 text-xs font-bold rounded-lg border border-rose-200 hover:bg-rose-50">
+                    `<button type="button" onclick="showLocationMap('${data.lokasi_out}', '${data.lokasi_cabang}', ${data.radius_cabang}, 'Lokasi Pulang', 'rose')" class="block w-full text-center py-1.5 bg-white text-rose-600 text-xs font-bold rounded-lg border border-rose-200 hover:bg-rose-50 transition-colors">
                                     <ion-icon name="map"></ion-icon> Lokasi
-                                </a>` : ''
+                                </button>` : ''
                 }
                         </div>
                     </div>
@@ -365,8 +373,103 @@
             showCloseButton: true,
             showConfirmButton: false,
             customClass: {
-                popup: 'rounded-2xl w-full max-w-sm p-0 overflow-hidden font-inter',
-                htmlContainer: 'p-6 m-0 text-left'
+                popup: 'rounded-2xl shadow-xl w-[90%] md:w-full md:max-w-3xl p-0 overflow-hidden',
+                htmlContainer: '!m-0 !p-5'
+            }
+        });
+    }
+
+    var mapDetail = null;
+
+    function showLocationMap(lokasi, lokasi_cabang, radius, title, color) {
+        if (!lokasi || !lokasi_cabang) {
+            Swal.fire('Error', 'Data lokasi tidak tersedia', 'error');
+            return;
+        }
+
+        const userCoords = lokasi.split(',');
+        const userLat = parseFloat(userCoords[0]);
+        const userLng = parseFloat(userCoords[1]);
+
+        const branchCoords = lokasi_cabang.split(',');
+        const branchLat = parseFloat(branchCoords[0]);
+        const branchLng = parseFloat(branchCoords[1]);
+
+        Swal.fire({
+            title: title,
+            html: `<div id="map-detail" style="height: 300px; width: 100%; border-radius: 12px; border: 2px solid ${color === 'emerald' ? '#10B981' : '#F43F5E'}; position: relative; z-index: 1; overflow: hidden;"></div>
+                   <div class="mt-3 text-xs text-slate-500 font-medium">
+                        <div class="flex items-center justify-center gap-2 mb-1">
+                            <span class="inline-block w-3 h-3 rounded-full bg-blue-500"></span> Titik Presensi
+                            <span class="inline-block w-3 h-3 rounded-full bg-red-500 ml-2"></span> Lokasi Kantor
+                        </div>
+                        <div class="italic text-center">Radius yang diperbolehkan: ${radius} meter</div>
+                   </div>`,
+            showConfirmButton: true,
+            confirmButtonText: 'Tutup',
+            confirmButtonColor: '#2563EB',
+            width: '90%',
+            scrollbarPadding: false,
+            heightAuto: false,
+            didOpen: () => {
+                if (mapDetail) {
+                    mapDetail.remove();
+                    mapDetail = null;
+                }
+
+                mapDetail = L.map('map-detail', {
+                    zoomControl: true,
+                    scrollWheelZoom: true,
+                    doubleClickZoom: true,
+                    touchZoom: true
+                }).setView([userLat, userLng], 15);
+
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(mapDetail);
+
+                L.marker([userLat, userLng]).addTo(mapDetail)
+                    .bindPopup("Titik Presensi").openPopup();
+
+                const branchMarker = L.circleMarker([branchLat, branchLng], {
+                    radius: 8,
+                    fillColor: "#ff0000",
+                    color: "#fff",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(mapDetail);
+                branchMarker.bindPopup("Pusat Radius Kantor");
+
+                L.circle([branchLat, branchLng], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.15,
+                    radius: radius
+                }).addTo(mapDetail);
+
+                const bounds = L.latLngBounds([
+                    [userLat, userLng],
+                    [branchLat, branchLng]
+                ]);
+                mapDetail.fitBounds(bounds, {
+                    padding: [30, 30]
+                });
+
+                const resizeInterval = setInterval(() => {
+                    mapDetail.invalidateSize();
+                }, 100);
+
+                setTimeout(() => {
+                    clearInterval(resizeInterval);
+                }, 3000);
+            },
+            willClose: () => {
+                if (mapDetail) {
+                    mapDetail.remove();
+                    mapDetail = null;
+                }
             }
         });
     }

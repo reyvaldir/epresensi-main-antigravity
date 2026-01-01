@@ -670,6 +670,8 @@ class PresensiController extends Controller
         $user = User::where('id', auth()->user()->id)->first();
         $userkaryawan = Userkaryawan::where('id_user', auth()->user()->id)->first();
         $data['datapresensi'] = Presensi::join('presensi_jamkerja', 'presensi.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
+            ->join('karyawan', 'presensi.nik', '=', 'karyawan.nik')
+            ->join('cabang', 'karyawan.kode_cabang', '=', 'cabang.kode_cabang')
             ->where('presensi.nik', $userkaryawan->nik)
             ->where('presensi.status', 'h')
             ->select(
@@ -678,7 +680,9 @@ class PresensiController extends Controller
                 'presensi_jamkerja.jam_masuk',
                 'presensi_jamkerja.jam_pulang',
                 'presensi_jamkerja.total_jam',
-                'presensi_jamkerja.lintashari'
+                'presensi_jamkerja.lintashari',
+                'cabang.lokasi_cabang',
+                'cabang.radius_cabang'
             )
             ->when(!empty($request->dari) && !empty($request->sampai), function ($q) use ($request) {
                 $q->whereBetween('presensi.tanggal', [$request->dari, $request->sampai]);
