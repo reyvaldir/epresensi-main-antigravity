@@ -654,33 +654,14 @@ class PresensiController extends Controller
         $userkaryawan = Userkaryawan::where('id_user', auth()->user()->id)->first();
         $data['datapresensi'] = Presensi::join('presensi_jamkerja', 'presensi.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
             ->where('presensi.nik', $userkaryawan->nik)
-            ->leftJoin('presensi_izinabsen_approve', 'presensi.id', '=', 'presensi_izinabsen_approve.id_presensi')
-            ->leftJoin('presensi_izinabsen', 'presensi_izinabsen_approve.kode_izin', '=', 'presensi_izinabsen.kode_izin')
-
-            ->leftJoin('presensi_izinsakit_approve', 'presensi.id', '=', 'presensi_izinsakit_approve.id_presensi')
-            ->leftJoin('presensi_izinsakit', 'presensi_izinsakit_approve.kode_izin_sakit', '=', 'presensi_izinsakit.kode_izin_sakit')
-
-            ->leftJoin('presensi_izincuti_approve', 'presensi.id', '=', 'presensi_izincuti_approve.id_presensi')
-            ->leftJoin('presensi_izincuti', 'presensi_izincuti_approve.kode_izin_cuti', '=', 'presensi_izincuti.kode_izin_cuti')
-            ->leftJoin('cuti', 'presensi_izincuti.kode_cuti', '=', 'cuti.kode_cuti')
+            ->where('presensi.status', 'h')
             ->select(
                 'presensi.*',
                 'presensi_jamkerja.nama_jam_kerja',
                 'presensi_jamkerja.jam_masuk',
                 'presensi_jamkerja.jam_pulang',
                 'presensi_jamkerja.total_jam',
-                'presensi_jamkerja.lintashari',
-                'presensi_izinabsen.keterangan as keterangan_izin',
-                'presensi_izinabsen.dari as izin_dari',
-                'presensi_izinabsen.sampai as izin_sampai',
-                'presensi_izinsakit.keterangan as keterangan_izin_sakit',
-                'presensi_izinsakit.dari as sakit_dari',
-                'presensi_izinsakit.sampai as sakit_sampai',
-                'presensi_izinsakit.doc_sid as sakit_sid',
-                'presensi_izincuti.keterangan as keterangan_izin_cuti',
-                'presensi_izincuti.dari as cuti_dari',
-                'presensi_izincuti.sampai as cuti_sampai',
-                'cuti.jenis_cuti as nama_cuti'
+                'presensi_jamkerja.lintashari'
             )
             ->when(!empty($request->dari) && !empty($request->sampai), function ($q) use ($request) {
                 $q->whereBetween('presensi.tanggal', [$request->dari, $request->sampai]);

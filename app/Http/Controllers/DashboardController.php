@@ -37,96 +37,20 @@ class DashboardController extends Controller
             $data['presensi'] = Presensi::where('presensi.nik', $userkaryawan->nik)->where('presensi.tanggal', $hari_ini)->first();
             $data['datapresensi'] = Presensi::join('presensi_jamkerja', 'presensi.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
                 ->where('presensi.nik', $userkaryawan->nik)
-                ->leftJoin('presensi_izinabsen_approve', 'presensi.id', '=', 'presensi_izinabsen_approve.id_presensi')
-                ->leftJoin('presensi_izinabsen', 'presensi_izinabsen_approve.kode_izin', '=', 'presensi_izinabsen.kode_izin')
-
-                ->leftJoin('presensi_izinsakit_approve', 'presensi.id', '=', 'presensi_izinsakit_approve.id_presensi')
-                ->leftJoin('presensi_izinsakit', 'presensi_izinsakit_approve.kode_izin_sakit', '=', 'presensi_izinsakit.kode_izin_sakit')
-
-                ->leftJoin('presensi_izincuti_approve', 'presensi.id', '=', 'presensi_izincuti_approve.id_presensi')
-                ->leftJoin('presensi_izincuti', 'presensi_izincuti_approve.kode_izin_cuti', '=', 'presensi_izincuti.kode_izin_cuti')
-                // Join Master Cuti for Name
-                ->leftJoin('cuti', 'presensi_izincuti.kode_cuti', '=', 'cuti.kode_cuti')
+                ->where('presensi.status', 'h')
+                ->whereRaw('MONTH(presensi.tanggal) = MONTH(?)', [$hari_ini])
+                ->whereRaw('YEAR(presensi.tanggal) = YEAR(?)', [$hari_ini])
                 ->select(
                     'presensi.*',
                     'presensi_jamkerja.nama_jam_kerja',
                     'presensi_jamkerja.jam_masuk',
                     'presensi_jamkerja.jam_pulang',
                     'presensi_jamkerja.total_jam',
-                    'presensi_jamkerja.lintashari',
-                    'presensi_izinabsen.keterangan as keterangan_izin',
-                    'presensi_izinsakit.keterangan as keterangan_izin_sakit',
-                    'presensi_izincuti.keterangan as keterangan_izin_cuti',
-
-                    // Extra fields for Detail Modal
-                    'presensi_izinabsen.dari as izin_dari',
-                    'presensi_izinabsen.sampai as izin_sampai',
-
-                    'presensi_izinsakit.dari as sakit_dari',
-                    'presensi_izinsakit.sampai as sakit_sampai',
-                    'presensi_izinsakit.doc_sid as sakit_sid',
-
-                    'presensi_izincuti.dari as cuti_dari',
-                    'presensi_izincuti.sampai as cuti_sampai',
-                    'cuti.jenis_cuti as nama_cuti'
+                    'presensi_jamkerja.lintashari'
                 )
                 ->orderBy('tanggal', 'desc')
                 ->limit(30)
                 ->get();
-
-            // Add Izin Dinas
-            $izindinas = Izindinas::where('nik', $userkaryawan->nik)
-                ->where('status', 1)
-                ->get();
-
-            foreach ($izindinas as $d) {
-                $start = Carbon::parse($d->dari);
-                $end = Carbon::parse($d->sampai);
-
-                while ($start->lte($end)) {
-                    $tgl = $start->format('Y-m-d');
-
-                    // Check duplicate
-                    if ($data['datapresensi']->where('tanggal', $tgl)->count() == 0) {
-                        $obj = new \stdClass();
-                        $obj->tanggal = $tgl;
-                        $obj->status = 'd';
-                        $obj->nama_jam_kerja = 'Dinas Luar';
-                        $obj->jam_in = null;
-                        $obj->jam_out = null;
-                        $obj->jam_masuk = null;
-                        $obj->jam_pulang = null;
-                        $obj->keterangan_izin = null;
-                        $obj->keterangan_izin_sakit = null;
-                        $obj->keterangan_izin_cuti = null;
-                        $obj->keterangan_izin_dinas = $d->keterangan;
-                        $obj->foto_in = null;
-                        $obj->foto_out = null;
-                        $obj->lokasi_in = null;
-                        $obj->lokasi_out = null;
-
-                        // Extra fields for Dinas
-                        $obj->izin_dari = null;
-                        $obj->izin_sampai = null;
-                        $obj->sakit_dari = null;
-                        $obj->sakit_sampai = null;
-                        $obj->sakit_sid = null;
-                        $obj->cuti_dari = null;
-                        $obj->cuti_sampai = null;
-                        $obj->nama_cuti = null;
-
-                        // Dinas Date Range
-                        $obj->dinas_dari = $d->dari;
-                        $obj->dinas_sampai = $d->sampai;
-
-                        $data['datapresensi']->push($obj);
-                    }
-                    $start->addDay();
-                }
-            }
-
-            // Sort by tanggal desc
-            $data['datapresensi'] = $data['datapresensi']->sortByDesc('tanggal')->values()->take(30);
             $data['rekappresensi'] = Presensi::select(
                 DB::raw("SUM(IF(status='h',1,0)) as hadir"),
                 DB::raw("SUM(IF(status='i',1,0)) as izin"),
@@ -141,7 +65,9 @@ class DashboardController extends Controller
                 ->first();
 
             $data['lembur'] = Lembur::where('nik', $userkaryawan->nik)->where('status', 1)
-                ->orderBy('id', 'desc')
+                ->whereRaw('MONTH(tanggal) = MONTH(?)', [$hari_ini])
+                ->whereRaw('YEAR(tanggal) = YEAR(?)', [$hari_ini])
+                ->orderBy('tanggal', 'desc')
                 ->limit(10)
                 ->get();
             $data['notiflembur'] = Lembur::where('nik', $userkaryawan->nik)

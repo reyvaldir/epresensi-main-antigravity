@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class PengajuanizinController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = User::where('id', auth()->user()->id)->first();
         $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
@@ -30,6 +30,13 @@ class PengajuanizinController extends Controller
 
         $izin_dinas = Izindinas::where('nik', $userkaryawan->nik)
             ->select('kode_izin_dinas as kode', 'tanggal', 'keterangan', 'dari', 'sampai', DB::raw('\'d\' as ket'), 'status as status_izin', DB::raw('NULL as doc_sid'), DB::raw('NULL as nama_cuti'));
+
+        if (!empty($request->dari) && !empty($request->sampai)) {
+            $izinabsen->whereBetween('tanggal', [$request->dari, $request->sampai]);
+            $izinsakit->whereBetween('tanggal', [$request->dari, $request->sampai]);
+            $izincuti->whereBetween('presensi_izincuti.tanggal', [$request->dari, $request->sampai]);
+            $izin_dinas->whereBetween('tanggal', [$request->dari, $request->sampai]);
+        }
 
         $pengajuan_izin = $izinabsen->union($izinsakit)->union($izincuti)->union($izin_dinas)->orderBy('tanggal', 'desc')->get();
         $data['pengajuan_izin'] = $pengajuan_izin;

@@ -263,6 +263,7 @@
         <!-- Presensi Content -->
         <div x-show="activeTab === 'presensi'" class="space-y-3" x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+            @if (count($datapresensi) > 0)
             @foreach ($datapresensi as $d)
                     @php
                         $jam_in_minute_ts = strtotime(date('Y-m-d H:i', strtotime($d->jam_in)));
@@ -406,6 +407,14 @@
                     </div>
                 </div>
             @endforeach
+            @else
+            <div class="text-center py-8">
+                <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-3">
+                    <ion-icon name="finger-print-outline" class="text-3xl"></ion-icon>
+                </div>
+                <p class="text-sm text-slate-500">Belum ada data presensi bulan ini.</p>
+            </div>
+            @endif
     </div>
 
     <!-- Lembur Content -->
