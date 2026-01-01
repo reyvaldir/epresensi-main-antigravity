@@ -1,27 +1,22 @@
 @extends('layouts.mobile_modern')
-
-@section('header')
-    <div class="appHeader bg-white text-slate-800 shadow-sm border-b border-slate-100" style="z-index: 999;">
-        <div class="left">
-            <a href="javascript:history.back()"
-                class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-slate-900 border border-slate-200 shadow-sm hover:bg-slate-50 transition-all active:scale-95">
-                <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
-            </a>
-        </div>
-        <div class="pageTitle text-slate-900 font-bold tracking-tight text-lg">ID Card Digital</div>
-        <div class="right"></div>
-    </div>
-@endsection
-
-
-
 @section('content')
-    @php
-        use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
-    @endphp
+        @php
+            use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
+        @endphp
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <div class="p-4 flex flex-col items-center justify-center min-h-[80vh] pb-24">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-5 mt-2">
+        <div class="flex items-center gap-3">
+            <a href="javascript:history.back()"
+                class="flex items-center justify-center h-10 w-10 bg-white rounded-full shadow-sm text-slate-500 border border-slate-100 hover:bg-slate-50 transition-colors">
+                <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">ID Card Digital</h1>
+        </div>
+    </div>
+
+    <div class="flex flex-col items-center pb-24">
 
         <!-- ID Card Wrapper -->
         <div id="idcard-area" class="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-100"
@@ -64,12 +59,7 @@
 
             <!-- Profile Picture Section -->
             <!-- Overlapping the curved header -->
-            <!-- Profile Picture Section -->
-            <!-- Overlapping the curved header -->
-            <!-- Profile Picture Section -->
-            <!-- Overlapping the curved header -->
-            <!-- Profile Picture Section -->
-            <!-- Overlapping the curved header -->
+
             <div class="relative flex justify-center -mt-16 mb-2 z-20">
                 <div class="p-1.5 bg-white rounded-full shadow-lg">
                     <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-slate-100 bg-slate-100">
