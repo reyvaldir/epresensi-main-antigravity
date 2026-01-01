@@ -351,6 +351,8 @@
         }
 
         Swal.fire({
+            heightAuto: false,
+            scrollbarPadding: false,
             html: `
                     <div class="text-center mb-5 pb-3 border-b border-slate-100">
                         <h3 class="text-lg font-bold text-slate-800 mb-0.5">${dateIndo}</h3>

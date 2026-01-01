@@ -243,16 +243,16 @@
                 iconName = 'medkit-outline';
                 if (data.doc_sid) {
                     extraHtml = `
-                            <div class="mt-3 text-left">
-                                <span class="text-xs font-bold text-slate-500 block mb-1">Surat Dokter (SID)</span>
-                                <div onclick="event.stopPropagation(); Swal.fire({imageUrl: '/storage/uploads/sid/${data.doc_sid}', showCloseButton:true, showConfirmButton:false})" class="cursor-pointer relative group overflow-hidden rounded-lg border border-slate-200">
-                                    <img src="/storage/uploads/sid/${data.doc_sid}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
-                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <ion-icon name="eye-outline" class="text-white text-2xl"></ion-icon>
+                                <div class="mt-3 text-left">
+                                    <span class="text-xs font-bold text-slate-500 block mb-1">Surat Dokter (SID)</span>
+                                    <div onclick="event.stopPropagation(); Swal.fire({imageUrl: '/storage/uploads/sid/${data.doc_sid}', showCloseButton:true, showConfirmButton:false})" class="cursor-pointer relative group overflow-hidden rounded-lg border border-slate-200">
+                                        <img src="/storage/uploads/sid/${data.doc_sid}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <ion-icon name="eye-outline" class="text-white text-2xl"></ion-icon>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                         `;
+                             `;
                 }
             } else if (data.ket === 'c') {
                 statusLabel = `Cuti: ${data.nama_cuti || 'Tahunan'}`;
@@ -275,38 +275,40 @@
             }
 
             const contentHtml = `
-                    <div class="bg-white text-center">
-                         <div class="bg-${statusColor}-50 p-4 rounded-xl border border-${statusColor}-100">
-                             <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-2">
-                                <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
-                            </div>
-                            <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">${statusLabel}</h3>
-                            <div class="mt-2 mb-1">
-                                ${approvalBadge}
-                            </div>
-                         </div>
+                        <div class="bg-white text-center">
+                             <div class="bg-${statusColor}-50 p-4 rounded-xl border border-${statusColor}-100">
+                                 <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-2">
+                                    <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
+                                </div>
+                                <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">${statusLabel}</h3>
+                                <div class="mt-2 mb-1">
+                                    ${approvalBadge}
+                                </div>
+                             </div>
 
-                         <div class="mt-4 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <div class="flex items-center gap-3 mb-2">
-                                 <span class="bg-white px-3 py-1 rounded-lg border border-slate-200 font-medium text-xs text-slate-600 shrink-0 whitespace-nowrap">
-                                    <ion-icon name="calendar-outline" class="align-middle mb-0.5"></ion-icon> ${daysCount} Hari
-                                </span>
-                                <span class="text-xs text-slate-500 font-medium">${dateRangeTitle}</span>
-                            </div>
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Keterangan</span>
-                            <p class="text-slate-700 text-sm mt-0.5 font-medium leading-relaxed">
-                                "${data.keterangan || '-'}"
-                            </p>
-                         </div>
+                             <div class="mt-4 text-left bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <div class="flex items-center gap-3 mb-2">
+                                     <span class="bg-white px-3 py-1 rounded-lg border border-slate-200 font-medium text-xs text-slate-600 shrink-0 whitespace-nowrap">
+                                        <ion-icon name="calendar-outline" class="align-middle mb-0.5"></ion-icon> ${daysCount} Hari
+                                    </span>
+                                    <span class="text-xs text-slate-500 font-medium">${dateRangeTitle}</span>
+                                </div>
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Keterangan</span>
+                                <p class="text-slate-700 text-sm mt-0.5 font-medium leading-relaxed">
+                                    "${data.keterangan || '-'}"
+                                </p>
+                             </div>
 
-                         ${extraHtml}
-                    </div>
-                `;
+                             ${extraHtml}
+                        </div>
+                    `;
 
             Swal.fire({
                 html: contentHtml,
                 showCloseButton: true,
                 showConfirmButton: false,
+                heightAuto: false,
+                scrollbarPadding: false,
                 customClass: {
                     popup: 'rounded-2xl w-full max-w-sm p-0 overflow-hidden font-inter',
                     htmlContainer: 'p-6 m-0 text-left'
