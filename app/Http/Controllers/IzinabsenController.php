@@ -169,7 +169,7 @@ class IzinabsenController extends Controller
                 ->orderBy("kode_izin", "desc")
                 ->first();
             $last_kode_izin = $lastizin != null ? $lastizin->kode_izin : '';
-            $kode_izin  = buatkode($last_kode_izin, "IA"  . date('ym', strtotime($request->dari)), 4);
+            $kode_izin = buatkode($last_kode_izin, "IA" . date('ym', strtotime($request->dari)), 4);
 
             Izinabsen::create([
                 'kode_izin' => $kode_izin,

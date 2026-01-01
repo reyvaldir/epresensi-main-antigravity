@@ -146,12 +146,12 @@ class IzinsakitController extends Controller
                 ->orderBy("kode_izin_sakit", "desc")
                 ->first();
             $last_kode_izin_sakit = $lastizinsakit != null ? $lastizinsakit->kode_izin_sakit : '';
-            $kode_izin_sakit  = buatkode($last_kode_izin_sakit, "IS"  . date('ym', strtotime($request->dari)), 4);
+            $kode_izin_sakit = buatkode($last_kode_izin_sakit, "IS" . date('ym', strtotime($request->dari)), 4);
 
 
             $data_sid = [];
             if ($request->hasfile('sid')) {
-                $sid_name =  $kode_izin_sakit . "." . $request->file('sid')->getClientOriginalExtension();
+                $sid_name = $kode_izin_sakit . "." . $request->file('sid')->getClientOriginalExtension();
                 $destination_sid_path = "/public/uploads/sid";
                 $sid = $sid_name;
                 $data_sid = [
@@ -312,7 +312,7 @@ class IzinsakitController extends Controller
             $izinsakit = Izinsakit::where('kode_izin_sakit', $kode_izin_sakit)->first();
             $data_sid = [];
             if ($request->hasfile('sid')) {
-                $sid_name =  $kode_izin_sakit . "." . $request->file('sid')->getClientOriginalExtension();
+                $sid_name = $kode_izin_sakit . "." . $request->file('sid')->getClientOriginalExtension();
                 $destination_sid_path = "/public/uploads/sid";
                 $sid = $sid_name;
                 $data_sid = [

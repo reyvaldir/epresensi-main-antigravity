@@ -134,7 +134,7 @@ class IzincutiController extends Controller
                 ->orderBy("kode_izin_cuti", "desc")
                 ->first();
             $last_kode_izin_cuti = $lastizincuti != null ? $lastizincuti->kode_izin_cuti : '';
-            $kode_izin_cuti  = buatkode($last_kode_izin_cuti, "IC"  . date('ym', strtotime($request->dari)), 4);
+            $kode_izin_cuti = buatkode($last_kode_izin_cuti, "IC" . date('ym', strtotime($request->dari)), 4);
 
 
             $dataizincuti = [
