@@ -671,8 +671,15 @@ class PresensiController extends Controller
                 'presensi_jamkerja.total_jam',
                 'presensi_jamkerja.lintashari',
                 'presensi_izinabsen.keterangan as keterangan_izin',
+                'presensi_izinabsen.dari as izin_dari',
+                'presensi_izinabsen.sampai as izin_sampai',
                 'presensi_izinsakit.keterangan as keterangan_izin_sakit',
+                'presensi_izinsakit.dari as sakit_dari',
+                'presensi_izinsakit.sampai as sakit_sampai',
+                'presensi_izinsakit.doc_sid as sakit_sid',
                 'presensi_izincuti.keterangan as keterangan_izin_cuti',
+                'presensi_izincuti.dari as cuti_dari',
+                'presensi_izincuti.sampai as cuti_sampai',
                 'cuti.jenis_cuti as nama_cuti'
             )
             ->when(!empty($request->dari) && !empty($request->sampai), function ($q) use ($request) {
