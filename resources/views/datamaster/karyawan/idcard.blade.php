@@ -1,240 +1,211 @@
-@extends('layouts.mobile.app')
+@extends('layouts.mobile_modern')
+
+@section('header')
+    <div class="appHeader bg-white text-slate-800 shadow-sm border-b border-slate-100" style="z-index: 999;">
+        <div class="left">
+            <a href="javascript:history.back()"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-slate-900 border border-slate-200 shadow-sm hover:bg-slate-50 transition-all active:scale-95">
+                <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
+            </a>
+        </div>
+        <div class="pageTitle text-slate-900 font-bold tracking-tight text-lg">ID Card Digital</div>
+        <div class="right"></div>
+    </div>
+@endsection
+
+
+
 @section('content')
-    <style>
-        body {
-            background: var(--bg-body, #dff9fb);
-        }
-
-        .idcard-container {
-            width: 400px;
-            min-height: 520px;
-            margin: 100px auto 40px auto;
-            background: #fff;
-            border-radius: 28px;
-            box-shadow: 0 8px 32px 0 rgba(50, 116, 94, 0.13);
-            overflow: hidden;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            position: relative;
-            border: 1.5px solid #e0e7ef;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-
-        .idcard-header-modern {
-            background: linear-gradient(120deg, #32745e 80%, #58907D 100%);
-            height: 120px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding-left: 36px;
-        }
-
-        .profile-pic-modern {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 5px solid #fff;
-            box-shadow: 0 2px 16px rgba(50, 116, 94, 0.13);
-            position: absolute;
-            top: 80px;
-            left: 36px;
-            background: #fff;
-        }
-
-        .company-logo-modern {
-            position: absolute;
-            top: 24px;
-            right: 32px;
-            width: 60px;
-            opacity: 0.95;
-        }
-
-        .idcard-body-modern {
-            padding: 110px 28px 18px 28px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        }
-
-        .idcard-name-modern {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #32745e;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
-        }
-
-        .idcard-position-modern {
-            font-size: 1.08rem;
-            color: #58907D;
-            font-weight: 500;
-        }
-
-        .idcard-position-modern_jabatan {
-            font-size: 1rem;
-            color: #58907D;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .idcard-info-modern {
-            display: flex;
-            align-items: center;
-            font-size: 1.01rem;
-            color: #444;
-            margin-bottom: 10px;
-        }
-
-        .idcard-info-modern i {
-            font-size: 1.13rem;
-            color: #32745e;
-            margin-right: 10px;
-            width: 22px;
-            text-align: center;
-        }
-
-        .barcode-modern {
-            margin: 32px 0 16px 0;
-            text-align: center;
-        }
-
-        .barcode-modern img {
-            height: 54px;
-        }
-
-        .idcard-footer-modern {
-            text-align: center;
-            font-size: 1.01rem;
-            color: #32745e;
-            font-weight: 500;
-            margin-bottom: 18px;
-            letter-spacing: 0.5px;
-        }
-
-        .company-name-modern {
-            position: absolute;
-            left: 36px;
-            top: 30px;
-            color: #fff;
-            font-size: 1.08rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 8px rgba(50, 116, 94, 0.13);
-            max-width: 60%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        @media (max-width: 400px) {
-            .idcard-container {
-                width: 90%;
-            }
-        }
-    </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    @php
+        use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
+    @endphp
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <div id="header-section">
-        <div class="appHeader bg-primary text-light">
-            <div class="left">
-                <a href="{{ route('dashboard.index') }}" class="headerButton goBack">
-                    <ion-icon name="chevron-back-outline"></ion-icon>
-                </a>
-            </div>
-            <div class="pageTitle">ID Card</div>
-            <div class="right"></div>
-        </div>
-    </div>
-    <div id="content-section">
-        <div class="idcard-container" id="idcard-area">
-            <div class="idcard-header-modern">
-                @if ($generalsetting->logo && Storage::exists('public/logo/' . $generalsetting->logo))
-                    <img src="{{ asset('storage/logo/' . $generalsetting->logo) }}" alt="Logo Perusahaan" class="company-logo-modern" alt="Company Logo">
-                @else
-                    <img src="https://placehold.co/100x100?text=Logo" class="company-logo-modern" alt="Company Logo">
-                @endif
-                <div class="company-name-modern">
-                    {{ $generalsetting->nama_perusahaan ?? 'Nama Perusahaan' }}
+
+    <div class="p-4 flex flex-col items-center justify-center min-h-[80vh] pb-24">
+
+        <!-- ID Card Wrapper -->
+        <div id="idcard-area" class="relative bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-100"
+            style="width: 320px; background-color: #ffffff;">
+
+            <!-- Elegant Header -->
+            <!-- Curved Bottom shape for elegance -->
+            <div class="relative w-full h-44 bg-blue-600 overflow-hidden"
+                style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); border-bottom-left-radius: 50% 20px; border-bottom-right-radius: 50% 20px;">
+
+                <!-- Background Pattern -->
+                <div class="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-20 -mt-20 blur-2xl"></div>
+                <div class="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full -ml-16 -mb-10 blur-xl"></div>
+
+                <!-- Header Content: Centered Layout for better proportion -->
+                <div class="absolute top-0 left-0 right-0 p-6 flex flex-col items-center justify-start z-10">
+
+                    <!-- Logo -->
+                    <div class="mb-2">
+                        @if ($generalsetting->logo && Storage::exists('public/logo/' . $generalsetting->logo))
+                            <img src="{{ asset('storage/logo/' . $generalsetting->logo) }}" alt="Logo"
+                                class="h-10 w-auto brightness-0 invert drop-shadow-md">
+                        @else
+                            <div
+                                class="h-10 w-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30">
+                                <span class="text-white font-bold text-[10px]">LOGO</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Company Name -->
+                    <div class="text-center">
+                        <h3 class="text-white font-bold tracking-widest text-sm uppercase drop-shadow-sm opacity-95">
+                            {{ $generalsetting->nama_perusahaan ?? 'COMPANY NAME' }}
+                        </h3>
+                        <div class="h-0.5 w-12 bg-white/30 mx-auto mt-2 rounded-full"></div>
+                    </div>
                 </div>
             </div>
 
-            @if (!empty($karyawan->foto))
-                @if (Storage::disk('public')->exists('/karyawan/' . $karyawan->foto))
-                    <img src="{{ getfotoKaryawan($karyawan->foto) }}" class="profile-pic-modern" alt="Profile Picture">
-                @else
-                    <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}" class="profile-pic-modern" alt="Profile Picture">
-                @endif
-            @else
-                <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}" class="profile-pic-modern" alt="Profile Picture">
-            @endif
-
-            <div class="idcard-body-modern">
-                <div class="idcard-name-modern">{{ textUpperCase($karyawan->nama_karyawan) }}</div>
-                <div class="idcard-position-modern">{{ $karyawan->nama_dept }}</div>
-
-                <div class="idcard-info-modern"><i class="fa-solid fa-id-badge"></i> ID: {{ $karyawan->nik }}</div>
-                <div class="idcard-info-modern"><i class="fa-solid fa-calendar-plus"></i> Join Date:
-                    {{ date('d-m-Y', strtotime($karyawan->tanggal_masuk)) }}</div>
-                <div class="idcard-info-modern"><i class="fa-solid fa-phone"></i> {{ $karyawan->no_hp }}</div>
-                <div class="idcard-info-modern"><i class="fa-solid fa-user"></i> {{ $karyawan->nama_jabatan }}</div>
-                <div class="barcode-modern">
-                    {!! DNS1D::getBarcodeHTML($karyawan->nik, 'C128', 2, 54) !!}
+            <!-- Profile Picture Section -->
+            <!-- Overlapping the curved header -->
+            <!-- Profile Picture Section -->
+            <!-- Overlapping the curved header -->
+            <!-- Profile Picture Section -->
+            <!-- Overlapping the curved header -->
+            <!-- Profile Picture Section -->
+            <!-- Overlapping the curved header -->
+            <div class="relative flex justify-center -mt-16 mb-2 z-20">
+                <div class="p-1.5 bg-white rounded-full shadow-lg">
+                    <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-slate-100 bg-slate-100">
+                        @if (!empty($karyawan->foto) && Storage::disk('public')->exists('/karyawan/' . $karyawan->foto))
+                            <img src="{{ getfotoKaryawan($karyawan->foto) }}" class="w-full h-full object-cover" alt="Profile">
+                        @else
+                            <img src="{{ asset('assets/template/img/sample/avatar/avatar1.jpg') }}"
+                                class="w-full h-full object-cover" alt="Profile">
+                        @endif
+                    </div>
                 </div>
             </div>
-            <div class="idcard-footer-modern">
-                {{ $generalsetting->nama_perusahaan }}
+
+            <!-- Body Content -->
+            <div class="px-5 pb-5 text-center">
+                <!-- Name & Role -->
+                <div class="mb-3">
+                    <h2 class="text-lg font-bold text-slate-800 uppercase leading-snug tracking-tight mb-1">
+                        {{ $karyawan->nama_karyawan }}
+                    </h2>
+                    <span
+                        class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider border border-blue-100">
+                        {{ $karyawan->nama_jabatan }}
+                    </span>
+                </div>
+
+                <!-- Info Box -->
+                <div class="bg-slate-50 rounded-xl p-3 mb-4 text-left space-y-2 border border-slate-100">
+
+                    <!-- NIK -->
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 rounded-full bg-white text-blue-600 flex items-center justify-center shadow-sm text-sm border border-slate-100">
+                            <ion-icon name="id-card-outline"></ion-icon>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <span
+                                class="text-[11px] text-slate-400 block uppercase font-bold tracking-widest leading-tight mb-1">ID
+                                Karyawan</span>
+                            <span class="text-xs font-bold text-slate-700 block">{{ $karyawan->nik }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 rounded-full bg-white text-blue-600 flex items-center justify-center shadow-sm text-sm border border-slate-100">
+                            <ion-icon name="call-outline"></ion-icon>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <span
+                                class="text-[11px] text-slate-400 block uppercase font-bold tracking-widest leading-tight mb-1">No.
+                                Handphone</span>
+                            <span class="text-xs font-bold text-slate-700 block">{{ $karyawan->no_hp }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Dept -->
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="flex-shrink-0 w-8 h-8 rounded-full bg-white text-blue-600 flex items-center justify-center shadow-sm text-sm border border-slate-100">
+                            <ion-icon name="business-outline"></ion-icon>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <span
+                                class="text-[11px] text-slate-400 block uppercase font-bold tracking-widest leading-tight mb-1">Departemen</span>
+                            <span class="text-xs font-bold text-slate-700 block">{{ $karyawan->nama_dept }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barcode -->
+                <div class="flex flex-col items-center justify-center pt-2 border-t border-slate-100 border-dashed">
+                    <div class="mix-blend-multiply mb-1" style="opacity: 0.85;">
+                        {!! DNS1D::getBarcodeHTML($karyawan->nik, 'C128', 1.6, 40, 'black') !!}
+                    </div>
+                    <span class="text-[10px] text-slate-400 font-mono tracking-[0.2em]">{{ $karyawan->nik }}</span>
+                </div>
             </div>
+
+            <!-- Bottom Border -->
+            <div class="h-1.5 w-full bg-gradient-to-r from-blue-600 to-indigo-600"></div>
         </div>
-        <div style="text-align:center; margin: 24px 0 0 0; z-index:2; position:relative;">
-            <button id="download-idcard" class="btn btn-success"
-                style="background:#32745e; color:#fff; border:none; border-radius:8px; padding:8px 18px; font-size:1rem; box-shadow:0 2px 8px rgba(50,116,94,0.13);">
-                <i class="fa-solid fa-download"></i> Download JPG
-            </button>
-        </div>
+
+        <!-- Action Button -->
+        <button id="download-idcard"
+            class="mt-8 px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 flex items-center gap-2 active:scale-95 transition-transform hover:shadow-blue-500/50">
+            <ion-icon name="download-outline" class="text-xl"></ion-icon>
+            <span>Simpan ID Card</span>
+        </button>
+
     </div>
-    <script>
-        // Ketika dokumen selesai dimuat, jalankan fungsi ini
-        document.addEventListener('DOMContentLoaded', function() {
-            // Temukan tombol dengan id 'download-idcard'
-            var btn = document.getElementById('download-idcard');
-            // Jika tombol ditemukan, tambahkan event listener untuk klik
-            if (btn) {
-                btn.addEventListener('click', function() {
-                    // Temukan area dengan id 'idcard-area'
-                    var area = document.getElementById('idcard-area');
-                    // Jika area tidak ditemukan, tampilkan pesan error
-                    if (!area) {
-                        alert('ID Card tidak ditemukan!');
-                        return;
-                    }
-                    // Jika html2canvas tidak terdefinisi, tampilkan pesan error
-                    if (typeof html2canvas === 'undefined') {
-                        alert('Gagal memuat html2canvas. Pastikan koneksi internet Anda stabil.');
-                        return;
-                    }
-                    // Gunakan html2canvas untuk mengubah area menjadi canvas
-                    html2canvas(area, {
-                        backgroundColor: null, // Tidak mengubah warna latar belakang
-                        scale: 2 // Meningkatkan skala gambar untuk kualitas lebih baik
-                    }).then(function(canvas) {
-                        // Buat elemen 'a' untuk download gambar
-                        var link = document.createElement('a');
-                        // Tentukan nama file yang akan diunduh
-                        link.download = 'idcard-{{ $karyawan->nik }}.jpg';
-                        // Tentukan URL gambar yang akan diunduh
-                        link.href = canvas.toDataURL('image/jpeg', 0.95); // Kualitas gambar 95%
-                        // Klik elemen 'a' untuk memulai unduhan
-                        link.click();
-                    }).catch(function(e) {
-                        // Jika terjadi error saat membuat gambar, tampilkan pesan error
-                        alert('Gagal membuat gambar: ' + e);
+
+    @push('myscript')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var btn = document.getElementById('download-idcard');
+
+                if (btn) {
+                    btn.addEventListener('click', function () {
+                        var originalText = btn.innerHTML;
+                        btn.innerHTML = '<ion-icon name="sync-outline" class="animate-spin text-xl"></ion-icon> <span>Memproses...</span>';
+                        btn.disabled = true;
+                        btn.classList.add('opacity-75');
+
+                        var area = document.getElementById('idcard-area');
+
+                        // Force white background for the canvas capture
+                        var options = {
+                            scale: 3,
+                            useCORS: true,
+                            backgroundColor: '#ffffff',
+                            logging: false
+                        };
+
+                        setTimeout(function () {
+                            html2canvas(area, options).then(function (canvas) {
+                                var link = document.createElement('a');
+                                link.download = 'ID-Card-{{ $karyawan->nama_karyawan }}.jpg';
+                                link.href = canvas.toDataURL('image/jpeg', 1.0);
+                                link.click();
+
+                                btn.innerHTML = originalText;
+                                btn.disabled = false;
+                                btn.classList.remove('opacity-75');
+                            }).catch(function (e) {
+                                console.error(e);
+                                alert('Gagal menyimpan gambar. Coba lagi.');
+                                btn.innerHTML = originalText;
+                                btn.disabled = false;
+                                btn.classList.remove('opacity-75');
+                            });
+                        }, 500);
                     });
-                });
-            }
-        });
-    </script>
+                }
+            });
+        </script>
+    @endpush
 @endsection

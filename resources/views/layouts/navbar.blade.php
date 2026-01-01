@@ -1,4 +1,5 @@
-<nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+<nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+    id="layout-navbar">
     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
             <i class="ti ti-menu-2 ti-sm"></i>
@@ -22,16 +23,17 @@
 
             <!-- Quick links  -->
             <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-2 me-xl-0">
-                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside"
-                    aria-expanded="false">
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside" aria-expanded="false">
                     <i class="ti ti-layout-grid-add ti-md"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end py-0">
                     <div class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
                             <h5 class="text-body mb-0 me-auto">Shortcuts</h5>
-                            <a href="javascript:void(0)" class="dropdown-shortcuts-add text-body" data-bs-toggle="tooltip" data-bs-placement="top"
-                                title="Add shortcuts"><i class="ti ti-sm ti-apps"></i></a>
+                            <a href="javascript:void(0)" class="dropdown-shortcuts-add text-body"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Add shortcuts"><i
+                                    class="ti ti-sm ti-apps"></i></a>
                         </div>
                     </div>
                     <div class="dropdown-shortcuts-list scrollable-container">
@@ -108,8 +110,8 @@
 
             <!-- Notification -->
             <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
-                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside"
-                    aria-expanded="false">
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside" aria-expanded="false">
                     <i class="ti ti-bell ti-md"></i>
                     <span class="badge bg-danger rounded-pill badge-notifications">{{ $notifikasi_ajuan_absen }}</span>
                 </a>
@@ -117,8 +119,9 @@
                     <li class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
                             <h5 class="text-body mb-0 me-auto">Notification</h5>
-                            <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip"
-                                data-bs-placement="top" title="Mark all as read"><i class="ti ti-mail-opened fs-4"></i></a>
+                            <a href="javascript:void(0)" class="dropdown-notifications-all text-body"
+                                data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read"><i
+                                    class="ti ti-mail-opened fs-4"></i></a>
                         </div>
                     </li>
                     <li class="dropdown-notifications-list scrollable-container">
@@ -160,7 +163,8 @@
                                         <div class="flex-shrink-0 dropdown-notifications-actions">
                                             <a href="javascript:void(0)" class="dropdown-notifications-read"><span
                                                     class="badge badge-dot"></span></a>
-                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span class="ti ti-x"></span></a>
+                                            <a href="javascript:void(0)" class="dropdown-notifications-archive"><span
+                                                    class="ti ti-x"></span></a>
                                         </div>
                                     </div>
                                 </li>
@@ -191,11 +195,16 @@
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('/assets/img/avatars/1.png') }}" alt class="h-auto rounded-circle" />
+                                        <img src="{{ asset('/assets/img/avatars/1.png') }}" alt
+                                            class="h-auto rounded-circle" />
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <span class="fw-medium d-block">{{ Auth::user()->name }}</span>
+                                    @php
+                                        /** @var \App\Models\User $user */
+                                        $user = Auth::user();
+                                    @endphp
+                                    <span class="fw-medium d-block">{{ $user->name }}</span>
                                     <small class="text-muted">Admin</small>
                                 </div>
                             </div>
@@ -217,8 +226,7 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
 
-                            <x-responsive-nav-link :href="route('logout')"
-                                onclick="event.preventDefault();
+                            <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-responsive-nav-link>
@@ -232,7 +240,8 @@
 
     <!-- Search Small Screens -->
     <div class="navbar-search-wrapper search-input-wrapper d-none">
-        <input type="text" class="form-control search-input container-fluid border-0" placeholder="Search..." aria-label="Search..." />
+        <input type="text" class="form-control search-input container-fluid border-0" placeholder="Search..."
+            aria-label="Search..." />
         <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
     </div>
 </nav>

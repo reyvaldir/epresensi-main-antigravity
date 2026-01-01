@@ -1,6 +1,10 @@
 @extends('layouts.mobile_modern')
 
 @section('content')
+    @php
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+    @endphp
     <!-- Header -->
     <div class="flex items-center justify-between mb-5 mt-2">
         <div class="flex items-center gap-3">
