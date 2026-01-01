@@ -12,6 +12,7 @@ use App\Models\Lembur;
 use App\Models\Presensi;
 use App\Models\User;
 use App\Models\Userkaryawan;
+use App\Models\Izindinas;
 use App\Jobs\SendWaMessage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -58,6 +59,46 @@ class DashboardController extends Controller
                 ->orderBy('tanggal', 'desc')
                 ->limit(30)
                 ->get();
+
+            // Add Izin Dinas
+            $izindinas = Izindinas::where('nik', $userkaryawan->nik)
+                ->where('status', 1)
+                ->get();
+
+            foreach ($izindinas as $d) {
+                $start = Carbon::parse($d->dari);
+                $end = Carbon::parse($d->sampai);
+
+                while ($start->lte($end)) {
+                    $tgl = $start->format('Y-m-d');
+
+                    // Check duplicate
+                    if ($data['datapresensi']->where('tanggal', $tgl)->count() == 0) {
+                        $obj = new \stdClass();
+                        $obj->tanggal = $tgl;
+                        $obj->status = 'd';
+                        $obj->nama_jam_kerja = 'Dinas Luar';
+                        $obj->jam_in = null;
+                        $obj->jam_out = null;
+                        $obj->jam_masuk = null;
+                        $obj->jam_pulang = null;
+                        $obj->keterangan_izin = null;
+                        $obj->keterangan_izin_sakit = null;
+                        $obj->keterangan_izin_cuti = null;
+                        $obj->keterangan_izin_dinas = $d->keterangan;
+                        $obj->foto_in = null;
+                        $obj->foto_out = null;
+                        $obj->lokasi_in = null;
+                        $obj->lokasi_out = null;
+
+                        $data['datapresensi']->push($obj);
+                    }
+                    $start->addDay();
+                }
+            }
+
+            // Sort by tanggal desc
+            $data['datapresensi'] = $data['datapresensi']->sortByDesc('tanggal')->values()->take(30);
             $data['rekappresensi'] = Presensi::select(
                 DB::raw("SUM(IF(status='h',1,0)) as hadir"),
                 DB::raw("SUM(IF(status='i',1,0)) as izin"),

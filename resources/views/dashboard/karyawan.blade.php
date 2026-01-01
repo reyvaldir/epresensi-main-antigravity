@@ -299,8 +299,10 @@
                         $early_msg .= $early_minutes . 'm';
                     }
                 @endphp
-                <div
-                    class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm flex items-top justify-between hover:bg-slate-50 transition-colors gap-3">
+                <div onclick="showHistoryDetail(this)"
+                    data-detail="{{ json_encode($d) }}"
+                    data-date="{{ DateToIndo($d->tanggal) }}"
+                    class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm flex items-top justify-between hover:bg-slate-50 transition-colors gap-3 cursor-pointer">
                     <!-- Icon -->
                     <div class="shrink-0 mt-0.5">
                         <div
@@ -313,6 +315,8 @@
                                 <ion-icon name="medkit-outline" class="text-xl"></ion-icon>
                             @elseif($d->status == 'c')
                                 <ion-icon name="calendar-outline" class="text-xl"></ion-icon>
+                            @elseif($d->status == 'd')
+                                <ion-icon name="briefcase-outline" class="text-xl"></ion-icon>
                             @endif
                         </div>
                     </div>
@@ -369,6 +373,7 @@
                                 @if ($d->status == 'i') Izin: {{ $d->keterangan_izin }}
                                 @elseif ($d->status == 's') Sakit: {{ $d->keterangan_sakit }}
                                 @elseif ($d->status == 'c') Cuti: {{ $d->keterangan_cuti }}
+                                @elseif ($d->status == 'd') Dinas: {{ $d->keterangan_izin_dinas }}
                                 @endif
                             </p>
                         @endif
@@ -378,7 +383,8 @@
                     <div class="text-right shrink-0">
                          <span class="block text-[10px] font-bold text-slate-400 mb-0.5">Jadwal</span>
                          <span class="text-[10px] font-bold text-slate-700 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-100">
-                            {{ date('H:i', strtotime($d->jam_masuk)) }} - {{ $d->jam_pulang ? date('H:i', strtotime($d->jam_pulang)) : '??' }}
+                            {{ isset($d->jam_masuk) ? date('H:i', strtotime($d->jam_masuk)) : '--:--' }} - 
+                            {{ isset($d->jam_pulang) ? date('H:i', strtotime($d->jam_pulang)) : '--:--' }}
                         </span>
                     </div>
                 </div>
@@ -487,5 +493,90 @@
 
         setInterval(updateClock, 1000);
         updateClock(); // Initial call
+
+        function showHistoryDetail(element) {
+            const data = JSON.parse(element.getAttribute('data-detail'));
+            const dateIndo = element.getAttribute('data-date');
+
+            let contentHtml = '';
+
+            if (data.status === 'h') {
+                contentHtml = `
+                    <div class="grid grid-cols-2 gap-4 text-left">
+                        <!-- Masuk -->
+                        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-100">
+                            <h4 class="font-bold text-emerald-700 text-sm mb-2 flex items-center gap-1">
+                                <ion-icon name="log-in-outline"></ion-icon> Masuk
+                            </h4>
+                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_in ? data.jam_in.substring(0,5) : '--:--'}</div>
+                            ${data.foto_in ? 
+                                `<img src="/storage/uploads/absensi/${data.foto_in}" class="w-full h-24 object-cover rounded-lg shadow-sm border border-emerald-200 mt-2 mb-2">` : 
+                                '<div class="w-full h-24 bg-emerald-100/50 rounded-lg flex items-center justify-center text-emerald-400 text-xs mt-2 mb-2">No Photo</div>'
+                            }
+                            ${data.lokasi_in ? 
+                                `<a href="https://www.google.com/maps/search/?api=1&query=${data.lokasi_in}" target="_blank" class="block w-full text-center py-1.5 bg-white text-emerald-600 text-xs font-bold rounded-lg border border-emerald-200 hover:bg-emerald-50">
+                                    <ion-icon name="map"></ion-icon> Lokasi
+                                </a>` : ''
+                            }
+                        </div>
+
+                        <!-- Pulang -->
+                        <div class="bg-rose-50 p-3 rounded-xl border border-rose-100">
+                            <h4 class="font-bold text-rose-700 text-sm mb-2 flex items-center gap-1">
+                                <ion-icon name="log-out-outline"></ion-icon> Pulang
+                            </h4>
+                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_out ? data.jam_out.substring(0,5) : '--:--'}</div>
+                            ${data.foto_out ? 
+                                `<img src="/storage/uploads/absensi/${data.foto_out}" class="w-full h-24 object-cover rounded-lg shadow-sm border border-rose-200 mt-2 mb-2">` : 
+                                '<div class="w-full h-24 bg-rose-100/50 rounded-lg flex items-center justify-center text-rose-400 text-xs mt-2 mb-2">No Photo</div>'
+                            }
+                            ${data.lokasi_out ? 
+                                `<a href="https://www.google.com/maps/search/?api=1&query=${data.lokasi_out}" target="_blank" class="block w-full text-center py-1.5 bg-white text-rose-600 text-xs font-bold rounded-lg border border-rose-200 hover:bg-rose-50">
+                                    <ion-icon name="map"></ion-icon> Lokasi
+                                </a>` : ''
+                            }
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Izin/Sakit/Cuti
+                let statusLabel = '';
+                let statusColor = '';
+                let keterangan = '';
+                
+                if(data.status === 'i') { statusLabel = 'Izin'; statusColor = 'blue'; keterangan = data.keterangan_izin; }
+                else if(data.status === 's') { statusLabel = 'Sakit'; statusColor = 'rose'; keterangan = data.keterangan_sakit; }
+                else if(data.status === 'c') { statusLabel = 'Cuti'; statusColor = 'amber'; keterangan = data.keterangan_cuti; }
+                else if(data.status === 'd') { statusLabel = 'Dinas Luar'; statusColor = 'indigo'; keterangan = data.keterangan_izin_dinas; }
+
+                contentHtml = `
+                    <div class="bg-${statusColor}-50 p-4 rounded-xl border border-${statusColor}-100 text-center">
+                        <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-3">
+                            <ion-icon name="briefcase-outline" class="text-3xl"></ion-icon>
+                        </div>
+                        <h3 class="text-lg font-bold text-${statusColor}-700 mb-1">${statusLabel}</h3>
+                        <p class="text-slate-600">${keterangan || 'Tidak ada keterangan'}</p>
+                    </div>
+                `;
+            }
+
+            Swal.fire({
+                html: `
+                    <div class="text-center mb-6">
+                        <h3 class="text-lg font-bold text-slate-800 mb-1">${dateIndo}</h3>
+                        <span class="inline-block px-3 py-1 bg-slate-100 text-slate-600 text-xs font-bold rounded-full border border-slate-200">
+                            ${data.nama_jam_kerja || 'Shift Umum'}
+                        </span>
+                    </div>
+                    ${contentHtml}
+                `,
+                showConfirmButton: false,
+                showCloseButton: true,
+                background: '#ffffff',
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl w-full max-w-md p-0 overflow-hidden',
+                    htmlContainer: '!m-0 !p-5'
+                }
+            });
+        }
     </script>
-@endpush
