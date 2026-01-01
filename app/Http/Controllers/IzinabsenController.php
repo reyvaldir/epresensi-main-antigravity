@@ -77,7 +77,8 @@ class IzinabsenController extends Controller
         $user = User::where('id', '=', auth()->user()->id)->first();
         $agent = new Agent();
         if ($user->hasRole('karyawan')) {
-            return view('izinabsen.create-mobile');
+            $data['general_setting'] = Pengaturanumum::first();
+            return view('izinabsen.create-mobile', $data);
         }
         $user = User::where('id', '=', auth()->user()->id)->first();
         $qkaryawan = Karyawan::query();
