@@ -54,6 +54,12 @@
             border-radius: 1rem;
         }
 
+        /* Fix for Leaflet tiles disappearing due to Tailwind/Global styles */
+        .leaflet-container img {
+            max-width: none !important;
+            max-height: none !important;
+        }
+
         /* =====================================================
            SWEETALERT2 GLOBAL STYLING - Modern & Visible Buttons
            ===================================================== */
@@ -325,6 +331,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Global SweetAlert2 Configuration
+        // Prevent page scrolling/jumping when modals open by disabling heightAuto
+        const SwalOriginal = Swal;
+        window.Swal = SwalOriginal.mixin({
+            heightAuto: false,
+            buttonsStyling: false // We use custom Tailwind classes
+        });
+    </script>
+
+    <!-- Leaflet Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 
     <!-- Face API (Local Asset) -->
     <script src="{{ asset('assets/vendor/face-api.min.js') }}"></script>

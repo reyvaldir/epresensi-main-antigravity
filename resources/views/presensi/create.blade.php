@@ -242,11 +242,11 @@
 
                         <!-- Action Buttons (Attached to Sheet Top) -->
                         <div class="absolute -top-[70px] left-0 right-0 z-[60] px-6">
-                            <div class="flex justify-center">
+                            <div class="grid grid-cols-1 gap-4">
                                 @if (!$presensi || !$presensi->jam_in)
                                     {{-- Show MASUK button if not clocked in yet --}}
                                     <button id="absenmasuk"
-                                        class="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3 w-full max-w-xs">
+                                        class="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3 w-full">
                                         <div
                                             class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                                         </div>
@@ -259,7 +259,7 @@
                                 @elseif (!$presensi->jam_out)
                                     {{-- Show PULANG button if clocked in but not clocked out --}}
                                     <button id="absenpulang"
-                                        class="group relative overflow-hidden bg-rose-500 hover:bg-rose-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-rose-200 flex items-center justify-center gap-3 w-full max-w-xs">
+                                        class="group relative overflow-hidden bg-rose-500 hover:bg-rose-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-rose-200 flex items-center justify-center gap-3 w-full">
                                         <div
                                             class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                                         </div>
@@ -271,7 +271,7 @@
                                     </button>
                                 @else
                                     {{-- Both clocked in and out - show completion message --}}
-                                    <div class="bg-slate-100 text-slate-600 h-14 rounded-2xl flex items-center justify-center gap-3 w-full max-w-xs border border-slate-200">
+                                    <div class="bg-slate-100 text-slate-600 h-14 rounded-2xl flex items-center justify-center gap-3 w-full border border-slate-200">
                                         <ion-icon name="checkmark-circle" class="text-emerald-500 text-xl"></ion-icon>
                                         <span class="font-bold">Presensi Selesai</span>
                                     </div>

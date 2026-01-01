@@ -36,6 +36,8 @@ class DashboardController extends Controller
 
             $data['presensi'] = Presensi::where('presensi.nik', $userkaryawan->nik)->where('presensi.tanggal', $hari_ini)->first();
             $data['datapresensi'] = Presensi::join('presensi_jamkerja', 'presensi.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
+                ->join('karyawan', 'presensi.nik', '=', 'karyawan.nik')
+                ->join('cabang', 'karyawan.kode_cabang', '=', 'cabang.kode_cabang')
                 ->where('presensi.nik', $userkaryawan->nik)
                 ->where('presensi.status', 'h')
                 ->whereRaw('MONTH(presensi.tanggal) = MONTH(?)', [$hari_ini])
@@ -46,7 +48,9 @@ class DashboardController extends Controller
                     'presensi_jamkerja.jam_masuk',
                     'presensi_jamkerja.jam_pulang',
                     'presensi_jamkerja.total_jam',
-                    'presensi_jamkerja.lintashari'
+                    'presensi_jamkerja.lintashari',
+                    'cabang.lokasi_cabang',
+                    'cabang.radius_cabang'
                 )
                 ->orderBy('tanggal', 'desc')
                 ->limit(30)

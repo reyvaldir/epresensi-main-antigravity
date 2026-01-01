@@ -543,10 +543,12 @@
 <script>
     // Real-time Clock for Card Header
     function updateClock() {
+        var el = document.getElementById('jam-card');
+        if (!el) return;
         var now = new Date();
         var hours = String(now.getHours()).padStart(2, '0');
         var minutes = String(now.getMinutes()).padStart(2, '0');
-        document.getElementById('jam-card').textContent = hours + ":" + minutes;
+        el.textContent = hours + ":" + minutes;
     }
 
     setInterval(updateClock, 1000);
@@ -583,15 +585,15 @@
                             <h4 class="font-bold text-emerald-700 text-sm mb-2 flex items-center gap-1">
                                 <ion-icon name="log-in-outline"></ion-icon> Masuk
                             </h4>
-                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_in ? data.jam_in.substring(0, 5) : '--:--'}</div>
+                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_in ? data.jam_in.substring(11, 16) : '--:--'}</div>
                             ${data.foto_in ?
-                    `<img src="/storage/uploads/absensi/${data.foto_in}" class="w-full h-24 object-cover rounded-lg shadow-sm border border-emerald-200 mt-2 mb-2">` :
-                    '<div class="w-full h-24 bg-emerald-100/50 rounded-lg flex items-center justify-center text-emerald-400 text-xs mt-2 mb-2">No Photo</div>'
+                    `<img src="/storage/uploads/absensi/${data.foto_in}" class="w-full h-auto aspect-[4/3] object-cover rounded-lg shadow-sm border border-emerald-200 mt-2 mb-2">` :
+                    '<div class="w-full aspect-[4/3] bg-emerald-100/50 rounded-lg flex items-center justify-center text-emerald-400 text-xs mt-2 mb-2">No Photo</div>'
                 }
                             ${data.lokasi_in ?
-                    `<a href="https://www.google.com/maps/search/?api=1&query=${data.lokasi_in}" target="_blank" class="block w-full text-center py-1.5 bg-white text-emerald-600 text-xs font-bold rounded-lg border border-emerald-200 hover:bg-emerald-50">
+                    `<button type="button" onclick="showLocationMap('${data.lokasi_in}', '${data.lokasi_cabang}', ${data.radius_cabang}, 'Lokasi Masuk', 'emerald')" class="block w-full text-center py-1.5 bg-white text-emerald-600 text-xs font-bold rounded-lg border border-emerald-200 hover:bg-emerald-50 transition-colors">
                                     <ion-icon name="map"></ion-icon> Lokasi
-                                </a>` : ''
+                                </button>` : ''
                 }
                         </div>
 
@@ -600,15 +602,15 @@
                             <h4 class="font-bold text-rose-700 text-sm mb-2 flex items-center gap-1">
                                 <ion-icon name="log-out-outline"></ion-icon> Pulang
                             </h4>
-                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_out ? data.jam_out.substring(0, 5) : '--:--'}</div>
+                            <div class="text-2xl font-bold text-slate-800 mb-1">${data.jam_out ? data.jam_out.substring(11, 16) : '--:--'}</div>
                             ${data.foto_out ?
-                    `<img src="/storage/uploads/absensi/${data.foto_out}" class="w-full h-24 object-cover rounded-lg shadow-sm border border-rose-200 mt-2 mb-2">` :
-                    '<div class="w-full h-24 bg-rose-100/50 rounded-lg flex items-center justify-center text-rose-400 text-xs mt-2 mb-2">No Photo</div>'
+                    `<img src="/storage/uploads/absensi/${data.foto_out}" class="w-full h-auto aspect-[4/3] object-cover rounded-lg shadow-sm border border-rose-200 mt-2 mb-2">` :
+                    '<div class="w-full aspect-[4/3] bg-rose-100/50 rounded-lg flex items-center justify-center text-rose-400 text-xs mt-2 mb-2">No Photo</div>'
                 }
                             ${data.lokasi_out ?
-                    `<a href="https://www.google.com/maps/search/?api=1&query=${data.lokasi_out}" target="_blank" class="block w-full text-center py-1.5 bg-white text-rose-600 text-xs font-bold rounded-lg border border-rose-200 hover:bg-rose-50">
+                    `<button type="button" onclick="showLocationMap('${data.lokasi_out}', '${data.lokasi_cabang}', ${data.radius_cabang}, 'Lokasi Pulang', 'rose')" class="block w-full text-center py-1.5 bg-white text-rose-600 text-xs font-bold rounded-lg border border-rose-200 hover:bg-rose-50 transition-colors">
                                     <ion-icon name="map"></ion-icon> Lokasi
-                                </a>` : ''
+                                </button>` : ''
                 }
                         </div>
                     </div>
@@ -714,7 +716,7 @@
             showCloseButton: true,
             background: '#ffffff',
             customClass: {
-                popup: 'rounded-2xl shadow-xl w-full max-w-sm p-0 overflow-hidden',
+                popup: 'rounded-2xl shadow-xl w-[90%] md:w-full md:max-w-3xl p-0 overflow-hidden',
                 htmlContainer: '!m-0 !p-5'
             }
         });
@@ -736,6 +738,110 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = '/presensi/create';
+            }
+        });
+    }
+
+    var mapDetail = null;
+
+    function showLocationMap(lokasi, lokasi_cabang, radius, title, color) {
+        if (!lokasi || !lokasi_cabang) {
+            Swal.fire('Error', 'Data lokasi tidak tersedia', 'error');
+            return;
+        }
+
+        const userCoords = lokasi.split(',');
+        const userLat = parseFloat(userCoords[0]);
+        const userLng = parseFloat(userCoords[1]);
+
+        const branchCoords = lokasi_cabang.split(',');
+        const branchLat = parseFloat(branchCoords[0]);
+        const branchLng = parseFloat(branchCoords[1]);
+
+        Swal.fire({
+            title: title,
+            html: `<div id="map-detail" style="height: 300px; width: 100%; border-radius: 12px; border: 2px solid ${color === 'emerald' ? '#10B981' : '#F43F5E'}; position: relative; z-index: 1; overflow: hidden;"></div>
+                   <div class="mt-3 text-xs text-slate-500 font-medium">
+                        <div class="flex items-center justify-center gap-2 mb-1">
+                            <span class="inline-block w-3 h-3 rounded-full bg-blue-500"></span> Titik Presensi
+                            <span class="inline-block w-3 h-3 rounded-full bg-red-500 ml-2"></span> Lokasi Kantor
+                        </div>
+                        <div class="italic text-center">Radius yang diperbolehkan: ${radius} meter</div>
+                   </div>`,
+            showConfirmButton: true,
+            confirmButtonText: 'Tutup',
+            confirmButtonColor: '#2563EB',
+            width: '90%',
+            scrollbarPadding: false,
+            heightAuto: false,
+            didOpen: () => {
+                // Initialize map after Swal modal is rendered
+                if (mapDetail) {
+                    mapDetail.remove();
+                    mapDetail = null;
+                }
+
+                mapDetail = L.map('map-detail', {
+                    zoomControl: true,
+                    scrollWheelZoom: true,
+                    doubleClickZoom: true,
+                    touchZoom: true
+                }).setView([userLat, userLng], 15);
+
+                // Use the exact same Tile Layer URL as presensi/create (no {s} subdomain)
+                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }).addTo(mapDetail);
+
+                // User Marker (Blue)
+                L.marker([userLat, userLng]).addTo(mapDetail)
+                    .bindPopup("Titik Presensi").openPopup();
+
+                // Branch Marker (Red)
+                const branchMarker = L.circleMarker([branchLat, branchLng], {
+                    radius: 8,
+                    fillColor: "#ff0000",
+                    color: "#fff",
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(mapDetail);
+                branchMarker.bindPopup("Pusat Radius Kantor");
+
+                // Radius Circle (Reddish)
+                L.circle([branchLat, branchLng], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.15,
+                    radius: radius
+                }).addTo(mapDetail);
+
+                // Fit bounds to show both points
+                const bounds = L.latLngBounds([
+                    [userLat, userLng],
+                    [branchLat, branchLng]
+                ]);
+                mapDetail.fitBounds(bounds, {
+                    padding: [30, 30]
+                });
+
+                // Crucial for Leaflet inside Modals
+                // Use setInterval to ensure map renders correctly even if modal animation takes time
+                const resizeInterval = setInterval(() => {
+                    mapDetail.invalidateSize();
+                }, 100);
+
+                // Stop the interval after 3 seconds
+                setTimeout(() => {
+                    clearInterval(resizeInterval);
+                }, 3000);
+            },
+            willClose: () => {
+                if (mapDetail) {
+                    mapDetail.remove();
+                    mapDetail = null;
+                }
             }
         });
     }
