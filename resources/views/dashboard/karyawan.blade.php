@@ -76,61 +76,63 @@
 
 
     <!-- Attendance Action Area (MASSIVE BUTTONS) -->
-    <div class="grid grid-cols-2 gap-4 mb-6">
+    <!-- Attendance Action Area (Compact & Centered) -->
+    <div class="grid grid-cols-2 gap-3 mb-6">
         <!-- Clock In -->
         @if ($presensi && $presensi->jam_in)
             <button disabled
-                class="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-400 cursor-not-allowed opacity-75">
-                <div class="h-12 w-12 rounded-full bg-slate-200 flex items-center justify-center mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-400 cursor-not-allowed opacity-75 h-full">
+                <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <span class="font-bold">Sudah Masuk</span>
+                <span class="font-bold text-sm">Sudah Masuk</span>
             </button>
         @else
             <a href="/presensi/create"
-                class="flex flex-col items-center justify-center p-6 rounded-2xl bg-emerald-50 border-2 border-emerald-100 text-emerald-600 shadow-sm active:scale-95 transition-transform hover:bg-emerald-100">
+                class="flex flex-col items-center justify-center p-3 rounded-2xl bg-emerald-50 border-2 border-emerald-100 text-emerald-600 shadow-sm active:scale-95 transition-transform hover:bg-emerald-100 h-full">
                 <div
-                    class="h-14 w-14 rounded-full bg-emerald-500 text-white flex items-center justify-center mb-3 shadow-lg shadow-emerald-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    class="h-12 w-12 rounded-full bg-emerald-500 text-white flex items-center justify-center mb-2 shadow-lg shadow-emerald-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
                 </div>
-                <span class="font-bold text-lg">Absen Masuk</span>
+                <span class="font-bold text-base text-center">Masuk</span>
             </a>
         @endif
 
         <!-- Clock Out -->
         @if ($presensi && $presensi->jam_out)
             <button disabled
-                class="flex flex-col items-center justify-center p-6 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-400 cursor-not-allowed opacity-75">
-                <div class="h-12 w-12 rounded-full bg-slate-200 flex items-center justify-center mb-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                class="flex flex-col items-center justify-center p-3 rounded-2xl bg-slate-100 border-2 border-slate-200 text-slate-400 cursor-not-allowed opacity-75 h-full">
+                <div class="h-10 w-10 rounded-full bg-slate-200 flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <span class="font-bold">Sudah Pulang</span>
+                <span class="font-bold text-sm">Sudah Pulang</span>
             </button>
         @else
             <a href="/presensi/create"
-                class="flex flex-col items-center justify-center p-6 rounded-2xl bg-rose-50 border-2 border-rose-100 text-rose-600 shadow-sm active:scale-95 transition-transform hover:bg-rose-100">
+                class="flex flex-col items-center justify-center p-3 rounded-2xl bg-rose-50 border-2 border-rose-100 text-rose-600 shadow-sm active:scale-95 transition-transform hover:bg-rose-100 h-full">
                 <div
-                    class="h-14 w-14 rounded-full bg-rose-500 text-white flex items-center justify-center mb-3 shadow-lg shadow-rose-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                    class="h-12 w-12 rounded-full bg-rose-500 text-white flex items-center justify-center mb-2 shadow-lg shadow-rose-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                 </div>
-                <span class="font-bold text-lg">Absen Pulang</span>
+                <span class="font-bold text-base text-center">Pulang</span>
             </a>
         @endif
     </div>
+
 
     <!-- Monthly Stats Summary -->
     <div class="grid grid-cols-4 gap-2 mb-6">
