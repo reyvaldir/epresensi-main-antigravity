@@ -1,183 +1,181 @@
-@extends('layouts.mobile.app')
+@extends('layouts.mobile_modern')
+
 @section('content')
-    <style>
-        /* Tambahkan style untuk header dan content */
-        #header-section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        #content-section {
-            margin-top: 70px;
-            padding-top: 5px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .btn-primary {
-            background-color: #32745e;
-            color: white;
-            padding: 13px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: 500;
-        }
-
-        .btn-primary:hover {
-            background-color: #1a4a3a;
-        }
-    </style>
-    <div id="header-section">
-        <div class="appHeader bg-primary text-light">
-            <div class="left">
-                <a href="{{ route('dashboard.index') }}" class="headerButton goBack">
-                    <ion-icon name="chevron-back-outline"></ion-icon>
-                </a>
-            </div>
-            <div class="pageTitle">Profile</div>
-            <div class="right"></div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-5 mt-2">
+        <div class="flex items-center gap-3">
+            <a href="/dashboard"
+                class="flex items-center justify-center h-10 w-10 bg-white rounded-full shadow-sm text-slate-500 border border-slate-100 hover:bg-slate-50 transition-colors">
+                <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Profile & Settings</h1>
         </div>
     </div>
-    <div id="content-section">
-        <div class="row" style="margin-top: 70px; padding-bottom:80px">
-            <div class="col pl-3 pr-3">
-                <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" id="formProfile">
-                    @csrf
-                    @method('PUT')
-                    <div style="margin-bottom: 10px; text-align: center;">
 
-                        @if (!empty($karyawan->foto))
-                            @if (Storage::disk('public')->exists('/karyawan/' . $karyawan->foto))
-                                <div
-                                    style="width: 100px; height: 100px; background-size: cover; background-position: center; border-radius: 50%; background-image: url({{ getfotoKaryawan($karyawan->foto) }});
-                                    display: block; margin: auto;">
-
-                                </div>
-                            @else
-                                <div style="width: 100px; height: 100px; display: block; margin: auto;">
-                                    <img src="{{ asset('assets/img/avatars/No_Image_Available.jpg') }}" alt="" class="rounded-circle w-100">
-                                </div>
-                            @endif
-                        @else
-                            <div style="width: 100px; height: 100px; display: block; margin: auto;">
-                                <img src="{{ asset('assets/img/avatars/No_Image_Available.jpg') }}" alt="" class="rounded-circle w-100">
-                            </div>
-                        @endif
-                    </div>
-
-                    <input type="text" class="feedback-input" name="nama_karyawan" placeholder="Nama Lengkap"
-                        value="{{ $karyawan->nama_karyawan ?? '' }}" required>
-                    <input type="text" class="feedback-input" name="no_ktp" placeholder="No. KTP" value="{{ $karyawan->no_ktp ?? '' }}" required>
-                    <input type="text" class="feedback-input" name="no_hp" placeholder="No. HP" value="{{ $karyawan->no_hp ?? '' }}" required>
-                    <textarea class="feedback-input" name="alamat" placeholder="Alamat" style="height: 100px" required>{{ $karyawan->alamat ?? '' }}</textarea>
-                    <input type="username" class="feedback-input" name="username" placeholder="Username" value="{{ $user->username }}" required>
-                    <input type="email" class="feedback-input" name="email" placeholder="Email" value="{{ $user->email }}" required>
-
-                    <div class="mb-3">
-                        <input type="file" class="feedback-input" id="foto" name="foto" accept=".jpg, .jpeg, .png">
-                    </div>
-                    <button class="btn btn-primary w-100" id="btnSimpan"><i class="ti ti-send me-1"></i>Update</button>
-                </form>
-            </div>
+    <!-- Profile Photo Section -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6 text-center">
+        <div class="relative w-24 h-24 mx-auto mb-4">
+            @if (!empty($karyawan->foto) && Storage::disk('public')->exists('/karyawan/' . $karyawan->foto))
+                @php $fotoPath = getfotoKaryawan($karyawan->foto); @endphp
+                <img src="{{ $fotoPath }}" alt="Profile"
+                    class="w-full h-full object-cover rounded-full border-4 border-slate-50 shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                    onclick="showProfileImage('{{ $fotoPath }}')">
+            @else
+                @php $fotoPath = asset('assets/img/avatars/No_Image_Available.jpg'); @endphp
+                <img src="{{ $fotoPath }}" alt="Default Profile"
+                    class="w-full h-full object-cover rounded-full border-4 border-slate-50 shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+                    onclick="showProfileImage('{{ $fotoPath }}')">
+            @endif
+            <label for="foto"
+                class="absolute bottom-0 right-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-blue-700 transition-colors">
+                <ion-icon name="camera-outline"></ion-icon>
+            </label>
         </div>
+        <h2 class="text-lg font-bold text-slate-800">{{ $karyawan->nama_karyawan }}</h2>
+        <p class="text-slate-500 text-sm">{{ $karyawan->jabatan }}</p>
     </div>
+
+    <!-- Personal Info Form -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6">
+        <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <ion-icon name="person-circle-outline" class="text-primary text-xl"></ion-icon>
+            Informasi Pribadi
+        </h3>
+
+        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" id="formProfile"
+            class="space-y-4">
+            @csrf
+            @method('PUT')
+
+            <!-- Hidden File Input triggered by label above -->
+            <input type="file" name="foto" id="foto" class="hidden" accept=".jpg, .jpeg, .png">
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Nama Lengkap</label>
+                <input type="text" name="nama_karyawan" value="{{ $karyawan->nama_karyawan }}"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">No. KTP</label>
+                <input type="text" name="no_ktp" value="{{ $karyawan->no_ktp }}"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">No. HP</label>
+                <input type="text" name="no_hp" value="{{ $karyawan->no_hp }}"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Alamat</label>
+                <textarea name="alamat"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none h-24">{{ $karyawan->alamat }}</textarea>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Username</label>
+                <input type="text" name="username" value="{{ $user->username }}"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Email</label>
+                <input type="email" name="email" value="{{ $user->email }}"
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+            </div>
+
+            <button type="submit"
+                class="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/40 hover:bg-blue-700 active:scale-95 transition-all text-sm">
+                Simpan Perubahan
+            </button>
+        </form>
+    </div>
+
+    <!-- Security Settings (Password) -->
+    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6">
+        <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <ion-icon name="shield-checkmark-outline" class="text-primary text-xl"></ion-icon>
+            Keamanan
+        </h3>
+
+        <form action="{{ route('users.updatepassword', Crypt::encrypt($user->id)) }}" method="POST" id="formPassword"
+            class="space-y-4">
+            @csrf
+            @method('PUT')
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Password Baru</label>
+                <div class="relative">
+                    <input type="password" id="passwordbaru" name="passwordbaru" placeholder="Minimal 6 karakter"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                    <button type="button" onclick="togglePassword('passwordbaru')"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
+                        <ion-icon name="eye-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Konfirmasi Password</label>
+                <div class="relative">
+                    <input type="password" id="konfirmasipassword" name="konfirmasipassword"
+                        placeholder="Ulangi password baru"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                    <button type="button" onclick="togglePassword('konfirmasipassword')"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
+                        <ion-icon name="eye-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit"
+                class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl shadow-lg hover:bg-slate-900 active:scale-95 transition-all text-sm flex items-center justify-center gap-2">
+                <ion-icon name="lock-closed-outline"></ion-icon>
+                Update Password
+            </button>
+        </form>
+    </div>
+
+    <!-- Spacer for Bottom Nav -->
+    <div class="h-20"></div>
 @endsection
 
-@push('myscript')
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+@push('scripts')
     <script>
-        $(function() {
-            $("#formProfile").submit(function(e) {
-                let nama_karyawan = $('input[name="nama_karyawan"]').val();
-                let no_ktp = $('input[name="no_ktp"]').val();
-                let no_hp = $('input[name="no_hp"]').val();
-                let alamat = $('textarea[name="alamat"]').val();
-                let username = $('input[name="username"]').val();
-                let email = $('input[name="email"]').val();
-
-                if (nama_karyawan == "") {
-                    Swal.fire({
-                        title: "Oops!",
-                        text: 'Nama Lengkap Harus Diisi !',
-                        icon: "warning",
-                        showConfirmButton: true,
-                        didClose: () => {
-                            $('input[name="nama_karyawan"]').focus();
-                        }
-                    });
-                    return false;
-                } else if (no_ktp == "") {
-                    Swal.fire({
-                        title: "Oops!",
-                        text: 'No. KTP Harus Diisi !',
-                        icon: "warning",
-                        showConfirmButton: true,
-                        didClose: () => {
-                            $('input[name="no_ktp"]').focus();
-                        }
-                    });
-                    return false;
-                } else if (no_hp == "") {
-                    Swal.fire({
-                        title: "Oops!",
-                        text: 'No. HP Harus Diisi !',
-                        icon: "warning",
-                        showConfirmButton: true,
-                        didClose: () => {
-                            $('input[name="no_hp"]').focus();
-                        }
-                    });
-                    return false;
-                } else if (alamat == "") {
-                    Swal.fire({
-                        title: "Oops!",
-                        text: 'Alamat Harus Diisi !',
-                        icon: "warning",
-                        showConfirmButton: true,
-                        didClose: () => {
-                            $('textarea[name="alamat"]').focus();
-                        }
-                    });
-                    return false;
-                } else if (username == "") {
-                    Swal.fire({
-                        title: "Oops!",
-                        text: 'Username Harus Diisi !',
-                        icon: "warning",
-                        showConfirmButton: true,
-                        didClose: () => {
-                            $('input[name="username"]').focus();
-                        }
-                    });
-                    return false;
-                } else if (email == "") {
-                    Swal.fire({
-                        title: "Oops!",
-                        text: 'Email Harus Diisi !',
-                        icon: "warning",
-                        showConfirmButton: true,
-                        didClose: () => {
-                            $('input[name="email"]').focus();
-                        }
-                    });
-                    return false;
+        function showProfileImage(src) {
+            Swal.fire({
+                imageUrl: src,
+                imageAlt: 'Profile Picture',
+                showConfirmButton: false,
+                showCloseButton: true,
+                background: 'transparent',
+                backdrop: `rgba(0,0,0,0.8)`,
+                heightAuto: false,
+                scrollbarPadding: false,
+                customClass: {
+                    image: 'rounded-xl shadow-2xl max-h-[80vh] w-auto'
                 }
             });
+        }
 
-            function buttonDisabled() {
-                $("#btnSimpan").prop('disabled', true);
-                $("#btnSimpan").html(`
-                <div class="spinner-border spinner-border-sm text-white mr-2" role="status">
-                </div>
-                Sedang Mengirim..`);
+        function togglePassword(id) {
+            var x = document.getElementById(id);
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
             }
+        }
+
+        // Preview Photo
+        $('#foto').change(function () {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('.relative img').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(this.files[0]);
         });
     </script>
 @endpush

@@ -114,12 +114,12 @@
                 <span class="text-[10px] font-medium leading-none mt-1">Pengajuan Izin</span>
             </a>
 
-            <a href="{{ route('users.editpassword', Crypt::encrypt(Auth::id())) }}"
-                class="flex flex-col items-center justify-center w-full h-full group {{ request()->routeIs('users.editpassword') ? 'text-primary' : 'text-slate-400 hover:text-slate-600' }}">
+            <a href="{{ route('profile.index') }}"
+                class="flex flex-col items-center justify-center w-full h-full group {{ request()->routeIs('profile.index') ? 'text-primary' : 'text-slate-400 hover:text-slate-600' }}">
                 <div class="text-2xl transition-transform group-active:scale-90 leading-none">
-                    <ion-icon name="settings-outline"></ion-icon>
+                    <ion-icon name="person-outline"></ion-icon>
                 </div>
-                <span class="text-[10px] font-medium leading-none mt-1">Setting</span>
+                <span class="text-[10px] font-medium leading-none mt-1">Profile</span>
             </a>
 
         </div>
