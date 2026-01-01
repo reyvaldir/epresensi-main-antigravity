@@ -136,7 +136,7 @@ class PresensiController extends Controller
             ->where('nik', $karyawan->nik)
             ->first();
 
-        $ceklintashari_presensi = $cekpresensi_sebelumnya != null  ? $cekpresensi_sebelumnya->lintashari : 0;
+        $ceklintashari_presensi = $cekpresensi_sebelumnya != null ? $cekpresensi_sebelumnya->lintashari : 0;
 
         if ($ceklintashari_presensi == 1) {
             if ($jamsekarang < $general_setting->batas_presensi_lintashari) {
@@ -347,7 +347,7 @@ class PresensiController extends Controller
         // dd($presensi_kemarin);
 
         // dd($jam_pulang);
-        $jam_mulai_pulang =  date('Y-m-d H:i', strtotime('-' . $batas_jam_absen_pulang . ' minutes', strtotime($jam_pulang)));
+        $jam_mulai_pulang = date('Y-m-d H:i', strtotime('-' . $batas_jam_absen_pulang . ' minutes', strtotime($jam_pulang)));
         //return $jam_mulai_pulang;
 
         // Cek Izin Dinas
@@ -662,6 +662,7 @@ class PresensiController extends Controller
 
             ->leftJoin('presensi_izincuti_approve', 'presensi.id', '=', 'presensi_izincuti_approve.id_presensi')
             ->leftJoin('presensi_izincuti', 'presensi_izincuti_approve.kode_izin_cuti', '=', 'presensi_izincuti.kode_izin_cuti')
+            ->leftJoin('cuti', 'presensi_izincuti.kode_cuti', '=', 'cuti.kode_cuti')
             ->select(
                 'presensi.*',
                 'presensi_jamkerja.nama_jam_kerja',
@@ -671,7 +672,8 @@ class PresensiController extends Controller
                 'presensi_jamkerja.lintashari',
                 'presensi_izinabsen.keterangan as keterangan_izin',
                 'presensi_izinsakit.keterangan as keterangan_izin_sakit',
-                'presensi_izincuti.keterangan as keterangan_izin_cuti'
+                'presensi_izincuti.keterangan as keterangan_izin_cuti',
+                'cuti.jenis_cuti as nama_cuti'
             )
             ->when(!empty($request->dari) && !empty($request->sampai), function ($q) use ($request) {
                 $q->whereBetween('presensi.tanggal', [$request->dari, $request->sampai]);
@@ -688,16 +690,14 @@ class PresensiController extends Controller
         $pin = Crypt::decrypt($pin);
         $scan = $request->scan_date;
 
-        $karyawan       = Karyawan::where('pin', $pin)->first();
+        $karyawan = Karyawan::where('pin', $pin)->first();
 
         if ($karyawan == null) {
             return Redirect::back()->with(messageError('Karyawan Tidak Ditemukan'));
-            $nik = "";
-        } else {
-            $nik = $karyawan->nik;
         }
+        $nik = $karyawan->nik;
 
-        $tanggal_sekarang   = date("Y-m-d", strtotime($scan));
+        $tanggal_sekarang = date("Y-m-d", strtotime($scan));
         $jam_sekarang = date("H:i", strtotime($scan));
         $tanggal_kemarin = date("Y-m-d", strtotime("-1 days"));
 

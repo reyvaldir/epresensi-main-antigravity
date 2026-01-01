@@ -19,22 +19,22 @@
                 if ($d->ket == 'i') {
                     $route = 'izinabsen.delete';
                     $icon = 'document-text-outline';
-                    $color = 'text-blue-600 bg-blue-50';
+                    $color = 'text-blue-600 bg-blue-100';
                     $label = 'Izin Absen';
                 } elseif ($d->ket == 's') {
                     $route = 'izinsakit.delete';
                     $icon = 'medkit-outline';
-                    $color = 'text-pink-600 bg-pink-50';
+                    $color = 'text-rose-600 bg-rose-100';
                     $label = 'Izin Sakit';
                 } elseif ($d->ket == 'c') {
                     $route = 'izincuti.delete';
-                    $icon = 'briefcase-outline';
-                    $color = 'text-amber-600 bg-amber-50';
+                    $icon = 'calendar-outline';
+                    $color = 'text-amber-600 bg-amber-100';
                     $label = 'Izin Cuti';
                 } elseif ($d->ket == 'd') {
                     $route = 'izindinas.delete';
-                    $icon = 'airplane-outline';
-                    $color = 'text-emerald-600 bg-emerald-50';
+                    $icon = 'briefcase-outline';
+                    $color = 'text-indigo-600 bg-indigo-100';
                     $label = 'Izin Dinas';
                 }
 

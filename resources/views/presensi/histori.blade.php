@@ -104,23 +104,30 @@
                     class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm flex items-start gap-3 hover:bg-slate-50 transition-colors">
                     <!-- Icon -->
                     <div class="shrink-0 mt-0.5">
-                        @if ($d->status == 'h')
-                            <div class="text-3xl text-emerald-500">
-                                <ion-icon name="finger-print-outline"></ion-icon>
-                            </div>
-                        @elseif($d->status == 'i')
-                            <div class="text-3xl text-amber-500">
-                                <ion-icon name="document-text-outline"></ion-icon>
-                            </div>
-                        @elseif($d->status == 's')
-                            <div class="text-3xl text-rose-500">
-                                <ion-icon name="medkit-outline"></ion-icon>
-                            </div>
-                        @elseif($d->status == 'c')
-                            <div class="text-3xl text-blue-500">
-                                <ion-icon name="calendar-outline"></ion-icon>
-                            </div>
-                        @endif
+                        @php
+                            $iconColor = 'bg-slate-100 text-slate-600';
+                            $iconName = 'help-circle-outline';
+
+                            if ($d->status == 'h') {
+                                $iconColor = 'bg-emerald-100 text-emerald-600';
+                                $iconName = 'finger-print-outline';
+                            } elseif ($d->status == 'i') {
+                                $iconColor = 'bg-blue-100 text-blue-600';
+                                $iconName = 'document-text-outline';
+                            } elseif ($d->status == 's') {
+                                $iconColor = 'bg-rose-100 text-rose-600';
+                                $iconName = 'medkit-outline';
+                            } elseif ($d->status == 'c') {
+                                $iconColor = 'bg-amber-100 text-amber-600';
+                                $iconName = 'calendar-outline';
+                            } elseif ($d->status == 'd') {
+                                $iconColor = 'bg-indigo-100 text-indigo-600';
+                                $iconName = 'briefcase-outline';
+                            }
+                        @endphp
+                        <div class="h-12 w-12 rounded-xl {{ $iconColor }} flex items-center justify-center">
+                            <ion-icon name="{{ $iconName }}" class="text-2xl"></ion-icon>
+                        </div>
                     </div>
 
                     <!-- Split Content -->
@@ -163,12 +170,18 @@
                                     </div>
                                 </div>
                             @else
-                                <p class="text-sm font-medium text-slate-600 mt-1">
-                                    @if ($d->status == 'i') Izin: {{ $d->keterangan_izin }}
-                                    @elseif ($d->status == 's') Sakit: {{ $d->keterangan_sakit }}
-                                    @elseif ($d->status == 'c') Cuti: {{ $d->keterangan_cuti }}
+                                <!-- Non-Presence Status -->
+                                <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                                    @if ($d->status == 'i')
+                                        <span class="bg-blue-50 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Izin Absen</span>
+                                    @elseif ($d->status == 's')
+                                        <span class="bg-rose-50 text-rose-600 border border-rose-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Sakit</span>
+                                    @elseif ($d->status == 'c')
+                                        <span class="bg-amber-100 text-amber-600 border border-amber-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Cuti {{ $d->nama_cuti ?? '' }}</span>
+                                    @elseif ($d->status == 'd')
+                                        <span class="bg-indigo-50 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded text-[10px] font-bold inline-block leading-none">Dinas Luar</span>
                                     @endif
-                                </p>
+                                </div>
                             @endif
                         </div>
 
