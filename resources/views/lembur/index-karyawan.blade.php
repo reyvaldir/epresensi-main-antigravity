@@ -54,11 +54,15 @@
             @php
                 // Status Badge Logic
                 $statusBadge = '';
-                if ($d->status == 0) {
+                $isApproved = $d->status == 1;
+                $isPending = $d->status == 0;
+                $isRejected = $d->status == 2;
+
+                if ($isPending) {
                     $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">Pending</span>';
-                } elseif ($d->status == 1) {
+                } elseif ($isApproved) {
                     $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">Disetujui</span>';
-                } elseif ($d->status == 2) {
+                } elseif ($isRejected) {
                     $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200">Ditolak</span>';
                 }
 
@@ -68,18 +72,19 @@
 
             <div onclick="showDetailLembur(this)" data-detail="{{ json_encode($d) }}"
                 class="relative bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all group overflow-hidden cursor-pointer">
+                
                 <!-- Action Buttons: Delete (Pending) or Presence (Approved) -->
-                @if ($d->status == 0)
+                @if ($isPending)
                     <form action="{{ route('lembur.delete', Crypt::encrypt($d->id)) }}" method="POST"
                         class="absolute top-4 right-4 z-20 delete-form">
                         @csrf
                         @method('DELETE')
                         <button type="button"
-                            class="btn-delete flex items-center justify-center w-10 h-10 rounded-full bg-red-50 text-red-500 hover:bg-red-100 active:scale-95 transition-all shadow-sm border border-red-100">
-                            <ion-icon name="trash-outline" class="text-lg"></ion-icon>
+                            class="btn-delete flex items-center justify-center w-10 h-10 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100 active:scale-95 transition-all shadow-sm border border-rose-100">
+                            <ion-icon name="trash-outline" class="text-xl"></ion-icon>
                         </button>
                     </form>
-                @elseif ($d->status == 1)
+                @elseif ($isApproved)
                     <a href="{{ route('lembur.createpresensi', Crypt::encrypt($d->id)) }}"
                         class="absolute top-4 right-4 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 active:scale-95 transition-all shadow-sm border border-blue-100"
                         onclick="event.stopPropagation()">
@@ -87,7 +92,7 @@
                     </a>
                 @endif
 
-                <div class="flex items-start gap-4 pr-10">
+                <div class="flex items-start gap-4 pr-1">
                     <!-- Icon -->
                     <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
                         <ion-icon name="time-outline" class="text-2xl"></ion-icon>
@@ -112,7 +117,7 @@
                             </div>
                         @endif
 
-                        @if ($d->status == 1)
+                        @if ($isApproved)
                             <div class="flex items-center gap-2 mt-2">
                                 @if ($d->lembur_in != null)
                                     <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100 font-bold">
@@ -205,7 +210,7 @@
             // Logic status styling
             if (data.status == 0) {
                 statusBadge = 'Pending';
-                statusColor = 'amber';
+                statusColor = 'blue';
                 iconName = 'time-outline';
             } else if (data.status == 1) {
                 statusBadge = 'Disetujui';
@@ -220,30 +225,30 @@
             // Bukti Lembur Logic (Only if Approved and Present)
             let buktiHtml = '';
             if (data.status == 1) {
-                let fotoIn = data.foto_lembur_in ? `<img src="/storage/uploads/lembur/${data.foto_lembur_in}" class="w-full h-32 object-cover rounded-lg border border-slate-200 shadow-sm">` : '<div class="h-32 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 text-[10px] border border-dashed border-slate-300">Belum Absen Masuk</div>';
-                let fotoOut = data.foto_lembur_out ? `<img src="/storage/uploads/lembur/${data.foto_lembur_out}" class="w-full h-32 object-cover rounded-lg border border-slate-200 shadow-sm">` : '<div class="h-32 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 text-[10px] border border-dashed border-slate-300">Belum Absen Pulang</div>';
+                let fotoIn = data.foto_lembur_in ? `<img src="/storage/uploads/lembur/${data.foto_lembur_in}" class="w-full h-32 object-cover rounded-lg border border-slate-200">` : '<div class="h-32 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 text-xs border border-dashed border-slate-300">Belum Absen Masuk</div>';
+                let fotoOut = data.foto_lembur_out ? `<img src="/storage/uploads/lembur/${data.foto_lembur_out}" class="w-full h-32 object-cover rounded-lg border border-slate-200">` : '<div class="h-32 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 text-xs border border-dashed border-slate-300">Belum Absen Pulang</div>';
 
                 buktiHtml = `
-                    <div class="grid grid-cols-2 gap-3 mt-4 text-left">
-                        <div>
-                            <span class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wide">Absen Masuk</span>
-                            ${fotoIn}
-                            <div class="mt-1.5 text-xs font-bold text-slate-600 flex items-center gap-1">
-                                <ion-icon name="time-outline" class="text-slate-400"></ion-icon> ${data.lembur_in ? data.lembur_in.substring(11, 16) : '--:--'}
-                            </div>
-                        </div>
-                        <div>
-                            <span class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wide">Absen Pulang</span>
-                            ${fotoOut}
-                            <div class="mt-1.5 text-xs font-bold text-slate-600 flex items-center gap-1">
-                                <ion-icon name="time-outline" class="text-slate-400"></ion-icon> ${data.lembur_out ? data.lembur_out.substring(11, 16) : '--:--'}
-                            </div>
-                        </div>
-                    </div>
-                `;
+                                                        <div class="grid grid-cols-2 gap-3 mt-4 text-left">
+                                                            <div>
+                                                                <span class="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wide">Absen Masuk</span>
+                                                                ${fotoIn}
+                                                                <div class="mt-1 text-xs font-medium text-slate-600">
+                                                                    <ion-icon name="time-outline" class="align-middle"></ion-icon> ${data.lembur_in ? data.lembur_in.substring(0, 5) : '--:--'}
+                                                                </div>
+                                                            </div>
+                                                            <div>
+                                                                <span class="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wide">Absen Pulang</span>
+                                                                ${fotoOut}
+                                                                <div class="mt-1 text-xs font-medium text-slate-600">
+                                                                    <ion-icon name="time-outline" class="align-middle"></ion-icon> ${data.lembur_out ? data.lembur_out.substring(0, 5) : '--:--'}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    `;
             }
 
-            // Safe time parsing
+            // Safe time parsing (Handle "Y-m-d H:i:s" or "H:i:s")
             let getJam = (str) => {
                 if (!str) return '--:--';
                 if (str.includes(' ')) return str.split(' ')[1].substring(0, 5);
@@ -253,7 +258,7 @@
             let lemburMulai = getJam(data.lembur_mulai);
             let lemburSelesai = getJam(data.lembur_selesai);
 
-            // Calculate duration safely
+            // Calculate duration safely (Format: 1j 30m)
             let durasi = '0j 0m';
             if (data.lembur_mulai && data.lembur_selesai) {
                 let start, end;
@@ -274,13 +279,19 @@
                 }
             }
 
-            // Status Badge HTML
-            let colorMap = {
-                'amber': 'bg-amber-100 text-amber-700 border-amber-200',
-                'emerald': 'bg-emerald-100 text-emerald-700 border-emerald-200',
-                'rose': 'bg-rose-100 text-rose-700 border-rose-200'
-            };
-            let badgeHtml = `<span class="px-2.5 py-0.5 rounded-full ${colorMap[statusColor]} text-xs font-bold border">${statusBadge}</span>`;
+            // Status Badge Logic
+            let approvalBadge = '';
+            if (data.status == '0') {
+                approvalBadge = '<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">Pending</span>';
+            } else if (data.status == '1') {
+                approvalBadge = '<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">Disetujui</span>';
+            } else if (data.status == '2') {
+                approvalBadge = '<span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200">Ditolak</span>';
+            }
+
+            // Status Styling Override
+            let bgClass = `bg-${statusColor}-50`;
+            let borderClass = `border-${statusColor}-100`;
 
             Swal.fire({
                 showCloseButton: false,
@@ -288,47 +299,47 @@
                 confirmButtonText: 'Tutup',
                 buttonsStyling: false,
                 html: `
-                    <div class="text-center">
-                        <div class="bg-${statusColor}-50 p-4 rounded-xl border border-${statusColor}-100 mb-4">
-                             <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-2">
-                                <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
-                            </div>
-                            <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">Lembur</h3>
-                            <div class="mt-2 mb-1">
-                                ${badgeHtml}
-                            </div>
-                            <p class="text-[11px] text-slate-500 mt-2 font-bold bg-white/60 py-1 rounded-lg inline-block px-3 uppercase tracking-wider">
-                                ${data.tanggal_indo}
-                            </p>
-                        </div>
+                                                <div class="text-center">
+                                                    <div class="${bgClass} p-4 rounded-xl border ${borderClass} mb-4">
+                                                         <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-2">
+                                                            <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
+                                                        </div>
+                                                        <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">Lembur</h3>
+                                                        <div class="mt-2 mb-1">
+                                                            ${approvalBadge}
+                                                        </div>
+                                                        <p class="text-sm text-slate-500 mt-2 font-medium bg-white/60 py-1 rounded-lg inline-block px-3">
+                                                            ${data.tanggal_indo}
+                                                        </p>
+                                                    </div>
 
-                        <div class="text-left space-y-3">
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
-                                <div>
-                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Jam Lembur</span>
-                                    <span class="text-sm font-bold text-slate-700 font-mono">
-                                        ${lemburMulai} - ${lemburSelesai}
-                                    </span>
-                                </div>
-                                <div class="text-right">
-                                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Durasi</span>
-                                     <span class="text-sm font-bold text-blue-600">
-                                        ${durasi}
-                                     </span>
-                                </div>
-                            </div>
+                                                    <div class="text-left space-y-3">
+                                                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
+                                                                    <div>
+                                                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Jam Lembur</span>
+                                                                        <span class="text-sm font-bold text-slate-700 font-mono">
+                                                                            ${lemburMulai} - ${lemburSelesai}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div class="text-right">
+                                                                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total</span>
+                                                                         <span class="text-sm font-bold text-blue-600">
+                                                                            ${durasi}
+                                                                         </span>
+                                                                    </div>
+                                                                </div>
 
-                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Keterangan Tugas</span>
-                                <p class="text-slate-700 text-sm font-medium leading-relaxed">
-                                    "${data.keterangan || '-'}"
-                                </p>
-                            </div>
-                        </div>
+                                                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Keterangan Tugas</span>
+                                                                    <p class="text-slate-700 text-sm font-medium leading-relaxed">
+                                                                        "${data.keterangan}"
+                                                                    </p>
+                                                                </div>
+                                                            </div>
 
-                        ${buktiHtml}
-                    </div>
-                `,
+                                                            ${buktiHtml}
+                                                        </div>
+                                                    `,
                 customClass: {
                     popup: 'rounded-2xl shadow-xl w-[90%] md:w-full md:max-w-md p-0 overflow-hidden',
                     htmlContainer: '!m-0 !px-4 !pt-4 !pb-0',
