@@ -68,7 +68,7 @@ class DashboardController extends Controller
                 ->where('presensi.nik', $userkaryawan->nik)
                 ->first();
 
-            $data['lembur'] = Lembur::where('nik', $userkaryawan->nik)->where('status', 1)
+            $data['lembur'] = Lembur::where('nik', $userkaryawan->nik)
                 ->whereRaw('MONTH(tanggal) = MONTH(?)', [$hari_ini])
                 ->whereRaw('YEAR(tanggal) = YEAR(?)', [$hari_ini])
                 ->orderBy('tanggal', 'desc')

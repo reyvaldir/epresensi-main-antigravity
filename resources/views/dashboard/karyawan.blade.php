@@ -438,7 +438,6 @@
                         </div>
                     </div>
                     </div>
-                </div>
             @endforeach
             @else
             <div class="text-center py-8">
@@ -448,6 +447,8 @@
                 <p class="text-sm text-slate-500">Belum ada data presensi bulan ini.</p>
             </div>
             @endif
+            <!-- Internal Spacer for Presensi -->
+            <div class="h-24"></div>
     </div>
 
     <!-- Lembur Content -->
@@ -457,48 +458,97 @@
         x-transition:enter-end="opacity-100 translate-y-0">
         @if (isset($lembur) && count($lembur) > 0)
             @foreach ($lembur as $d)
-                <a href="{{ route('lembur.createpresensi', Crypt::encrypt($d->id)) }}" class="block">
-                    <div
-                        class="bg-white rounded-xl p-4 border border-slate-100 shadow-sm flex items-center justify-between hover:bg-slate-50 transition-colors">
-                        <div class="flex items-center gap-3">
-                            <div class="h-10 w-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
-                                <ion-icon name="timer-outline" class="text-xl"></ion-icon>
+                @php
+                    $isApproved = $d->status == 1;
+                    $isPending = $d->status == 0;
+                    $isRejected = $d->status == 2;
+                    
+                    // Status Badge Logic
+                    $statusBadge = '';
+                    if ($isPending) {
+                        $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">Pending</span>';
+                    } elseif ($isApproved) {
+                        $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">Disetujui</span>';
+                    }
+                    
+                    // Add indo formatted date to data object
+                     $d->tanggal_indo = DateToIndo($d->tanggal);
+                @endphp
+
+                @if ($isApproved)
+                    <div onclick="showDetailLembur(this)" 
+                        data-detail="{{ json_encode($d) }}" 
+                        data-action-url="{{ route('lembur.createpresensi', Crypt::encrypt($d->id)) }}"
+                        class="block cursor-pointer relative group">
+                        
+                        <!-- Floating Camera Button for Approved Overtime -->
+                        <a href="{{ route('lembur.createpresensi', Crypt::encrypt($d->id)) }}" 
+                           onclick="event.stopPropagation()"
+                           class="absolute top-4 right-4 z-20 flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 active:scale-95 transition-all shadow-sm border border-blue-100">
+                            <ion-icon name="camera-outline" class="text-xl"></ion-icon>
+                        </a>
+                @else
+                    <div onclick="showDetailLembur(this)" 
+                        data-detail="{{ json_encode($d) }}" 
+                        class="block cursor-pointer">
+                @endif
+                    <div class="relative bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all group overflow-hidden">
+                        <div class="flex items-start gap-4 pr-1">
+                            <!-- Icon -->
+                            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+                                <ion-icon name="time-outline" class="text-2xl"></ion-icon>
                             </div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-sm">{{ DateToIndo($d->tanggal) }}</h4>
-                                <p class="text-xs text-slate-500 line-clamp-1">{{ $d->keterangan }}</p>
-                                <div class="flex items-center gap-2 mt-1">
-                                    @if ($d->lembur_in != null)
-                                        <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded">
-                                            IN: {{ date('H:i', strtotime($d->lembur_in)) }}
-                                        </span>
-                                    @else
-                                        <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
-                                            Belum Absen
-                                        </span>
-                                    @endif
-                                    <span class="text-[10px] text-slate-300">|</span>
-                                    @if ($d->lembur_out != null)
-                                        <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded">
-                                            OUT: {{ date('H:i', strtotime($d->lembur_out)) }}
-                                        </span>
-                                    @else
-                                        <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded">
-                                            Belum Absen
-                                        </span>
-                                    @endif
+
+                            <!-- Content -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 class="font-bold text-slate-800 text-base truncate">Lembur</h3>
+                                    {!! $statusBadge !!}
                                 </div>
+
+                                <p class="text-xs text-slate-500 font-medium flex items-center gap-1 mb-1.5 leading-tight">
+                                    <ion-icon name="calendar-outline" class="text-slate-400"></ion-icon>
+                                    {{ DateToIndo($d->tanggal) }} <span class="mx-0.5">•</span>
+                                    {{ date('H:i', strtotime($d->lembur_mulai)) }} - {{ date('H:i', strtotime($d->lembur_selesai)) }}
+                                </p>
+
+                                @if($d->keterangan)
+                                    <div class="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
+                                        <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">"{{ $d->keterangan }}"</p>
+                                    </div>
+                                @endif
+                                
+                                @if ($isApproved)
+                                    <div class="flex items-center gap-2 mt-2">
+                                        @if ($d->lembur_in != null)
+                                            <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100 font-bold">
+                                                IN: {{ date('H:i', strtotime($d->lembur_in)) }}
+                                            </span>
+                                        @else
+                                            <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded border border-rose-100 font-bold">
+                                                Belum Absen
+                                            </span>
+                                        @endif
+                                        <span class="text-[10px] text-slate-300">|</span>
+                                        @if ($d->lembur_out != null)
+                                            <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100 font-bold">
+                                                OUT: {{ date('H:i', strtotime($d->lembur_out)) }}
+                                            </span>
+                                        @else
+                                            <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded border border-rose-100 font-bold">
+                                                Belum Absen
+                                            </span>
+                                        @endif
+                                    </div>
+                                @endif
                             </div>
-                        </div>
-                        <div class="text-right pl-2">
-                            <span class="block text-[10px] font-bold text-slate-500 mb-1">Jadwal</span>
-                            <span class="text-xs font-medium text-slate-700">
-                                {{ date('H:i', strtotime($d->lembur_mulai)) }} -
-                                {{ date('H:i', strtotime($d->lembur_selesai)) }}
-                            </span>
                         </div>
                     </div>
-                </a>
+                @if ($isApproved)
+                    </a>
+                @else
+                    </div>
+                @endif
             @endforeach
         @else
             <div class="text-center py-8">
@@ -508,6 +558,8 @@
                 <p class="text-sm text-slate-500">Belum ada data lembur bulan ini.</p>
             </div>
         @endif
+        <!-- Internal Spacer for Lembur -->
+        <div class="h-24"></div>
     </div>
     </div>
 
@@ -712,12 +764,15 @@
                     </div>
                     ${contentHtml}
                 `,
-            showConfirmButton: false,
-            showCloseButton: true,
+            showConfirmButton: true,
+            showCloseButton: false,
+            confirmButtonText: 'Tutup',
+            buttonsStyling: false,
             background: '#ffffff',
             customClass: {
                 popup: 'rounded-2xl shadow-xl w-[90%] md:w-full md:max-w-3xl p-0 overflow-hidden',
-                htmlContainer: '!m-0 !p-5'
+                htmlContainer: '!m-0 !px-4 !pt-4 !pb-0',
+                confirmButton: 'w-full bg-slate-100 text-slate-600 font-bold py-3.5 rounded-b-2xl border-t border-slate-100 hover:bg-slate-200 transition-all active:scale-[0.98]'
             }
         });
     }
@@ -845,4 +900,164 @@
             }
         });
     }
+
+        function showDetailLembur(element) {
+            let data = JSON.parse($(element).attr('data-detail'));
+            let statusBadge, statusColor, iconName;
+            
+            // Logic status styling
+            // Status Logic
+            if (data.status == 0) {
+                statusBadge = 'Pending';
+                statusColor = 'blue';
+                iconName = 'time-outline';
+            } else if (data.status == 1) {
+                statusBadge = 'Disetujui';
+                statusColor = 'emerald';
+                iconName = 'checkmark-circle-outline';
+            } else if (data.status == 2) {
+                statusBadge = 'Ditolak';
+                statusColor = 'rose';
+                iconName = 'close-circle-outline';
+            }
+
+            // Bukti Lembur Logic (Only if Approved and Present)
+            let buktiHtml = '';
+            if (data.status == 1) {
+                let fotoIn = data.foto_lembur_in ? `<img src="/storage/uploads/lembur/${data.foto_lembur_in}" class="w-full h-32 object-cover rounded-lg border border-slate-200">` : '<div class="h-32 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 text-xs border border-dashed border-slate-300">Belum Absen Masuk</div>';
+                let fotoOut = data.foto_lembur_out ? `<img src="/storage/uploads/lembur/${data.foto_lembur_out}" class="w-full h-32 object-cover rounded-lg border border-slate-200">` : '<div class="h-32 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 text-xs border border-dashed border-slate-300">Belum Absen Pulang</div>';
+                
+                buktiHtml = `
+                    <div class="grid grid-cols-2 gap-3 mt-4 text-left">
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wide">Absen Masuk</span>
+                            ${fotoIn}
+                            <div class="mt-1 text-xs font-medium text-slate-600">
+                                <ion-icon name="time-outline" class="align-middle"></ion-icon> ${data.lembur_in ? data.lembur_in.substring(0,5) : '--:--'}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-500 block mb-1 uppercase tracking-wide">Absen Pulang</span>
+                            ${fotoOut}
+                            <div class="mt-1 text-xs font-medium text-slate-600">
+                                <ion-icon name="time-outline" class="align-middle"></ion-icon> ${data.lembur_out ? data.lembur_out.substring(0,5) : '--:--'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Safe time parsing (Handle "Y-m-d H:i:s" or "H:i:s")
+            let getJam = (str) => {
+                if (!str) return '--:--';
+                if (str.includes(' ')) return str.split(' ')[1].substring(0, 5);
+                return str.substring(0, 5);
+            };
+
+            let lemburMulai = getJam(data.lembur_mulai);
+            let lemburSelesai = getJam(data.lembur_selesai);
+            
+            // Calculate duration safely (Format: 1j 30m)
+            let durasi = '0j 0m';
+            if (data.lembur_mulai && data.lembur_selesai) {
+                let start, end;
+                if (data.lembur_mulai.includes(' ') && data.lembur_selesai.includes(' ')) {
+                     start = new Date(data.lembur_mulai);
+                     end = new Date(data.lembur_selesai);
+                } else {
+                     start = new Date("2000-01-01 " + data.lembur_mulai);
+                     end = new Date("2000-01-01 " + data.lembur_selesai);
+                }
+                
+                let diffMs = end - start;
+                if (!isNaN(diffMs) && diffMs > 0) {
+                    let diffMins = Math.floor(diffMs / 1000 / 60);
+                    let hours = Math.floor(diffMins / 60);
+                    let mins = diffMins % 60;
+                    durasi = `${hours}j ${mins}m`;
+                }
+            }
+
+             // Status Badge Logic
+             let approvalBadge = '';
+             if (data.status == '0') {
+                 approvalBadge = '<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-bold border border-amber-200">Pending</span>';
+             } else if (data.status == '1') {
+                 approvalBadge = '<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">Disetujui</span>';
+             } else if (data.status == '2') {
+                 approvalBadge = '<span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200">Ditolak</span>';
+             }
+
+             // Status Styling Override
+             let bgClass = `bg-${statusColor}-50`;
+             let borderClass = `border-${statusColor}-100`;
+
+            Swal.fire({
+                showCloseButton: false,
+                showConfirmButton: true,
+                confirmButtonText: 'Tutup',
+                buttonsStyling: false,
+                html: `
+                    <div class="text-center">
+                        <div class="${bgClass} p-4 rounded-xl border ${borderClass} mb-4">
+                             <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-${statusColor}-100 text-${statusColor}-600 mb-2">
+                                <ion-icon name="${iconName}" class="text-2xl"></ion-icon>
+                            </div>
+                            <h3 class="text-lg font-bold text-${statusColor}-700 leading-tight">Lembur</h3>
+                            <div class="mt-2 mb-1">
+                                ${approvalBadge}
+                            </div>
+                            <p class="text-sm text-slate-500 mt-2 font-medium bg-white/60 py-1 rounded-lg inline-block px-3">
+                                ${data.tanggal_indo}
+                            </p>
+                        </div>
+
+                        <div class="text-left space-y-3">
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Jam Lembur</span>
+                                    <span class="text-sm font-bold text-slate-700 font-mono">
+                                        ${lemburMulai} - ${lemburSelesai}
+                                    </span>
+                                </div>
+                                <div class="text-right">
+                                     <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total</span>
+                                     <span class="text-sm font-bold text-blue-600">
+                                        ${durasi}
+                                     </span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Keterangan Tugas</span>
+                                <p class="text-slate-700 text-sm font-medium leading-relaxed">
+                                    "${data.keterangan}"
+                                </p>
+                            </div>
+                        </div>
+
+                        ${buktiHtml}
+                        
+                        ${$(element).attr('data-action-url') ? `
+                            <div class="mt-5">
+                                <a href="${$(element).attr('data-action-url')}" class="flex items-center justify-center w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/30 transition-all active:scale-95">
+                                    <ion-icon name="camera-outline" class="text-xl mr-2"></ion-icon>
+                                    Lakukan Presensi
+                                </a>
+                            </div>
+                        ` : ''}
+                    </div>
+                `,
+                customClass: {
+                    popup: 'rounded-2xl shadow-xl w-[90%] md:w-full md:max-w-md p-0 overflow-hidden',
+                    htmlContainer: '!m-0 !px-4 !pt-4 !pb-0',
+                    confirmButton: 'w-full bg-slate-100 text-slate-600 font-bold py-3.5 rounded-b-2xl border-t border-slate-100 hover:bg-slate-200 transition-all active:scale-[0.98]'
+                }
+            });
+        }
+
+        // Helper not needed inside anymore, but keeping if used elsewhere found
+        function calculateDuration(start, end) {
+             return '0';
+        }
 </script>

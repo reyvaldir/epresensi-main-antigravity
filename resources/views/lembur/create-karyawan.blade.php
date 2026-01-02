@@ -1,130 +1,204 @@
-@extends('layouts.mobile.app')
-@section('content')
-    <style>
-        /* Tambahkan style untuk header dan content */
-        #header-section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-        }
+@extends('layouts.mobile_modern')
 
-        #content-section {
-            margin-top: 70px;
-            padding-top: 5px;
-            position: relative;
-            z-index: 1;
-        }
-    </style>
-    <div id="header-section">
-        <div class="appHeader bg-primary text-light">
-            <div class="left">
-                <a href="{{ route('dashboard.index') }}" class="headerButton goBack">
-                    <ion-icon name="chevron-back-outline"></ion-icon>
-                </a>
-            </div>
-            <div class="pageTitle">Ajukan Lembur</div>
-            <div class="right"></div>
+@section('content')
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6 mt-2">
+        <div class="flex items-center gap-3">
+            <a href="{{ route('lembur.index') }}"
+                class="flex items-center justify-center h-10 w-10 bg-white rounded-full shadow-sm text-slate-500 border border-slate-100 hover:bg-slate-50 transition-colors">
+                <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Ajukan Lembur</h1>
         </div>
     </div>
-    <div id="content-section">
-        <div class="row" style="margin-top: 30px">
-            <div class="col pl-3 pr-3">
-                <form action="{{ route('lembur.store') }}" method="POST" id="formLembur" autocomplete="off">
-                    @csrf
 
-                    <input type="text" class="feedback-input dari" name="dari" placeholder="Dari" id="datePicker" />
-                    <input type="text" class="feedback-input sampai" name="sampai" placeholder="Sampai" id="datePicker2" />
-                    <textarea placeholder="Keterangan" class="feedback-input keterangan" name="keterangan" style="height: 100px"></textarea>
-                    <button class="btn btn-primary w-100" id="btnSimpan"><i class="ti ti-send me-1"></i>Buat Lembur</button>
-                </form>
+    <!-- Form Section -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+        <form action="{{ route('lembur.store') }}" method="POST" id="formLembur" autocomplete="off" class="space-y-4">
+            @csrf
+            
+            <!-- Hidden Inputs for Submission -->
+            <input type="hidden" name="dari" id="dari">
+            <input type="hidden" name="sampai" id="sampai">
+
+            <!-- Dari Section -->
+            <div>
+                <label class="block text-sm font-bold text-slate-600 mb-2 ml-1">Dari Tanggal & Jam</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Date Input -->
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <ion-icon name="calendar-outline" class="text-lg"></ion-icon>
+                        </div>
+                        <input type="text" id="dari_tgl" readonly
+                            class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-800 font-medium transition-all cursor-pointer placeholder:text-slate-400"
+                            placeholder="Tanggal">
+                    </div>
+                    <!-- Time Input -->
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <ion-icon name="time-outline" class="text-lg"></ion-icon>
+                        </div>
+                        <input type="text" id="dari_jam" readonly
+                            class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-800 font-medium transition-all cursor-pointer placeholder:text-slate-400"
+                            placeholder="Jam">
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <!-- Sampai Section -->
+            <div>
+                <label class="block text-sm font-bold text-slate-600 mb-2 ml-1">Sampai Tanggal & Jam</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Date Input -->
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <ion-icon name="calendar-outline" class="text-lg"></ion-icon>
+                        </div>
+                        <input type="text" id="sampai_tgl" readonly
+                            class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-800 font-medium transition-all cursor-pointer placeholder:text-slate-400"
+                            placeholder="Tanggal">
+                    </div>
+                    <!-- Time Input -->
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <ion-icon name="time-outline" class="text-lg"></ion-icon>
+                        </div>
+                        <input type="text" id="sampai_jam" readonly
+                            class="w-full pl-10 pr-3 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-800 font-medium transition-all cursor-pointer placeholder:text-slate-400"
+                            placeholder="Jam">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keterangan -->
+            <div>
+                <label class="block text-sm font-bold text-slate-600 mb-1.5 ml-1">Keterangan / Tugas</label>
+                <div class="relative">
+                    <textarea name="keterangan" id="keterangan" rows="4"
+                        class="keterangan w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-800 font-medium transition-all placeholder:text-slate-400 leading-relaxed"
+                        placeholder="Contoh: Menyelesaikan laporan bulanan..."></textarea>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="btnSimpan"
+                class="w-full bg-primary text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-95 transition-transform hover:bg-blue-700 mt-4">
+                <ion-icon name="paper-plane-outline" class="text-xl"></ion-icon>
+                <span>Kirim Pengajuan</span>
+            </button>
+        </form>
     </div>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/rolldate@3.1.3/dist/rolldate.min.js"></script>
+@endpush
+
 @push('myscript')
     <script>
-        var lang = {
-            title: 'Pilih Tanggal',
-            cancel: 'Batal',
-            confirm: 'Set',
-            year: '',
-            month: '',
-            day: '',
-            hour: '',
-            min: '',
-            sec: ''
-        };
+        // Initialize Rolldate for Dates
         new Rolldate({
-            el: '#datePicker',
-            format: 'YYYY-MM-DD hh:mm',
-            beginYear: 2000,
-            endYear: 2100,
-            lang: lang,
-            time: true,
+            el: '#dari_tgl',
+            format: 'YYYY-MM-DD',
+            lang: { 
+                title: 'Pilih Tanggal', 
+                cancel: 'Batal', 
+                confirm: 'Set',
+                year: '',
+                month: '',
+                day: ''
+            }
+        });
+        new Rolldate({
+            el: '#sampai_tgl',
+            format: 'YYYY-MM-DD',
+            lang: { 
+                title: 'Pilih Tanggal', 
+                cancel: 'Batal', 
+                confirm: 'Set',
+                year: '',
+                month: '',
+                day: ''
+            }
         });
 
+        // Initialize Rolldate for Times
         new Rolldate({
-            el: '#datePicker2',
-            format: 'YYYY-MM-DD hh:mm',
-            beginYear: 2000,
-            endYear: 2100,
-            lang: lang,
-            time: true,
-
+            el: '#dari_jam',
+            format: 'hh:mm',
+            lang: { 
+                title: 'Pilih Jam', 
+                cancel: 'Batal', 
+                confirm: 'Set',
+                hour: '',
+                min: ''
+            }
+        });
+        new Rolldate({
+            el: '#sampai_jam',
+            format: 'hh:mm',
+            lang: { 
+                title: 'Pilih Jam', 
+                cancel: 'Batal', 
+                confirm: 'Set',
+                hour: '',
+                min: ''
+            }
         });
 
-
-        $("#formLembur").submit(function(e) {
-            let dari = $('.dari').val();
-            let sampai = $('.sampai').val();
-            let kode_cuti = $('.kode_cuti').val();
-            let jml_hari = $('.jml_hari').val();
+        $("#formLembur").submit(function (e) {
+            let dari_tgl = $('#dari_tgl').val();
+            let dari_jam = $('#dari_jam').val();
+            let sampai_tgl = $('#sampai_tgl').val();
+            let sampai_jam = $('#sampai_jam').val();
             let keterangan = $('.keterangan').val();
 
-            if (dari == "" && sampai == "") {
+            // Combine Date and Time
+            let dari = dari_tgl + ' ' + dari_jam;
+            let sampai = sampai_tgl + ' ' + sampai_jam;
+
+            // Set hidden inputs
+            $('#dari').val(dari);
+            $('#sampai').val(sampai);
+
+            if (dari_tgl == "" || dari_jam == "" || sampai_tgl == "" || sampai_jam == "") {
                 Swal.fire({
                     title: "Oops!",
-                    text: 'Periode Izin Harus Diisi !',
+                    text: 'Tanggal dan Jam Mulai/Selesai Harus Diisi Lengkap!',
                     icon: "warning",
-                    showConfirmButton: true,
-                    didClose: () => {
-                        $('.dari').focus();
-                    }
-                });
-                return false;
-            } else if (sampai < dari) {
-                Swal.fire({
-                    title: "Oops!",
-                    text: 'Periode Izin Harus Sesuai !',
-                    icon: "warning",
-                    showConfirmButton: true,
-                    didClose: () => {
-                        form.find("#sampai").focus();
-                    }
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold'
+                    },
+                    buttonsStyling: false
                 });
                 return false;
             } else if (keterangan == '') {
                 Swal.fire({
-                    title: "Oops!",
-                    text: 'Keterangan Harus Diisi !',
+                    title: "Keterangan Kosong",
+                    text: 'Mohon isi keterangan tugas lembur Anda!',
                     icon: "warning",
-                    showConfirmButton: true,
-                    didClose: () => {
-                        $('.keterangan').focus();
-                    }
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold'
+                    },
+                    buttonsStyling: false
                 });
                 return false;
             }
-        });
 
-        function buttonDisabled() {
+            // Disable button
             $("#btnSimpan").prop('disabled', true);
             $("#btnSimpan").html(`
-                <div class="spinner-border spinner-border-sm text-white mr-2" role="status">
-                </div>
-                Sedang Mengirim..`);
-        }
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Mengirim...
+                    `);
+        });
     </script>
 @endpush

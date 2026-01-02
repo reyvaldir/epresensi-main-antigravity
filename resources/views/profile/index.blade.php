@@ -152,14 +152,17 @@
             Swal.fire({
                 imageUrl: src,
                 imageAlt: 'Profile Picture',
-                showConfirmButton: false,
-                showCloseButton: true,
+                showConfirmButton: true,
+                showCloseButton: false,
+                confirmButtonText: 'Tutup',
+                buttonsStyling: false,
                 background: 'transparent',
                 backdrop: `rgba(0,0,0,0.8)`,
                 heightAuto: false,
                 scrollbarPadding: false,
                 customClass: {
-                    image: 'rounded-xl shadow-2xl max-h-[80vh] w-auto'
+                    image: 'rounded-xl shadow-2xl max-h-[80vh] w-auto',
+                    confirmButton: 'mt-4 px-6 py-2 bg-white/20 text-white font-bold rounded-full border border-white/30 hover:bg-white/30 transition-all backdrop-blur-sm'
                 }
             });
         }

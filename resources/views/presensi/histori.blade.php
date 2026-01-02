@@ -304,7 +304,7 @@
                     extraHtml = `
                             <div class="mt-3 text-left">
                                 <span class="text-xs font-bold text-slate-500 block mb-1">Surat Dokter (SID)</span>
-                                <div onclick="Swal.fire({imageUrl: '/storage/uploads/sid/${data.sakit_sid}', showCloseButton:true, showConfirmButton:false})" class="cursor-pointer relative group overflow-hidden rounded-lg border border-slate-200">
+                                <div onclick="Swal.fire({imageUrl: '/storage/uploads/sid/${data.sakit_sid}', showCloseButton:false, showConfirmButton:true, confirmButtonText:'Tutup', buttonsStyling:false, customClass: { image: 'rounded-xl shadow-2xl max-h-[80vh] w-auto', confirmButton: 'mt-4 px-6 py-2 bg-white/20 text-white font-bold rounded-full border border-white/30 hover:bg-white/30 transition-all backdrop-blur-sm'}})" class="cursor-pointer relative group overflow-hidden rounded-lg border border-slate-200">
                                     <img src="/storage/uploads/sid/${data.sakit_sid}" class="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-300">
                                     <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                         <ion-icon name="eye-outline" class="text-white text-2xl"></ion-icon>
@@ -370,11 +370,14 @@
                     </div>
                     ${contentHtml}
                 `,
-            showCloseButton: true,
-            showConfirmButton: false,
+            showCloseButton: false,
+            showConfirmButton: true,
+            confirmButtonText: 'Tutup',
+            buttonsStyling: false,
             customClass: {
                 popup: 'rounded-2xl shadow-xl w-[90%] md:w-full md:max-w-3xl p-0 overflow-hidden',
-                htmlContainer: '!m-0 !p-5'
+                htmlContainer: '!m-0 !px-4 !pt-4 !pb-0',
+                confirmButton: 'w-full bg-slate-100 text-slate-600 font-bold py-3.5 rounded-b-2xl border-t border-slate-100 hover:bg-slate-200 transition-all active:scale-[0.98]'
             }
         });
     }
@@ -405,12 +408,17 @@
                         </div>
                         <div class="italic text-center">Radius yang diperbolehkan: ${radius} meter</div>
                    </div>`,
-            showConfirmButton: true,
+             showConfirmButton: true,
             confirmButtonText: 'Tutup',
-            confirmButtonColor: '#2563EB',
+            buttonsStyling: false,
             width: '90%',
             scrollbarPadding: false,
             heightAuto: false,
+            customClass: {
+                 popup: 'rounded-2xl shadow-xl w-[90%] md:w-full md:max-w-3xl p-0 overflow-hidden',
+                 htmlContainer: '!m-0 !px-4 !pt-4 !pb-0',
+                 confirmButton: 'w-full bg-slate-100 text-slate-600 font-bold py-3.5 rounded-b-2xl border-t border-slate-100 hover:bg-slate-200 transition-all active:scale-[0.98]'
+            },
             didOpen: () => {
                 if (mapDetail) {
                     mapDetail.remove();
