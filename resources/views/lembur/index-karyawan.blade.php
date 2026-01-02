@@ -55,7 +55,7 @@
                 } elseif ($d->status == 1) {
                     $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold border border-emerald-200">Disetujui</span>';
                 } elseif ($d->status == 2) {
-                    $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-700 text-xs font-bold border border-red-200">Ditolak</span>';
+                    $statusBadge = '<span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-xs font-bold border border-rose-200">Ditolak</span>';
                 }
 
                 // Add indo formatted date to data object
@@ -105,6 +105,30 @@
                         @if($d->keterangan)
                             <div class="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
                                 <p class="text-xs text-slate-600 leading-relaxed line-clamp-2">"{{ $d->keterangan }}"</p>
+                            </div>
+                        @endif
+
+                        @if ($d->status == 1)
+                            <div class="flex items-center gap-2 mt-2">
+                                @if ($d->lembur_in != null)
+                                    <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100 font-bold">
+                                        IN: {{ date('H:i', strtotime($d->lembur_in)) }}
+                                    </span>
+                                @else
+                                    <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded border border-rose-100 font-bold">
+                                        Belum Absen
+                                    </span>
+                                @endif
+                                <span class="text-[10px] text-slate-300">|</span>
+                                @if ($d->lembur_out != null)
+                                    <span class="text-[10px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100 font-bold">
+                                        OUT: {{ date('H:i', strtotime($d->lembur_out)) }}
+                                    </span>
+                                @else
+                                    <span class="text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded border border-rose-100 font-bold">
+                                        Belum Absen
+                                    </span>
+                                @endif
                             </div>
                         @endif
                     </div>
