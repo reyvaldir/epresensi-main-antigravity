@@ -18,28 +18,32 @@
             <div class="grid grid-cols-2 gap-3">
                 <!-- Date Range Picker -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1 ml-1">Dari Tanggal</label>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1">Dari Tanggal</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <ion-icon name="calendar-outline"></ion-icon>
                         </div>
-                        <input type="date" name="dari" value="{{ Request('dari') }}"
-                            class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-700 transition-all font-medium">
+                        <input type="text" name="dari" id="datePicker" readonly
+                            value="{{ Request('dari') }}"
+                            class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-700 font-medium transition-all cursor-pointer"
+                            placeholder="Pilih Tanggal">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1 ml-1">Sampai Tanggal</label>
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1">Sampai Tanggal</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                             <ion-icon name="calendar-outline"></ion-icon>
                         </div>
-                        <input type="date" name="sampai" value="{{ Request('sampai') }}"
-                            class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-700 transition-all font-medium">
+                        <input type="text" name="sampai" id="datePicker2" readonly
+                            value="{{ Request('sampai') }}"
+                            class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-700 font-medium transition-all cursor-pointer"
+                            placeholder="Pilih Tanggal">
                     </div>
                 </div>
             </div>
             <button type="submit"
-                class="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-95 transition-transform hover:bg-blue-700 mt-2">
+                class="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-95 transition-transform hover:bg-blue-700">
                 <ion-icon name="search-outline" class="text-lg"></ion-icon>
                 <span>Cari Data</span>
             </button>
@@ -210,8 +214,20 @@
     </div>
 @endsection
 
+@push('scripts')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/rolldate@3.1.3/dist/rolldate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/rolldate@3.1.3/dist/rolldate.min.js"></script>
+@endpush
+
 @push('myscript')
 <script>
+    // Initialize Rolldate for date filters
+    $(function() {
+        var lang = { title: 'Pilih Tanggal', cancel: 'Batal', confirm: 'Set', year: '', month: '', day: '' };
+        new Rolldate({ el: '#datePicker', format: 'YYYY-MM-DD', beginYear: 2020, endYear: 2100, lang: lang });
+        new Rolldate({ el: '#datePicker2', format: 'YYYY-MM-DD', beginYear: 2020, endYear: 2100, lang: lang });
+    });
+
     function showHistoryDetail(element) {
         const data = JSON.parse(element.getAttribute('data-detail'));
         const dateIndo = element.getAttribute('data-date');
