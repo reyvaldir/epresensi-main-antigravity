@@ -1,30 +1,8 @@
-@extends('layouts.mobile.app')
+@extends('layouts.mobile_modern')
+
 @section('content')
     <style>
-        body {
-
-            margin: 0;
-            padding: 15px;
-            font-size: 11px;
-            line-height: 1.3;
-        }
-
-        #content-section {
-            margin-top: 90px;
-            padding: 16px 8px 8px 8px;
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            background: var(--md-background);
-        }
-
-        .container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-        }
-
+        /* Legacy Slip Styles */
         .slip-struk {
             width: 100%;
             background: white;
@@ -33,7 +11,14 @@
             padding: 12px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             page-break-inside: avoid;
-            margin-top: 50px;
+            margin-bottom: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: 11px;
+            line-height: 1.3;
+            color: #1e293b;
         }
 
         .header {
@@ -145,52 +130,83 @@
         }
 
         @media print {
-            body {
+            @page {
                 margin: 0;
-                padding: 10px;
-                background: white;
+                size: auto;
+            }
+
+            body {
+                background: white !important;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Hide Bottom Navigation from Layout */
+            nav.fixed.bottom-0 {
+                display: none !important;
+            }
+
+            .no-print {
+                display: none !important;
             }
 
             .slip-struk {
                 box-shadow: none;
                 border: 1px solid #000;
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                page-break-after: always;
+            }
+
+            /* Resets for print */
+            #content-section {
+                margin: 0 !important;
+                padding: 0 !important;
             }
         }
     </style>
-    <div id="header-section">
-        <div class="appHeader bg-primary text-light">
-            <div class="left">
-                <a href="{{ route('dashboard.index') }}" class="headerButton goBack">
-                    <ion-icon name="chevron-back-outline"></ion-icon>
-                </a>
-            </div>
-            <div class="pageTitle">Slip Gaji</div>
-            <div class="right"></div>
+
+    <!-- Header (Modern) -->
+    <div class="flex items-center justify-between mb-5 mt-2 no-print">
+        <div class="flex items-center gap-3">
+            <a href="javascript:history.back()"
+                class="flex items-center justify-center h-10 w-10 bg-white rounded-full shadow-sm text-slate-500 border border-slate-100 hover:bg-slate-50 transition-colors">
+                <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Cetak Slip Gaji</h1>
         </div>
+
     </div>
-    <div id="content-section" style="margin-top: 30px;">
+
+    <!-- Content (Standard Padding) -->
+    <div class="pb-10">
         @foreach ($laporan_presensi as $d)
             @php
                 $tanggal_presensi = $periode_dari;
                 $total_denda = 0;
                 $total_potongan_jam = 0;
                 $total_tunjangan = 0;
+                $total_jam_lembur = 0;
+
+                // Kalkulasi tunjangan
+                foreach ($jenis_tunjangan as $j) {
+                    $total_tunjangan += $d[$j->kode_jenis_tunjangan];
+                }
+
+                $bruto = $d['gaji_pokok'] + $total_tunjangan;
 
                 // Kalkulasi upah per jam
                 $upah_perjam = $d['gaji_pokok'] / $generalsetting->total_jam_bulan;
-            @endphp
 
-            {{-- Proses kalkulasi denda dan potongan jam --}}
-            @while (strtotime($tanggal_presensi) <= strtotime($periode_sampai))
-                @php
+                while (strtotime($tanggal_presensi) <= strtotime($periode_sampai)) {
                     $denda = 0;
                     $potongan_jam = 0;
                     $search = [
                         'nik' => $d['nik'],
                         'tanggal' => $tanggal_presensi,
                     ];
-                    $ceklibur = ceklibur($datalibur, $search);
-                    $ceklembur = ceklembur($datalembur, $search);
+                    $ceklembur = ceklembur($datalembur, $search); // Asumsi helper available
                     $lembur = hitungLembur($ceklembur);
                     if (!empty($ceklembur)) {
                         $jml_jam_lembur = $lembur;
@@ -198,11 +214,8 @@
                         $jml_jam_lembur = 0;
                     }
 
-                @endphp
-
-                @if (isset($d[$tanggal_presensi]))
-                    @if ($d[$tanggal_presensi]['status'] == 'h')
-                        @php
+                    if (isset($d[$tanggal_presensi])) {
+                        if ($d[$tanggal_presensi]['status'] == 'h') {
                             $jam_masuk = $tanggal_presensi . ' ' . $d[$tanggal_presensi]['jam_masuk'];
                             $terlambat = hitungjamterlambat($d[$tanggal_presensi]['jam_in'], $jam_masuk);
 
@@ -213,8 +226,8 @@
                                 } else {
                                     $potongan_jam_terlambat =
                                         $terlambat['desimal_terlambat'] > $d[$tanggal_presensi]['total_jam']
-                                            ? $d[$tanggal_presensi]['total_jam']
-                                            : $terlambat['desimal_terlambat'];
+                                        ? $d[$tanggal_presensi]['total_jam']
+                                        : $terlambat['desimal_terlambat'];
                                     $denda = 0;
                                 }
                             } else {
@@ -234,288 +247,176 @@
                             $pulangcepat = $pulangcepat > $d[$tanggal_presensi]['total_jam'] ? $d[$tanggal_presensi]['total_jam'] : $pulangcepat;
                             $potongan_tidak_absen_masuk_atau_pulang =
                                 empty($d[$tanggal_presensi]['jam_out']) || empty($d[$tanggal_presensi]['jam_in'])
-                                    ? $d[$tanggal_presensi]['total_jam']
-                                    : 0;
+                                ? $d[$tanggal_presensi]['total_jam']
+                                : 0;
                             $potongan_jam =
                                 $potongan_tidak_absen_masuk_atau_pulang == 0
-                                    ? $pulangcepat + $potongan_jam_terlambat
-                                    : $potongan_tidak_absen_masuk_atau_pulang;
-                        @endphp
-                    @elseif($d[$tanggal_presensi]['status'] == 'i')
-                        @php
+                                ? $pulangcepat + $potongan_jam_terlambat
+                                : $potongan_tidak_absen_masuk_atau_pulang;
+                        } elseif ($d[$tanggal_presensi]['status'] == 'i') {
                             $potongan_jam = $d[$tanggal_presensi]['total_jam'];
-                        @endphp
-                    @elseif($d[$tanggal_presensi]['status'] == 'a')
-                        @php
+                        } elseif ($d[$tanggal_presensi]['status'] == 'a') {
                             $potongan_jam = $d[$tanggal_presensi]['total_jam'];
-                        @endphp
+                        }
+                    }
+
+                    $total_denda += $denda;
+                    $total_potongan_jam += $potongan_jam;
+                    $total_jam_lembur += $jml_jam_lembur;
+                    $tanggal_presensi = date('Y-m-d', strtotime('+1 day', strtotime($tanggal_presensi)));
+                }
+
+                $jumlah_potongan_jam = ROUND($upah_perjam) * $total_potongan_jam;
+                $total_potongan = ROUND($jumlah_potongan_jam) + $total_denda + $d['bpjs_kesehatan'] + $d['bpjs_tenagakerja'];
+                // $gaji_bersih = $d['gaji_pokok'] + $total_tunjangan - $total_potongan + $d['penambah'] - $d['pengurang'];
+            @endphp
+
+            <div class="slip-struk">
+                <!-- Header -->
+                <div class="header">
+                    <div class="company-name">{{ $generalsetting->nama_perusahaan }}</div>
+                    <div class="slip-title">SLIP GAJI</div>
+                    <div class="periode">{{ date('d/m/Y', strtotime($periode_dari)) }} -
+                        {{ date('d/m/Y', strtotime($periode_sampai)) }}
+                    </div>
+                </div>
+
+                <!-- Employee Info -->
+                <div class="employee-section">
+                    <div class="row">
+                        <span class="label">NIK:</span>
+                        <span class="value">{{ $d['nik'] }}</span>
+                    </div>
+                    <div class="row">
+                        <span class="label">Nama:</span>
+                        <span class="value">{{ $d['nama_karyawan'] }}</span>
+                    </div>
+                    <div class="row">
+                        <span class="label">Jabatan:</span>
+                        <span class="value">{{ $d['nama_jabatan'] }}</span>
+                    </div>
+                    <div class="row">
+                        <span class="label">Dept:</span>
+                        <span class="value">{{ $d['kode_dept'] }}</span>
+                    </div>
+                </div>
+
+                <!-- Work Summary -->
+                <div class="work-info">
+                    {{ $generalsetting->total_jam_bulan }} jam | Rp {{ number_format($upah_perjam, 0, ',', '.') }}/jam |
+                    {{ number_format($total_potongan_jam, 1) }} jam potong
+                </div>
+
+                <!-- Penghasilan -->
+                <div class="section-title earning">PENGHASILAN</div>
+                <div class="row">
+                    <span>Gaji Pokok</span>
+                    <span class="currency">{{ number_format($d['gaji_pokok'], 0, ',', '.') }}</span>
+                </div>
+                @foreach ($jenis_tunjangan as $j)
+                    @if ($d[$j->kode_jenis_tunjangan] > 0)
+                        <div class="row">
+                            <span>{{ $j->jenis_tunjangan }}</span>
+                            <span class="currency">{{ number_format($d[$j->kode_jenis_tunjangan], 0, ',', '.') }}</span>
+                        </div>
+                    @endif
+                @endforeach
+                @if ($total_jam_lembur > 0)
+                    <div class="row">
+                        <span>Lembur {{ formatAngkaDesimal($total_jam_lembur) }} jam </span>
+                        <span class="currency">
+                            @php
+                                $upah_lembur = ROUND($upah_perjam) * ROUND($total_jam_lembur, 2);
+                            @endphp
+                            {{ formatAngka($upah_lembur) }}
+                        </span>
+                    </div>
+                @else
+                    @php
+                        $upah_lembur = 0;
+                    @endphp
+                @endif
+                <div class="row" style="font-weight: bold; border-top: 1px dotted #333; padding-top: 2px;">
+                    <span>Sub Total</span>
+                    @php
+                        $bruto_total = $bruto + ROUND($upah_lembur);
+                    @endphp
+                    <span class="currency">{{ number_format($bruto_total, 0, ',', '.') }}</span>
+                </div>
+
+                <!-- Potongan -->
+                <div class="section-title deduction">POTONGAN</div>
+                @if ($total_denda > 0)
+                    <div class="row">
+                        <span>Denda</span>
+                        <span class="currency">{{ number_format($total_denda, 0, ',', '.') }}</span>
+                    </div>
+                @endif
+                @if ($jumlah_potongan_jam > 0)
+                    <div class="row">
+                        <span>Pot. Jam ({{ number_format($total_potongan_jam, 2) }})</span>
+                        <span class="currency">{{ number_format($jumlah_potongan_jam, 0, ',', '.') }}</span>
+                    </div>
+                @endif
+                @if ($d['bpjs_kesehatan'] > 0)
+                    <div class="row">
+                        <span>BPJS Kes</span>
+                        <span class="currency">{{ number_format($d['bpjs_kesehatan'], 0, ',', '.') }}</span>
+                    </div>
+                @endif
+                @if ($d['bpjs_tenagakerja'] > 0)
+                    <div class="row">
+                        <span>BPJS TK</span>
+                        <span class="currency">{{ number_format($d['bpjs_tenagakerja'], 0, ',', '.') }}</span>
+                    </div>
+                @endif
+                <div class="row" style="font-weight: bold; border-top: 1px dotted #333; padding-top: 2px;">
+                    <span>Sub Total</span>
+                    <span class="currency">{{ number_format($total_potongan, 0, ',', '.') }}</span>
+                </div>
+
+                <!-- Penyesuaian -->
+                @if ($d['penambah'] > 0 || $d['pengurang'] > 0)
+                    <div class="section-title adjustment">PENYESUAIAN</div>
+                    @if ($d['penambah'] > 0)
+                        <div class="row">
+                            <span>Penambah</span>
+                            <span class="currency">{{ number_format($d['penambah'], 0, ',', '.') }}</span>
+                        </div>
+                    @endif
+                    @if ($d['pengurang'] > 0)
+                        <div class="row">
+                            <span>Pengurang</span>
+                            <span class="currency">{{ number_format($d['pengurang'], 0, ',', '.') }}</span>
+                        </div>
                     @endif
                 @endif
 
-                @php
-                    $total_denda += $denda;
-                    $total_potongan_jam += $potongan_jam;
-                    $tanggal_presensi = date('Y-m-d', strtotime('+1 day', strtotime($tanggal_presensi)));
-                @endphp
-            @endwhile
-
-            @php
-                // Final calculations
-                $jumlah_potongan_jam = ROUND($upah_perjam) * $total_potongan_jam;
-                $total_potongan = ROUND($jumlah_potongan_jam) + $total_denda + $d['bpjs_kesehatan'] + $d['bpjs_tenagakerja'];
-
-            @endphp
-
-            <!-- Slip akan ditampilkan dalam container flex untuk layout horizontal -->
-        @endforeach
-
-        <!-- Container untuk layout horizontal -->
-        <div class="container">
-            @foreach ($laporan_presensi as $d)
-                @php
-                    $tanggal_presensi = $periode_dari;
-                    $total_denda = 0;
-                    $total_potongan_jam = 0;
-                    $total_tunjangan = 0;
-                    $total_jam_lembur = 0;
-
-                    // Kalkulasi tunjangan
-                    foreach ($jenis_tunjangan as $j) {
-                        $total_tunjangan += $d[$j->kode_jenis_tunjangan];
-                    }
-
-                    // Kalkulasi bruto
-                    $bruto = $d['gaji_pokok'] + $total_tunjangan;
-
-                    // Kalkulasi upah per jam
-                    $upah_perjam = $d['gaji_pokok'] / $generalsetting->total_jam_bulan;
-                @endphp
-
-                {{-- Proses kalkulasi denda dan potongan jam --}}
-                @while (strtotime($tanggal_presensi) <= strtotime($periode_sampai))
-                    @php
-                        $denda = 0;
-                        $potongan_jam = 0;
-                        $search = [
-                            'nik' => $d['nik'],
-                            'tanggal' => $tanggal_presensi,
-                        ];
-                        $ceklibur = ceklibur($datalibur, $search);
-                        $ceklembur = ceklembur($datalembur, $search);
-                        $lembur = hitungLembur($ceklembur);
-                        if (!empty($ceklembur)) {
-                            $jml_jam_lembur = $lembur;
-                        } else {
-                            $jml_jam_lembur = 0;
-                        }
-                    @endphp
-
-                    @if (isset($d[$tanggal_presensi]))
-                        @if ($d[$tanggal_presensi]['status'] == 'h')
-                            @php
-                                $jam_masuk = $tanggal_presensi . ' ' . $d[$tanggal_presensi]['jam_masuk'];
-                                $terlambat = hitungjamterlambat($d[$tanggal_presensi]['jam_in'], $jam_masuk);
-
-                                if ($terlambat != null) {
-                                    if ($terlambat['desimal_terlambat'] < 1) {
-                                        $potongan_jam_terlambat = 0;
-                                        $denda = hitungdenda($denda_list, $terlambat['menitterlambat']);
-                                    } else {
-                                        $potongan_jam_terlambat =
-                                            $terlambat['desimal_terlambat'] > $d[$tanggal_presensi]['total_jam']
-                                                ? $d[$tanggal_presensi]['total_jam']
-                                                : $terlambat['desimal_terlambat'];
-                                        $denda = 0;
-                                    }
-                                } else {
-                                    $potongan_jam_terlambat = 0;
-                                    $denda = 0;
-                                }
-
-                                $pulangcepat = hitungpulangcepat(
-                                    $tanggal_presensi,
-                                    $d[$tanggal_presensi]['jam_out'],
-                                    $d[$tanggal_presensi]['jam_pulang'],
-                                    $d[$tanggal_presensi]['istirahat'],
-                                    $d[$tanggal_presensi]['jam_awal_istirahat'],
-                                    $d[$tanggal_presensi]['jam_akhir_istirahat'],
-                                    $d[$tanggal_presensi]['lintashari'],
-                                );
-                                $pulangcepat = $pulangcepat > $d[$tanggal_presensi]['total_jam'] ? $d[$tanggal_presensi]['total_jam'] : $pulangcepat;
-                                $potongan_tidak_absen_masuk_atau_pulang =
-                                    empty($d[$tanggal_presensi]['jam_out']) || empty($d[$tanggal_presensi]['jam_in'])
-                                        ? $d[$tanggal_presensi]['total_jam']
-                                        : 0;
-                                $potongan_jam =
-                                    $potongan_tidak_absen_masuk_atau_pulang == 0
-                                        ? $pulangcepat + $potongan_jam_terlambat
-                                        : $potongan_tidak_absen_masuk_atau_pulang;
-                            @endphp
-                        @elseif($d[$tanggal_presensi]['status'] == 'i')
-                            @php
-                                $potongan_jam = $d[$tanggal_presensi]['total_jam'];
-                            @endphp
-                        @elseif($d[$tanggal_presensi]['status'] == 'a')
-                            @php
-                                $potongan_jam = $d[$tanggal_presensi]['total_jam'];
-                            @endphp
-                        @endif
-                    @endif
-
-                    @php
-                        $total_denda += $denda;
-                        $total_potongan_jam += $potongan_jam;
-                        $total_jam_lembur += $jml_jam_lembur;
-                        $tanggal_presensi = date('Y-m-d', strtotime('+1 day', strtotime($tanggal_presensi)));
-                    @endphp
-                @endwhile
-
-                @php
-                    // Final calculations
-                    $jumlah_potongan_jam = ROUND($upah_perjam) * $total_potongan_jam;
-                    $total_potongan = ROUND($jumlah_potongan_jam) + $total_denda + $d['bpjs_kesehatan'] + $d['bpjs_tenagakerja'];
-                    $gaji_bersih = $d['gaji_pokok'] + $total_tunjangan - $total_potongan + $d['penambah'] - $d['pengurang'];
-                @endphp
-
-                <div class="slip-struk">
-                    <!-- Header -->
-                    <div class="header">
-                        <div class="company-name">{{ $generalsetting->nama_perusahaan }}</div>
-                        <div class="slip-title">SLIP GAJI</div>
-                        <div class="periode">{{ date('d/m/Y', strtotime($periode_dari)) }} -
-                            {{ date('d/m/Y', strtotime($periode_sampai)) }}</div>
-                    </div>
-
-                    <!-- Employee Info -->
-                    <div class="employee-section">
-                        <div class="row">
-                            <span class="label">NIK:</span>
-                            <span class="value">{{ $d['nik'] }}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Nama:</span>
-                            <span class="value">{{ $d['nama_karyawan'] }}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Jabatan:</span>
-                            <span class="value">{{ $d['nama_jabatan'] }}</span>
-                        </div>
-                        <div class="row">
-                            <span class="label">Dept:</span>
-                            <span class="value">{{ $d['kode_dept'] }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Work Summary -->
-                    <div class="work-info">
-                        {{ $generalsetting->total_jam_bulan }} jam | Rp {{ number_format($upah_perjam, 0, ',', '.') }}/jam |
-                        {{ number_format($total_potongan_jam, 1) }} jam potong
-                    </div>
-
-                    <!-- Penghasilan -->
-                    <div class="section-title earning">PENGHASILAN</div>
-                    <div class="row">
-                        <span>Gaji Pokok</span>
-                        <span class="currency">{{ number_format($d['gaji_pokok'], 0, ',', '.') }}</span>
-                    </div>
-                    @foreach ($jenis_tunjangan as $j)
-                        @if ($d[$j->kode_jenis_tunjangan] > 0)
-                            <div class="row">
-                                <span>{{ $j->jenis_tunjangan }}</span>
-                                <span class="currency">{{ number_format($d[$j->kode_jenis_tunjangan], 0, ',', '.') }}</span>
-                            </div>
-                        @endif
-                    @endforeach
-                    @if ($total_jam_lembur > 0)
-                        <div class="row">
-                            <span>Lembur {{ formatAngkaDesimal($total_jam_lembur) }} jam </span>
-                            <span class="currency">
-                                @php
-                                    $upah_lembur = ROUND($upah_perjam) * ROUND($total_jam_lembur, 2);
-                                @endphp
-                                {{ formatAngka($upah_lembur) }}
-                            </span>
-                        </div>
-                    @else
+                <!-- Total -->
+                <div class="total-section">
+                    <div class="net-salary">
+                        <span>GAJI BERSIH</span>
                         @php
-                            $upah_lembur = 0;
+                            $gaji_bersih =
+                                $d['gaji_pokok'] + $total_tunjangan - $total_potongan + $d['penambah'] - $d['pengurang'] + ROUND($upah_lembur);
                         @endphp
-                    @endif
-                    <div class="row" style="font-weight: bold; border-top: 1px dotted #333; padding-top: 2px;">
-                        <span>Sub Total</span>
-                        @php
-                            $bruto_total = $bruto + ROUND($upah_lembur);
-                        @endphp
-                        <span class="currency">{{ number_format($bruto_total, 0, ',', '.') }}</span>
-                    </div>
-
-                    <!-- Potongan -->
-                    <div class="section-title deduction">POTONGAN</div>
-                    @if ($total_denda > 0)
-                        <div class="row">
-                            <span>Denda</span>
-                            <span class="currency">{{ number_format($total_denda, 0, ',', '.') }}</span>
-                        </div>
-                    @endif
-                    @if ($jumlah_potongan_jam > 0)
-                        <div class="row">
-                            <span>Pot. Jam ({{ number_format($total_potongan_jam, 2) }})</span>
-                            <span class="currency">{{ number_format($jumlah_potongan_jam, 0, ',', '.') }}</span>
-                        </div>
-                    @endif
-                    @if ($d['bpjs_kesehatan'] > 0)
-                        <div class="row">
-                            <span>BPJS Kes</span>
-                            <span class="currency">{{ number_format($d['bpjs_kesehatan'], 0, ',', '.') }}</span>
-                        </div>
-                    @endif
-                    @if ($d['bpjs_tenagakerja'] > 0)
-                        <div class="row">
-                            <span>BPJS TK</span>
-                            <span class="currency">{{ number_format($d['bpjs_tenagakerja'], 0, ',', '.') }}</span>
-                        </div>
-                    @endif
-                    <div class="row" style="font-weight: bold; border-top: 1px dotted #333; padding-top: 2px;">
-                        <span>Sub Total</span>
-                        <span class="currency">{{ number_format($total_potongan, 0, ',', '.') }}</span>
-                    </div>
-
-                    <!-- Penyesuaian -->
-                    @if ($d['penambah'] > 0 || $d['pengurang'] > 0)
-                        <div class="section-title adjustment">PENYESUAIAN</div>
-                        @if ($d['penambah'] > 0)
-                            <div class="row">
-                                <span>Penambah</span>
-                                <span class="currency">{{ number_format($d['penambah'], 0, ',', '.') }}</span>
-                            </div>
-                        @endif
-                        @if ($d['pengurang'] > 0)
-                            <div class="row">
-                                <span>Pengurang</span>
-                                <span class="currency">{{ number_format($d['pengurang'], 0, ',', '.') }}</span>
-                            </div>
-                        @endif
-                    @endif
-
-                    <!-- Total -->
-                    <div class="total-section">
-                        <div class="net-salary">
-                            <span>GAJI BERSIH</span>
-                            @php
-                                $gaji_bersih =
-                                    $d['gaji_pokok'] + $total_tunjangan - $total_potongan + $d['penambah'] - $d['pengurang'] + ROUND($upah_lembur);
-                            @endphp
-                            <span class="currency">{{ number_format($gaji_bersih, 0, ',', '.') }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Footer -->
-                    <div class="footer">
-                        Dicetak: {{ date('d/m/Y H:i') }}<br>
-                        Sistem Payroll v1.0
+                        <span class="currency">{{ number_format($gaji_bersih, 0, ',', '.') }}</span>
                     </div>
                 </div>
-            @endforeach
-        </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    Dicetak: {{ date('d/m/Y H:i') }}<br>
+                    Sistem Payroll v1.0
+                </div>
+            </div>
+
+            <!-- Print Button (Outside Slip) -->
+            <button onclick="window.print()"
+                class="w-full bg-primary text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 mt-6 active:scale-95 transition-transform hover:bg-blue-700 no-print max-w-[800px] mx-auto">
+                <ion-icon name="print-outline" class="text-xl"></ion-icon>
+                <span class="text-base">Cetak Slip Gaji</span>
+            </button>
+        @endforeach
     </div>
 @endsection

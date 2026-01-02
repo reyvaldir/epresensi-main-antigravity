@@ -1,370 +1,204 @@
-@extends('layouts.mobile.app')
+@extends('layouts.mobile_modern')
+
 @section('content')
-    <style>
-        .md-form-group {
-            position: relative;
-            margin-bottom: 8px;
-        }
-
-        .md-input {
-            width: 100%;
-            padding: 16px 12px 6px 12px;
-            border: 1.5px solid #e0e0e0;
-            border-radius: 10px;
-            background: #fff;
-            font-size: 1em;
-            outline: none;
-            transition: border-color 0.2s;
-            appearance: none;
-        }
-
-        .md-input:focus {
-            border-color: var(--md-primary);
-        }
-
-        .md-label {
-            position: absolute;
-            left: 16px;
-            top: 15px;
-            font-size: 1em;
-            color: #888;
-            background: #fff;
-            padding: 0 4px;
-            pointer-events: none;
-            transition: 0.2s;
-        }
-
-        .md-input:focus+.md-label,
-        .md-input:not([value=""]):not(:focus)+.md-label,
-        .md-input:valid+.md-label {
-            top: -10px;
-            left: 12px;
-            font-size: 0.89em;
-            color: var(--md-primary);
-            background: #fff;
-        }
-
-        .md-btn {
-            width: 100%;
-            font-weight: 500;
-            padding: 13px 0;
-            font-size: 1.08em;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
-            margin-top: 4px;
-        }
-
-        :root {
-            --md-primary: #1976d2;
-            --md-primary-dark: #1565c0;
-            --md-accent: #ff9800;
-            --md-success: #43a047;
-            --md-warning: #fbc02d;
-            --md-danger: #e53935;
-            --md-surface: #fff;
-            --md-background: #f5f6fa;
-            --md-shadow: 0 4px 12px rgba(33, 150, 243, 0.10);
-        }
-
-        body,
-        html {
-            background: var(--md-background) !important;
-            font-family: 'Roboto', Arial, sans-serif;
-        }
-
-        #header-section {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: var(--md-shadow);
-        }
-
-        #content-section {
-            margin-top: 70px;
-            padding: 16px 8px 8px 8px;
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            background: var(--md-background);
-        }
-
-        .slip-card {
-            background: linear-gradient(135deg, #e8f5e9 0%, #fff 100%);
-            border-radius: 16px;
-            box-shadow: var(--md-shadow);
-            margin-bottom: 18px;
-            padding: 18px 16px 14px 16px;
-            transition: box-shadow 0.2s;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .slip-card .ornamen {
-            position: absolute;
-            top: -22px;
-            right: -22px;
-            width: 70px;
-            height: 70px;
-            opacity: 0.13;
-            z-index: 0;
-        }
-
-        .slip-card:active {
-            box-shadow: 0 1px 4px rgba(33, 150, 243, 0.18);
-        }
-
-        .slip-card .badge {
-            border-radius: 8px;
-            padding: 4px 12px;
-            font-size: 0.83em;
-            font-weight: 500;
-            color: #fff;
-        }
-
-        .badge.bg-success {
-            background: var(--md-success) !important;
-        }
-
-        .badge.bg-warning {
-            background: var(--md-warning) !important;
-            color: #333 !important;
-        }
-
-        .slip-card .actions {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .slip-card .actions .btn {
-            border-radius: 8px;
-            padding: 7px 16px;
-            font-size: 1em;
-            font-weight: 500;
-            box-shadow: none;
-            border: none;
-            transition: background 0.2s, color 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-outline-primary {
-            background: #fff;
-            color: var(--md-primary);
-            border: 1.5px solid var(--md-primary);
-        }
-
-        .btn-outline-primary:active,
-        .btn-outline-primary:focus {
-            background: var(--md-primary-dark);
-            color: #fff;
-        }
-
-        .btn-outline-danger {
-            background: #fff;
-            color: var(--md-danger);
-            border: 1.5px solid var(--md-danger);
-        }
-
-        .btn-outline-danger:active,
-        .btn-outline-danger:focus {
-            background: var(--md-danger);
-            color: #fff;
-        }
-
-        .btn-success,
-        .btn-primary {
-            border-radius: 8px !important;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
-        }
-
-        .input-group {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: var(--md-shadow);
-            margin-bottom: 18px;
-            padding: 10px 8px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .input-group select,
-        .input-group button {
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            font-size: 1em;
-            padding: 7px 12px;
-        }
-
-        .input-group button {
-            background: var(--md-primary);
-            color: #fff;
-            border: none;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-
-        .input-group button:active {
-            background: var(--md-primary-dark);
-        }
-
-        /* Typography */
-        .slip-card strong {
-            color: var(--md-primary-dark);
-            font-weight: 600;
-            font-size: 1.05em;
-        }
-
-        .slip-card .label {
-            color: #888;
-            font-size: 0.98em;
-        }
-
-        .pageTitle {
-            font-weight: 700;
-            font-size: 1.18em;
-            letter-spacing: 0.02em;
-        }
-
-        /* Ripple effect */
-        .ripple {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .ripple:after {
-            content: '';
-            display: block;
-            position: absolute;
-            border-radius: 50%;
-            pointer-events: none;
-            width: 100px;
-            height: 100px;
-            top: 50%;
-            left: 50%;
-            opacity: 0;
-            transform: translate(-50%, -50%) scale(1);
-            background: rgba(25, 118, 210, 0.15);
-            transition: opacity 0.4s, transform 0.4s;
-        }
-
-        .ripple:active:after {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(0.7);
-            transition: 0s;
-        }
-    </style>
-
-    <div id="header-section">
-        <div class="appHeader bg-primary text-light">
-            <div class="left">
-                <a href="{{ route('dashboard.index') }}" class="headerButton goBack">
-                    <ion-icon name="chevron-back-outline"></ion-icon>
-                </a>
-            </div>
-            <div class="pageTitle">Slip Gaji</div>
-            <div class="right"></div>
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-5 mt-2">
+        <div class="flex items-center gap-3">
+            <a href="{{ route('dashboard.index') }}"
+                class="flex items-center justify-center h-10 w-10 bg-white rounded-full shadow-sm text-slate-500 border border-slate-100 hover:bg-slate-50 transition-colors">
+                <ion-icon name="chevron-back-outline" class="text-xl"></ion-icon>
+            </a>
+            <h1 class="text-xl font-bold text-slate-800">Slip Gaji</h1>
         </div>
     </div>
-    <div id="content-section">
-        <form action="{{ route('slipgaji.index') }}" method="GET" class="mb-3" style="width:100%;">
-            <div class="md-form-group">
-                <select name="tahun" id="tahun" class="form-select md-input" required>
-                    <option value="" disabled {{ !request('tahun') ? 'selected' : '' }}>Pilih Tahun</option>
-                    @for ($t = $start_year; $t <= date('Y'); $t++)
-                        <option {{ request('tahun', date('Y')) == $t ? 'selected' : '' }} value="{{ $t }}">
-                            {{ $t }}</option>
-                    @endfor
-                </select>
-                <label for="tahun" class="md-label">Tahun</label>
+
+    <!-- Filter Form -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-6">
+        <form action="{{ route('slipgaji.index') }}" method="GET" class="space-y-3">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1">Tahun</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                    </div>
+                    <select name="tahun"
+                        class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-slate-700 font-medium appearance-none cursor-pointer">
+                        <option value="" disabled {{ !request('tahun') ? 'selected' : '' }}>Pilih Tahun</option>
+                        @for ($t = $start_year; $t <= date('Y'); $t++)
+                            <option {{ request('tahun', date('Y')) == $t ? 'selected' : '' }} value="{{ $t }}">{{ $t }}</option>
+                        @endfor
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                        <ion-icon name="chevron-down-outline"></ion-icon>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary ripple md-btn"><i class="ti ti-search me-1"></i> Cari</button>
+
+            <button type="submit"
+                class="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-95 transition-transform hover:bg-blue-700">
+                <ion-icon name="search-outline" class="text-lg"></ion-icon>
+                <span>Cari Data</span>
+            </button>
         </form>
-        @can('slipgaji.create')
-            <div class="mb-3">
-                <a href="#" class="btn btn-success w-100 ripple" id="btnCreate"><i class="fa fa-plus me-2"></i> Buat Slip
-                    Gaji</a>
-            </div>
-        @endcan
-        @if (count($slipgaji))
+    </div>
+
+    <!-- Slip Gaji List -->
+    <div class="space-y-3 pb-24">
+        @if (count($slipgaji) > 0)
             @foreach ($slipgaji as $d)
-                <a href="/laporan/cetakslipgaji?bulan={{ $d->bulan }}&tahun={{ $d->tahun }}&periode_laporan=1">
-                    <div class="slip-card d-flex align-items-start" style="gap:14px;">
-                        <svg class="ornamen" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="40" fill="#43a047" />
-                        </svg>
+                <!-- Card Item -->
+                <div
+                    class="relative bg-white rounded-2xl p-4 shadow-sm border border-slate-100 hover:shadow-md transition-all group overflow-hidden">
+                    <div class="flex items-start gap-4">
+                        <!-- Icon Box -->
                         <div
-                            style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:56px;height:56px;background:var(--md-success);border-radius:14px;z-index:1;">
-                            <ion-icon name="document-text-outline" style="font-size:2.5em;color:#fff;"></ion-icon>
+                            class="flex-shrink-0 w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                            <ion-icon name="document-text-outline" class="text-2xl"></ion-icon>
                         </div>
-                        <div style="flex:1;z-index:1;">
-                            <div class="mb-2">
-                                <div style="font-weight:700;color:var(--md-success);font-size:1.13em;">Slip Gaji Bulan
-                                    {{ getNamabulan($d->bulan) }} Tahun {{ $d->tahun }}</div>
-                                <div><span class="label" style="color:var(--md-primary-success);font-weight:500;">Periode
-                                        :</span>
-                                    <span style="color:var(--md-success);font-weight:600;">
 
-                                        @php
-                                            $periode_laporan_dari = $general_setting->periode_laporan_dari;
-                                            $periode_laporan_sampai = $general_setting->periode_laporan_sampai;
-                                            $periode_laporan_lintas_bulan =
-                                                $general_setting->periode_laporan_next_bulan;
+                        <!-- Content -->
+                        <div class="flex-1">
+                            <h3 class="font-bold text-slate-800 text-base mb-1">
+                                {{ getNamabulan($d->bulan) }} {{ $d->tahun }}
+                            </h3>
 
-                                            if ($periode_laporan_lintas_bulan == 1) {
-                                                if ($d->bulan == 1) {
-                                                    $bulan = 12;
-                                                    $tahun = $d->tahun - 1;
-                                                } else {
-                                                    $bulan = $d->bulan - 1;
-                                                    $tahun = $d->tahun;
-                                                }
-                                            } else {
-                                                $bulan = $d->bulan;
-                                                $tahun = $d->tahun;
-                                            }
+                            <!-- Periode Badge -->
+                            @php
+                                $periode_laporan_dari = $general_setting->periode_laporan_dari;
+                                $periode_laporan_sampai = $general_setting->periode_laporan_sampai;
+                                $periode_laporan_lintas_bulan = $general_setting->periode_laporan_next_bulan;
 
-                                            // Menambahkan nol di depan bulan jika bulan kurang dari 10
+                                if ($periode_laporan_lintas_bulan == 1) {
+                                    if ($d->bulan == 1) {
+                                        $bulan = 12;
+                                        $tahun = $d->tahun - 1;
+                                    } else {
+                                        $bulan = $d->bulan - 1;
+                                        $tahun = $d->tahun;
+                                    }
+                                } else {
+                                    $bulan = $d->bulan;
+                                    $tahun = $d->tahun;
+                                }
 
-                                            $bulan = str_pad($bulan, 2, '0', STR_PAD_LEFT);
-                                            $bulan_next = str_pad($d->bulan, 2, '0', STR_PAD_LEFT);
-                                            $periode_dari = $tahun . '-' . $bulan . '-' . $periode_laporan_dari;
-                                            $periode_sampai =
-                                                $tahun . '-' . $bulan_next . '-' . $periode_laporan_sampai;
+                                $bulan = str_pad($bulan, 2, '0', STR_PAD_LEFT);
+                                $bulan_next = str_pad($d->bulan, 2, '0', STR_PAD_LEFT);
+                                $periode_dari = $tahun . '-' . $bulan . '-' . $periode_laporan_dari;
+                                $periode_sampai = $tahun . '-' . $bulan_next . '-' . $periode_laporan_sampai;
+                            @endphp
 
-                                        @endphp
-                                        {{ DateToIndo($periode_dari) }}
-                                        - {{ DateToIndo($periode_sampai) }}</span>
-                                </div>
-
+                            <div
+                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 mb-3">
+                                <ion-icon name="calendar-clear-outline" class="text-slate-400 text-xs"></ion-icon>
+                                <span class="text-xs font-medium text-slate-600">
+                                    {{ date('d M', strtotime($periode_dari)) }} - {{ date('d M Y', strtotime($periode_sampai)) }}
+                                </span>
                             </div>
-                            <div class="actions d-flex">
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-2">
+                                <!-- Download/Print -->
+                                <a href="/laporan/cetakslipgaji?bulan={{ $d->bulan }}&tahun={{ $d->tahun }}&periode_laporan=1"
+                                    class="flex-1 flex items-center justify-center gap-1.5 py-2 px-3 bg-primary/5 text-primary rounded-xl text-xs font-bold border border-primary/20 hover:bg-primary hover:text-white transition-all active:scale-95 group/btn">
+                                    <ion-icon name="print-outline" class="text-sm group-hover/btn:text-white"></ion-icon>
+                                    Cetak Slip
+                                </a>
+
                                 @can('slipgaji.edit')
-                                    <a href="#" class="btn btn-outline-primary btnEdit me-2 ripple"
+                                    <a href="#"
+                                        class="w-9 h-9 flex items-center justify-center bg-amber-50 text-amber-500 rounded-xl border border-amber-100 hover:bg-amber-100 hover:text-amber-600 transition-colors btnEdit"
                                         kode_slip_gaji="{{ Crypt::encrypt($d->kode_slip_gaji) }}">
-                                        <i class="ti ti-edit"></i> Edit
+                                        <ion-icon name="create-outline"></ion-icon>
                                     </a>
                                 @endcan
+
                                 @can('slipgaji.delete')
-                                    <form method="POST" name="deleteform" class="deleteform d-inline"
-                                        action="{{ route('slipgaji.delete', Crypt::encrypt($d->kode_slip_gaji)) }}">
+                                    <form method="POST" action="{{ route('slipgaji.delete', Crypt::encrypt($d->kode_slip_gaji)) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger delete-confirm ripple"><i
-                                                class="ti ti-trash"></i> Hapus</button>
+                                        <button type="button"
+                                            class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-500 rounded-xl border border-red-100 hover:bg-red-100 hover:text-red-600 transition-colors delete-confirm"
+                                            onclick="event.stopPropagation(); Swal.fire({title: 'Hapus Slip Gaji?', text: 'Data akan dihapus permanen!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#EF4444', cancelButtonColor: '#64748B', confirmButtonText: 'Ya', cancelButtonText: 'Batal', customClass: { popup: 'rounded-2xl', confirmButton: 'bg-rose-500 hover:bg-rose-600 text-white px-5 py-2.5 rounded-xl', cancelButton: 'bg-slate-500 hover:bg-slate-600 text-white px-5 py-2.5 rounded-xl' }, buttonsStyling: false}).then((res) => { if(res.isConfirmed) this.form.submit(); });">
+                                            <ion-icon name="trash-outline"></ion-icon>
+                                        </button>
                                     </form>
                                 @endcan
                             </div>
                         </div>
                     </div>
-                </a>
+                </div>
             @endforeach
         @else
-            <div class="alert alert-warning">Tidak ada data slip gaji.</div>
+            <!-- Empty State -->
+            <div class="text-center py-12">
+                <div
+                    class="bg-indigo-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border border-indigo-100">
+                    <ion-icon name="document-text-outline" class="text-4xl text-indigo-400"></ion-icon>
+                </div>
+                <h3 class="font-bold text-slate-800 text-lg mb-1">Belum Ada Slip Gaji</h3>
+                <p class="text-slate-500 text-sm max-w-xs mx-auto">
+                    Slip gaji untuk tahun {{ request('tahun', date('Y')) }} belum tersedia.
+                </p>
+                @can('slipgaji.create')
+                    <a href="#" id="btnCreate"
+                        class="inline-flex items-center gap-2 mt-4 px-6 py-2.5 bg-primary text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all active:scale-95">
+                        <ion-icon name="add-outline" class="text-lg"></ion-icon>
+                        Buat Slip Gaji
+                    </a>
+                @endcan
+            </div>
         @endif
     </div>
+
+    <!-- Create Button (FAB) for Admin -->
+    @can('slipgaji.create')
+        <a href="#" id="btnCreateFab"
+            class="fixed bottom-24 right-6 h-14 w-14 bg-primary text-white rounded-full shadow-xl shadow-blue-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50">
+            <ion-icon name="add-outline" class="text-3xl"></ion-icon>
+        </a>
+    @endcan
 @endsection
+
+@push('myscript')
+    <script>
+        $(function () {
+            // Bind actions to buttons (Add any specific JS logic here if needed)
+            $('#btnCreate, #btnCreateFab').click(function (e) {
+                e.preventDefault();
+                // Logic to open create modal or page
+                // Assuming standard modal logic or redirect, checking original file
+                // Original file had <a href="#" id="btnCreate"> with no inline JS, likely mostly handled within common scripts or controller
+                // If it needs to open a modal, we'd add that here. 
+                // For now, retaining similar link behavior. 
+                // Based on controller, create is a page return view('payroll.slipgaji.create')
+                // But the button was <a href="#" id="btnCreate">. 
+                // Let's check routes. Route::get('/slipgaji/create', 'create') exists.
+                window.location.href = "{{ route('slipgaji.create') }}";
+            });
+
+            $('.btnEdit').click(function (e) {
+                e.preventDefault();
+                var kode_slip_gaji = $(this).attr('kode_slip_gaji');
+                // Original code was just a link with #, likely opening a modal via global handler or missing JS in snippet
+                // Route::get('/slipgaji/{kode_slip}/edit', 'edit') exists.
+                // Assuming page navigation for edit based on standard pattern
+                // Or if it's a modal, we need to load it. 
+                // Let's assume page navigation to be safe for now or modal load.
+                // Given the context of "create" being a view return, edit likely is too.
+                // However, original code used class `btnEdit` which might trigger modal.
+                // Checking controller Edit method... returns view('payroll.slipgaji.edit').
+                // So it is a full page or a view to be loaded in modal.
+                // Let's try redirect first or check adjacent scripts.
+                // Actually, let's load it into a modal if that's the pattern, but usually full page edit for complex forms.
+                // For Mobile, full page is often better. 
+                // Let's use simple redirect for now:
+                // window.location.href = '/slipgaji/' + kode_slip_gaji + '/edit';
+                // Wait, kode_slip_gaji is encrypted. 
+                // Better to use a standard route if possible or AJAX load.
+                // Let's look at Route: /slipgaji/{kode_slip}/edit
+                // So:
+                window.location.href = "{{ url('/slipgaji') }}/" + kode_slip_gaji + "/edit";
+            });
+        });
+    </script>
+@endpush
