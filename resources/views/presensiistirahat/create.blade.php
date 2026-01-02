@@ -183,7 +183,7 @@
                                 <span
                                     class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Tanggal</span>
                                 <span
-                                    class="text-white text-sm font-bold leading-tight mt-0.5">{{ \Carbon\Carbon::now()->translatedFormat('d M Y') }}</span>
+                                    class="text-white text-base font-bold font-mono leading-normal mt-0.5">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</span>
                             </div>
                         </div>
                     </div>
@@ -194,7 +194,7 @@
                             <div class="flex flex-col items-end">
                                 <span
                                     class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Waktu</span>
-                                <span class="text-white text-sm font-bold font-mono leading-tight mt-0.5"
+                                <span class="text-white text-base font-bold font-mono leading-normal mt-0.5"
                                     id="live-clock">{{ date('H:i:s') }}</span>
                             </div>
                             <div
@@ -519,11 +519,11 @@
                 const loadingIndicator = document.createElement('div');
                 loadingIndicator.id = 'face-recognition-loading';
                 loadingIndicator.innerHTML = `
-                        <div class="spinner-border text-light" role="status">
-                            <span class="sr-only">Memuat pengenalan wajah...</span>
-                        </div>
-                        <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                    `;
+                                    <div class="spinner-border text-light" role="status">
+                                        <span class="sr-only">Memuat pengenalan wajah...</span>
+                                    </div>
+                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                `;
                 loadingIndicator.style.position = 'absolute';
                 loadingIndicator.style.top = '50%';
                 loadingIndicator.style.left = '50%';
@@ -577,11 +577,11 @@
                     const faceDataLoading = document.createElement('div');
                     faceDataLoading.id = 'face-data-loading';
                     faceDataLoading.innerHTML = `
-                            <div class="spinner-border text-light" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                            <div class="mt-2 text-light">Memuat data wajah...</div>
-                        `;
+                                        <div class="spinner-border text-light" role="status">
+                                            <span class="sr-only">Loading...</span>
+                                        </div>
+                                        <div class="mt-2 text-light">Memuat data wajah...</div>
+                                    `;
                     faceDataLoading.style.position = 'absolute';
                     faceDataLoading.style.top = '50%';
                     faceDataLoading.style.left = '50%';
@@ -1196,11 +1196,11 @@
                 // If Passed or Face Recog disabled, proceed
                 var status = 2; // OUT
                 var kode_jam_kerja = "{{ $presensi->kode_jam_kerja }}";
-                
+
                 // FIXED: Webcam.snap is async - AJAX must be inside the callback
                 Webcam.snap(function (data_uri) {
                     var image = data_uri;
-                    
+
                     $.ajax({
                         type: 'POST',
                         url: '{{ route('presensiistirahat.store') }}',

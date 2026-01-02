@@ -1,476 +1,352 @@
-@extends('layouts.mobile.app')
+@extends('layouts.mobile_modern')
+
+@section('header')
+    <div class="appHeader bg-primary text-light">
+        <div class="left">
+            <a href="{{ route('kunjungan.index') }}" class="headerButton goBack">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+            </a>
+        </div>
+        <div class="pageTitle">Tambah Kunjungan</div>
+        <div class="right"></div>
+    </div>
+@endsection
+
 @section('content')
     <style>
-        /* Tambahan agar kamera portrait dan rounded di semua device */
         .webcam-capture {
-            width: 100%;
-
-            height: 360px;
-            margin: auto 20px;
-            padding: 0;
-            border-radius: 24px;
-            overflow: hidden;
-            background: #222;
-            position: relative;
-            box-shadow: 0 4px 24px rgba(44, 62, 80, 0.10);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .webcam-capture video,
-        .webcam-capture canvas {
             width: 100% !important;
             height: 100% !important;
-            object-fit: cover;
-            border-radius: 24px !important;
-            display: block;
-        }
-
-        canvas {
             position: absolute;
-            border-radius: 0;
-            box-shadow: none;
-        }
-
-        #facedetection {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            height: 100%;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-        }
-
-        /* Perbaikan untuk posisi content-section */
-        #header-section {
-            position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            z-index: 1000;
-        }
-
-        #content-section {
-            margin-top: 60px !important;
-            padding: 0 !important;
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        /* Style untuk tombol scan - overlay di depan kamera */
-        .scan-buttons {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            z-index: 1000;
-            width: 100%;
-            padding: 0 20px;
-        }
-
-        .scan-button {
-            height: 45px !important;
-            border-radius: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            width: 42%;
-            border: none;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .scan-button.btn-success {
-            background: #28a745 !important;
-            color: white !important;
-        }
-
-        .scan-button.btn-warning {
-            background: #ffc107 !important;
-            color: #212529 !important;
-        }
-
-        .scan-button ion-icon {
-            margin-right: 5px;
-            font-size: 18px;
-        }
-
-        /* Style untuk image preview overlay */
-        .image-preview-overlay {
-            position: absolute;
-            top: 50px;
-            right: 10px;
-            z-index: 500;
-            width: 100px;
-            height: 100px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            border: 3px solid #fff;
-        }
-
-        .image-preview-overlay img {
-            width: 100%;
-            height: 100%;
             object-fit: cover;
+            z-index: 0;
+            overflow: hidden;
         }
 
-        /* Style untuk jam digital */
-        .jam-digital-malasngoding {
-            background-color: rgba(39, 39, 39, 0.7);
+        .webcam-capture video {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
             position: absolute;
-            top: 65px;
-            right: 15px;
-            z-index: 20;
-            width: 150px;
-            border-radius: 10px;
-            padding: 5px;
-            backdrop-filter: blur(5px);
-        }
-
-        .jam-digital-malasngoding p {
-            color: #fff;
-            font-size: 16px;
-            text-align: left;
-            margin-top: 0;
-            margin-bottom: 0;
-        }
-
-        /* Modern Kunjungan Content Wrapper */
-        .kunjungan-content-modern {
-            background: transparent;
-            border-radius: 18px;
-            padding: 18px 5px 24px 5px;
-            margin: 10px 0;
-        }
-
-        .kunjungan-content-modern,
-        .kunjungan-content-modern * {
-            font-family: 'Poppins', sans-serif !important;
-        }
-
-        /* Absolute Tanggal & Jam */
-        .abs-tanggal-modern {
-            position: absolute;
-            top: 12px;
-            left: 30px;
-            background: rgba(255, 255, 255, 0.75);
-            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.10);
-            border-radius: 10px;
-            padding: 4px 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #222;
+            top: 0;
+            left: 0;
             z-index: 10;
-            backdrop-filter: blur(4px);
+            background: #000;
         }
 
-        .abs-jam-modern {
-            position: absolute;
-            top: 12px;
-            right: 30px;
-            background: rgba(255, 255, 255, 0.75);
-            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.10);
-            border-radius: 10px;
-            padding: 4px 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #222;
-            z-index: 10;
-            letter-spacing: 1px;
-            backdrop-filter: blur(4px);
-        }
-
-        /* Error Messages */
-        .error-message {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
+        body {
+            background-color: #0f172a;
         }
     </style>
 
-    <!-- Import Google Fonts: Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main Mobile Container -->
+    <div class="-m-4 relative w-[calc(100%+2rem)] h-[calc(100vh-112px)] overflow-hidden bg-slate-900 flex flex-col"
+        x-data="kunjunganHandler()">
 
-    <div id="header-section">
-        <div class="appHeader bg-primary text-light">
-            <div class="left">
-                <a href="{{ route('kunjungan.index') }}" class="headerButton goBack">
-                    <ion-icon name="chevron-back-outline"></ion-icon>
-                </a>
-            </div>
-            <div class="pageTitle">Tambah Kunjungan</div>
-            <div class="right"></div>
-        </div>
-    </div>
+        <!-- Top Section: Camera (70%) -->
+        <div class="relative w-full h-[70%] shrink-0">
+            <div class="relative w-full h-[calc(100vh-70px)] bg-slate-900 overflow-hidden font-inter">
 
-    <div id="content-section" style="padding-bottom: 200px;">
-        <div class="kunjungan-content-modern">
-            <!-- Camera Section -->
-            <div class="camera-section" style="position:relative;">
-                <div class="row" style="margin-top: 0;">
-                    <div class="col" id="facedetection" style="position:relative;">
-                        <!-- Absolute Tanggal & Jam -->
-                        <div class="abs-tanggal-modern">{{ DateToIndo(date('Y-m-d')) }}</div>
-                        <div class="abs-jam-modern"><span id="jam"></span></div>
+                <!-- 1. HEADER (Floating & Transparent) -->
+                <div class="absolute top-0 left-0 right-0 z-40 p-4 flex items-center justify-between pointer-events-none">
+                    <a href="{{ route('kunjungan.index') }}"
+                        class="pointer-events-auto w-10 h-10 flex items-center justify-center bg-black/20 backdrop-blur-md rounded-full text-white active:bg-black/40 transition-colors">
+                        <ion-icon name="arrow-back-outline" class="text-xl"></ion-icon>
+                    </a>
+                    <div class="absolute left-1/2 -translate-x-1/2 px-4 py-1.5 bg-black/20 backdrop-blur-md rounded-full">
+                        <h1 class="text-white text-xs font-semibold tracking-wide uppercase whitespace-nowrap">
+                            Tambah Kunjungan
+                        </h1>
+                    </div>
+                </div>
 
-                        <!-- Image Preview - Overlay di atas kamera -->
-                        <div id="imagePreview" class="image-preview-overlay" style="display: none;">
-                            <img id="previewImg" src="" alt="Preview">
+                <!-- 2. CAMERA LAYER -->
+                <div id="camera-wrapper" class="absolute inset-0 z-0">
+                    <div class="webcam-capture w-full h-full object-cover" id="webcam-container"></div>
+
+                    <!-- Date & Time Pills -->
+                    <div class="absolute top-24 left-4 z-10">
+                        <div
+                            class="bg-black/30 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                <ion-icon name="calendar-outline" class="text-blue-400 text-lg"></ion-icon>
+                            </div>
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Tanggal</span>
+                                <span
+                                    class="text-white text-base font-bold font-mono leading-normal mt-0.5">{{ DateToIndo(date('Y-m-d')) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute top-24 right-4 z-10">
+                        <div
+                            class="bg-black/30 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg">
+                            <div class="flex flex-col items-end">
+                                <span
+                                    class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Waktu</span>
+                                <span class="text-white text-base font-bold font-mono leading-normal mt-0.5"
+                                    id="live-clock">{{ date('H:i') }}</span>
+                            </div>
+                            <div
+                                class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center animate-pulse">
+                                <ion-icon name="time-outline" class="text-amber-400 text-lg"></ion-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. BOTTOM SHEET -->
+                <div class="absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] max-h-[70vh] flex flex-col"
+                    :class="isOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'">
+
+                    <!-- Toggle Handle Area (Fixed at top) -->
+                    <div @click="isOpen = !isOpen"
+                        class="absolute top-[-15px] left-0 right-0 h-6 w-full z-10 cursor-pointer flex justify-center items-center mt-3">
+                        <div class="w-16 h-1.5 bg-slate-400 rounded-full hover:bg-slate-500 transition-colors"></div>
+                    </div>
+
+                    <!-- Main Content (Scrollable) -->
+                    <div class="pb-20 pt-10 px-6 overflow-y-auto flex-1">
+
+                        <!-- Floating Action Buttons (Capture + Switch Camera) -->
+                        <div class="absolute -top-[70px] left-0 right-0 z-[60] px-6">
+                            <div class="flex gap-3">
+                                <!-- Capture Button -->
+                                <button @click="capturePhoto()"
+                                    class="group relative overflow-hidden bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-blue-200 flex items-center justify-center gap-3 flex-1">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                    </div>
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                        <ion-icon name="camera" class="text-white text-lg"></ion-icon>
+                                    </div>
+                                    <span class="text-white font-bold tracking-wide">Ambil Foto</span>
+                                </button>
+                                <!-- Switch Camera Button -->
+                                <button @click="switchCamera()"
+                                    class="w-14 h-14 bg-amber-500 hover:bg-amber-600 active:scale-95 transition-all duration-200 rounded-2xl shadow-lg shadow-amber-200 flex items-center justify-center shrink-0">
+                                    <ion-icon name="camera-reverse-outline" class="text-white text-2xl"></ion-icon>
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="webcam-capture"></div>
+                        <!-- Location Capsule -->
+                        <div
+                            class="w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden mx-auto -mt-2 mb-4">
+                            <div class="flex items-center gap-3 flex-1 min-w-0">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
+                                    <ion-icon name="location" class="text-white text-sm"></ion-icon>
+                                </div>
+                                <div class="flex-col flex min-w-0 pr-2">
+                                    <span
+                                        class="text-[9px] text-slate-400 uppercase tracking-wider font-bold leading-tight">Lokasi
+                                        Anda</span>
+                                    <span class="text-xs font-bold truncate leading-tight" id="location-display">Mencari
+                                        lokasi...</span>
+                                </div>
+                            </div>
+                        </div>
 
-                        <!-- Scan Buttons - Overlay di depan kamera -->
-                        <div class="scan-buttons">
-                            <button type="button" class="btn btn-success scan-button" id="btnScan">
-                                <ion-icon name="camera-outline"></ion-icon>
-                                Ambil Foto
-                            </button>
-                            <button type="button" class="btn btn-warning scan-button" id="btnSwitch">
-                                <ion-icon name="camera-reverse-outline"></ion-icon>
-                                Ganti Kamera
+                        <div class="h-2"></div>
+
+                        <!-- Photo Preview Section -->
+                        <div class="mb-4">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Foto Kunjungan</p>
+                            <div
+                                class="w-full aspect-video rounded-2xl border border-slate-200 shadow-sm overflow-hidden relative bg-slate-100">
+                                <!-- Empty State -->
+                                <div x-show="!hasCaptured"
+                                    class="absolute inset-0 flex flex-col items-center justify-center text-slate-400">
+                                    <ion-icon name="image-outline" class="text-4xl mb-2"></ion-icon>
+                                    <span class="text-xs font-medium">Belum Mengambil Foto Kunjungan</span>
+                                </div>
+                                <!-- Captured Photo -->
+                                <img x-show="hasCaptured" :src="capturedImage" class="w-full h-full object-cover"
+                                    style="display: none;">
+                            </div>
+                        </div>
+
+                        <!-- Description Input -->
+                        <div class="mb-4">
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Deskripsi Kunjungan</p>
+                            <textarea id="deskripsi-input"
+                                class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-700 text-sm font-medium focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all placeholder:text-slate-400 h-28 resize-none"
+                                placeholder="Deskripsikan kunjungan yang dilakukan..."></textarea>
+                        </div>
+
+                        <!-- Reset Button -->
+                        <div class="mb-4">
+                            <button @click="resetAll()"
+                                class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 h-12 rounded-xl font-bold transition-all active:scale-95 flex items-center justify-center gap-2 border border-rose-200">
+                                <ion-icon name="refresh-outline" class="text-xl"></ion-icon>
+                                <span class="text-sm">Reset</span>
                             </button>
                         </div>
+
+                        <!-- Save Button -->
+                        <button @click="submitKunjungan()"
+                            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white h-14 rounded-2xl font-bold shadow-lg shadow-emerald-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                            <ion-icon name="save-outline" class="text-xl"></ion-icon>
+                            <span>Simpan Kunjungan</span>
+                        </button>
+
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Form Section -->
-        <div class="row">
-            <div class="col pl-3 pr-3">
-                <form action="{{ route('kunjungan.store') }}" method="POST" enctype="multipart/form-data" id="formKunjungan">
-                    @csrf
-
-                    <!-- Hidden NIK field for karyawan -->
-                    @if (auth()->user()->hasRole('karyawan'))
-                        <input type="hidden" name="nik" value="{{ $karyawan->nik }}">
-                    @endif
-
-                    <!-- Hidden foto field -->
-                    <input type="hidden" name="foto" id="fotoData" value="">
-
-                    <!-- Hidden lokasi field - akan diisi otomatis dari geolocation -->
-                    <input type="hidden" name="lokasi" id="lokasiData" value="">
-
-                    <!-- Hidden tanggal kunjungan field - otomatis menggunakan tanggal hari ini -->
-                    <input type="hidden" name="tanggal_kunjungan" value="{{ date('Y-m-d') }}">
-
-                    <textarea placeholder="Deskripsikan kunjungan yang dilakukan..." class="feedback-input" name="deskripsi" style="height: 120px">{{ old('deskripsi') }}</textarea>
-                    @error('deskripsi')
-                        <div class="error-message">{{ $message }}</div>
-                    @enderror
-
-                    <button type="submit" class="btn btn-primary w-100" style="font-size: 14px;" id="btnSimpan">
-                        <i class="ti ti-send me-1"></i>Simpan Kunjungan
-                    </button>
-                </form>
-            </div>
-        </div>
+        <!-- Hidden Form -->
+        <form action="{{ route('kunjungan.store') }}" method="POST" enctype="multipart/form-data" id="formKunjungan"
+            class="hidden">
+            @csrf
+            <input type="hidden" name="foto" id="fotoData">
+            <input type="hidden" name="lokasi" id="lokasiData">
+            <input type="hidden" name="deskripsi" id="deskripsiData">
+            <input type="hidden" name="tanggal_kunjungan" value="{{ date('Y-m-d') }}">
+            @if (auth()->user()->hasRole('karyawan'))
+                <input type="hidden" name="nik" value="{{ $karyawan->nik }}">
+            @endif
+        </form>
     </div>
 @endsection
 
 @push('myscript')
     <script>
-        $(function() {
-            let stream = null;
-            let currentFacingMode = 'user'; // 'user' untuk front camera, 'environment' untuk back camera
-            let capturedImage = null;
-            let currentLocation = null;
+        // Live Clock
+        setInterval(() => {
+            const now = new Date();
+            const el = document.getElementById('live-clock');
+            if (el) el.innerText = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }, 1000);
 
-            // Update jam digital
-            function updateJam() {
-                const now = new Date();
-                const jam = now.toLocaleTimeString('id-ID', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
-                $('#jam').text(jam);
-            }
+        // Alpine Component
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('kunjunganHandler', () => ({
+                isOpen: false,
+                hasCaptured: false,
+                capturedImage: null,
+                facingMode: 'user', // Front camera default
 
-            // Update jam setiap detik
-            setInterval(updateJam, 1000);
-            updateJam();
+                init() {
+                    this.initCamera();
+                    this.initLocation();
+                },
 
-            // Start camera
-            function startCamera() {
-                navigator.mediaDevices.getUserMedia({
-                    video: {
-                        facingMode: currentFacingMode,
-                        width: {
-                            ideal: 640
-                        },
-                        height: {
-                            ideal: 480
-                        }
+                initCamera() {
+                    Webcam.set({
+                        width: 640,
+                        height: 480,
+                        image_format: 'jpeg',
+                        jpeg_quality: 90,
+                        facingMode: this.facingMode
+                    });
+                    Webcam.attach('.webcam-capture');
+
+                    Webcam.on('load', function () {
+                        setTimeout(() => {
+                            const video = document.querySelector('.webcam-capture video');
+                            if (video) {
+                                video.style.width = '100%';
+                                video.style.height = '100%';
+                                video.style.objectFit = 'cover';
+                            }
+                        }, 500);
+                    });
+                },
+
+                initLocation() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                const lat = position.coords.latitude;
+                                const lng = position.coords.longitude;
+                                document.getElementById('lokasiData').value = lat + "," + lng;
+                                document.getElementById('location-display').innerText = lat.toFixed(5) + ", " + lng.toFixed(5);
+                            },
+                            (error) => {
+                                document.getElementById('location-display').innerText = "Gagal mengambil lokasi";
+                            }
+                        );
                     }
-                }).then(function(mediaStream) {
-                    stream = mediaStream;
-                    const video = document.createElement('video');
-                    video.srcObject = stream;
-                    video.autoplay = true;
-                    video.playsInline = true;
-                    video.style.width = '100%';
-                    video.style.height = '100%';
-                    video.style.objectFit = 'cover';
-                    video.style.borderRadius = '24px';
+                },
 
-                    $('.webcam-capture').html(video);
-                }).catch(function(err) {
-                    console.error('Error accessing camera:', err);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Tidak dapat mengakses kamera. Pastikan izin kamera sudah diberikan.',
-                        confirmButtonText: 'OK'
+                switchCamera() {
+                    this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+                    Webcam.reset();
+                    Webcam.set({
+                        width: 640,
+                        height: 480,
+                        image_format: 'jpeg',
+                        jpeg_quality: 90,
+                        facingMode: this.facingMode
                     });
-                });
-            }
+                    Webcam.attach('.webcam-capture');
+                },
 
-            // Switch camera
-            function switchCamera() {
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-
-                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-                startCamera();
-            }
-
-            // Capture photo
-            function capturePhoto() {
-                const video = $('.webcam-capture video')[0];
-                if (!video) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Peringatan',
-                        text: 'Kamera belum siap. Tunggu sebentar.',
-                        confirmButtonText: 'OK'
+                capturePhoto() {
+                    Webcam.snap((data_uri) => {
+                        this.capturedImage = data_uri;
+                        this.hasCaptured = true;
+                        this.isOpen = true; // EXPAND sheet after capture so user can fill description
+                        document.getElementById('fotoData').value = data_uri;
                     });
-                    return;
-                }
+                },
 
-                const canvas = document.createElement('canvas');
-                const context = canvas.getContext('2d');
+                resetAll() {
+                    this.hasCaptured = false;
+                    this.capturedImage = null;
+                    document.getElementById('fotoData').value = '';
+                    document.getElementById('deskripsi-input').value = '';
+                },
 
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+                submitKunjungan() {
+                    if (!this.hasCaptured) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Foto Belum Diambil',
+                            text: 'Silakan ambil foto kunjungan terlebih dahulu!',
+                        });
+                        return;
+                    }
 
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const desc = document.getElementById('deskripsi-input').value.trim();
+                    if (!desc) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Deskripsi Kosong',
+                            text: 'Silakan isi deskripsi kunjungan!',
+                        });
+                        this.isOpen = true;
+                        return;
+                    }
 
-                capturedImage = canvas.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('deskripsiData').value = desc;
 
-                // Show preview
-                $('#previewImg').attr('src', capturedImage);
-                $('#imagePreview').show();
-
-                // Set hidden input
-                $('#fotoData').val(capturedImage);
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Foto berhasil diambil.',
-                    confirmButtonText: 'OK'
-                });
-            }
-
-            // Event listeners
-            $('#btnScan').click(capturePhoto);
-            $('#btnSwitch').click(switchCamera);
-
-            // Get current location
-            function getCurrentLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function(position) {
-                            currentLocation = position.coords.latitude + "," + position.coords.longitude;
-                            $('#lokasiData').val(currentLocation);
-                            console.log('Location obtained:', currentLocation);
+                    Swal.fire({
+                        title: 'Simpan Kunjungan?',
+                        text: "Pastikan data sudah benar",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Simpan',
+                        cancelButtonText: 'Batal',
+                        customClass: {
+                            popup: 'rounded-2xl',
+                            confirmButton: 'bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-bold',
+                            cancelButton: 'bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-bold'
                         },
-                        function(error) {
-                            console.error('Error getting location:', error);
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Peringatan',
-                                text: 'Tidak dapat mendapatkan lokasi. Kunjungan akan disimpan tanpa lokasi.',
-                                confirmButtonText: 'OK'
-                            });
-                        }, {
-                            enableHighAccuracy: true,
-                            timeout: 10000,
-                            maximumAge: 60000
-                        }
-                    );
-                } else {
-                    console.log('Geolocation is not supported by this browser.');
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Peringatan',
-                        text: 'Browser tidak mendukung geolocation. Kunjungan akan disimpan tanpa lokasi.',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            }
-
-            // Start camera on page load
-            startCamera();
-
-            // Get location on page load
-            getCurrentLocation();
-
-            // Form validation
-            $('#formKunjungan').on('submit', function(e) {
-                const deskripsi = $('textarea[name="deskripsi"]').val().trim();
-
-                if (deskripsi === '') {
-                    e.preventDefault();
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Peringatan!',
-                        text: 'Silakan isi deskripsi kunjungan terlebih dahulu',
-                        confirmButtonText: 'OK',
-                        didClose: () => {
-                            $('textarea[name="deskripsi"]').focus();
+                        buttonsStyling: false
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('formKunjungan').submit();
                         }
                     });
-                    return false;
                 }
-
-                if (!capturedImage) {
-                    e.preventDefault();
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Peringatan!',
-                        text: 'Silakan ambil foto terlebih dahulu',
-                        confirmButtonText: 'OK'
-                    });
-                    return false;
-                }
-            });
-
-            // Auto-resize textarea
-            $('textarea[name="deskripsi"]').on('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
-
-            // Cleanup on page unload
-            $(window).on('beforeunload', function() {
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                }
-            });
+            }));
         });
     </script>
 @endpush

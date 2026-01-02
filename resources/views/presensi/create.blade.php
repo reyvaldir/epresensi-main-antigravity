@@ -200,7 +200,7 @@
                                 <span
                                     class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Tanggal</span>
                                 <span
-                                    class="text-white text-sm font-bold leading-tight mt-0.5">{{ \Carbon\Carbon::now()->translatedFormat('d M Y') }}</span>
+                                    class="text-white text-base font-bold font-mono leading-normal mt-0.5">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</span>
                             </div>
                         </div>
                     </div>
@@ -212,7 +212,7 @@
                             <div class="flex flex-col items-end">
                                 <span
                                     class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Waktu</span>
-                                <span class="text-white text-sm font-bold font-mono leading-tight mt-0.5"
+                                <span class="text-white text-base font-bold font-mono leading-normal mt-0.5"
                                     id="live-clock">{{ date('H:i:s') }}</span>
                             </div>
                             <div

@@ -97,10 +97,23 @@
         }
 
         @keyframes scan {
-            0% { top: 5%; opacity: 0; }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { top: 95%; opacity: 0; }
+            0% {
+                top: 5%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.8;
+            }
+
+            90% {
+                opacity: 0.8;
+            }
+
+            100% {
+                top: 95%;
+                opacity: 0;
+            }
         }
 
         /* Loading Spinner Overrides */
@@ -124,7 +137,8 @@
 
                 <!-- 1. HEADER (Floating & Transparent) -->
                 <div class="absolute top-0 left-0 right-0 z-40 p-4 flex items-center justify-between pointer-events-none">
-                    <a href="/dashboard" class="pointer-events-auto w-10 h-10 flex items-center justify-center bg-black/20 backdrop-blur-md rounded-full text-white active:bg-black/40 transition-colors">
+                    <a href="/dashboard"
+                        class="pointer-events-auto w-10 h-10 flex items-center justify-center bg-black/20 backdrop-blur-md rounded-full text-white active:bg-black/40 transition-colors">
                         <ion-icon name="arrow-back-outline" class="text-xl"></ion-icon>
                     </a>
                     <div class="absolute left-1/2 -translate-x-1/2 px-4 py-1.5 bg-black/20 backdrop-blur-md rounded-full">
@@ -140,34 +154,52 @@
                     <div id="camera"></div>
 
                     <!-- Scanning Overlay -->
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-64 h-80 rounded-[3rem] border-2 border-white/30 box-content shadow-[0_0_100px_rgba(0,0,0,0.5)_inset]">
-                        <div class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-blue-400 rounded-tl-[2.5rem]"></div>
-                        <div class="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-blue-400 rounded-tr-[2.5rem]"></div>
-                        <div class="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-blue-400 rounded-bl-[2.5rem]"></div>
-                        <div class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-blue-400 rounded-br-[2.5rem]"></div>
-                        <div class="absolute top-0 left-0 right-0 h-1 bg-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,1)] animate-scan"></div>
+                    <div
+                        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-64 h-80 rounded-[3rem] border-2 border-white/30 box-content shadow-[0_0_100px_rgba(0,0,0,0.5)_inset]">
+                        <div
+                            class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-blue-400 rounded-tl-[2.5rem]">
+                        </div>
+                        <div
+                            class="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-blue-400 rounded-tr-[2.5rem]">
+                        </div>
+                        <div
+                            class="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-blue-400 rounded-bl-[2.5rem]">
+                        </div>
+                        <div
+                            class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-blue-400 rounded-br-[2.5rem]">
+                        </div>
+                        <div
+                            class="absolute top-0 left-0 right-0 h-1 bg-blue-400/50 shadow-[0_0_20px_rgba(59,130,246,1)] animate-scan">
+                        </div>
                     </div>
 
                     <!-- Date & Time Floating Pills -->
                     <div class="absolute top-24 left-4 z-10">
-                        <div class="bg-black/30 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg">
+                        <div
+                            class="bg-black/30 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg">
                             <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
                                 <ion-icon name="calendar-outline" class="text-blue-400 text-lg"></ion-icon>
                             </div>
                             <div class="flex flex-col">
-                                <span class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Tanggal</span>
-                                <span class="text-white text-sm font-bold leading-tight mt-0.5">{{ \Carbon\Carbon::now()->translatedFormat('d M Y') }}</span>
+                                <span
+                                    class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Tanggal</span>
+                                <span
+                                    class="text-white text-base font-bold font-mono leading-normal mt-0.5">{{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="absolute top-24 right-4 z-10">
-                        <div class="bg-black/30 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg">
+                        <div
+                            class="bg-black/30 backdrop-blur-md border border-white/10 px-4 py-2 rounded-2xl flex items-center gap-2 shadow-lg">
                             <div class="flex flex-col items-end">
-                                <span class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Waktu</span>
-                                <span class="text-white text-sm font-bold font-mono leading-tight mt-0.5" id="live-clock">{{ date('H:i:s') }}</span>
+                                <span
+                                    class="text-white/60 text-[10px] font-medium leading-none uppercase tracking-wider">Waktu</span>
+                                <span class="text-white text-base font-bold font-mono leading-normal mt-0.5"
+                                    id="live-clock">{{ date('H:i:s') }}</span>
                             </div>
-                            <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center animate-pulse">
+                            <div
+                                class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center animate-pulse">
                                 <ion-icon name="time-outline" class="text-amber-400 text-lg"></ion-icon>
                             </div>
                         </div>
@@ -179,7 +211,8 @@
                     class="absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
                     :class="isOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'">
 
-                    <div @click="isOpen = !isOpen" class="absolute top-[-15px] left-0 right-0 h-6 w-full z-10 cursor-pointer flex justify-center items-center mt-3">
+                    <div @click="isOpen = !isOpen"
+                        class="absolute top-[-15px] left-0 right-0 h-6 w-full z-10 cursor-pointer flex justify-center items-center mt-3">
                         <div class="w-16 h-1.5 bg-slate-400 rounded-full hover:bg-slate-500 transition-colors"></div>
                     </div>
 
@@ -188,17 +221,25 @@
                         <div class="absolute -top-[70px] left-0 right-0 z-[60] px-6">
                             <div class="grid grid-cols-1 gap-4">
                                 @if ($lembur->lembur_in == null)
-                                    <button id="absenmasuk" class="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3">
-                                        <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                    <button id="absenmasuk"
+                                        class="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-emerald-200 flex items-center justify-center gap-3">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                        </div>
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
                                             <ion-icon name="timer-outline" class="text-white text-lg"></ion-icon>
                                         </div>
                                         <span class="text-white font-bold tracking-wide">Mulai Lembur</span>
                                     </button>
                                 @else
-                                    <button id="absenpulang" class="group relative overflow-hidden bg-rose-500 hover:bg-rose-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-rose-200 flex items-center justify-center gap-3">
-                                        <div class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                        <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                    <button id="absenpulang"
+                                        class="group relative overflow-hidden bg-rose-500 hover:bg-rose-600 active:scale-95 transition-all duration-200 h-14 rounded-2xl shadow-lg shadow-rose-200 flex items-center justify-center gap-3">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                        </div>
+                                        <div
+                                            class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
                                             <ion-icon name="checkmark-circle-outline" class="text-white text-lg"></ion-icon>
                                         </div>
                                         <span class="text-white font-bold tracking-wide">Selesai Lembur</span>
@@ -208,13 +249,17 @@
                         </div>
 
                         <!-- Floating Location Capsule -->
-                        <div class="w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden mx-auto -mt-2 mb-4">
+                        <div
+                            class="w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden mx-auto -mt-2 mb-4">
                             <div class="flex items-center gap-3 flex-1 min-w-0">
-                                <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
                                     <ion-icon name="location" class="text-white text-sm"></ion-icon>
                                 </div>
                                 <div class="flex-col flex min-w-0 pr-2">
-                                    <span class="text-[9px] text-slate-400 uppercase tracking-wider font-bold leading-tight">Lokasi Anda</span>
+                                    <span
+                                        class="text-[9px] text-slate-400 uppercase tracking-wider font-bold leading-tight">Lokasi
+                                        Anda</span>
                                     @php
                                         // Use $lembur properties directly as configured in Controller
                                         // select('cabang.lokasi_cabang', ...) -> $lembur->lokasi_cabang
@@ -225,13 +270,16 @@
                                             $nama_lokasi = $cabang_terpilih ? $cabang_terpilih->nama_cabang : $nama_lokasi;
                                         }
                                     @endphp
-                                    <span class="text-xs font-bold truncate leading-tight" id="location-display">{{ $nama_lokasi }}</span>
+                                    <span class="text-xs font-bold truncate leading-tight"
+                                        id="location-display">{{ $nama_lokasi }}</span>
                                 </div>
                             </div>
-                            
+
                             @if (isset($cabang) && isset($general_setting) && $general_setting->multi_lokasi)
                                 <div><ion-icon name="chevron-down-outline" class="text-slate-400 text-xl"></ion-icon></div>
-                                <select name="cabang" id="cabang" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50 text-xs" onchange="document.getElementById('location-display').innerText = this.options[this.selectedIndex].text">
+                                <select name="cabang" id="cabang"
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50 text-xs"
+                                    onchange="document.getElementById('location-display').innerText = this.options[this.selectedIndex].text">
                                     @foreach ($cabang as $item)
                                         <option value="{{ $item->lokasi_cabang }}" {{ $item->kode_cabang == $lembur->kode_cabang ? 'selected' : '' }} class="text-black bg-white text-xs">
                                             {{ $item->nama_cabang }}
@@ -247,10 +295,12 @@
                         <div class="h-2"></div>
 
                         <!-- Info Card: Jadwal Lembur -->
-                        <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-6 flex items-center justify-between">
+                        <div
+                            class="bg-slate-50 border border-slate-100 rounded-2xl p-4 mb-6 flex items-center justify-between">
                             <div class="text-center">
                                 <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Jadwal</p>
-                                <div class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-100">
+                                <div
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-100">
                                     <span class="text-xs font-bold">Lembur</span>
                                 </div>
                             </div>
@@ -258,9 +308,11 @@
                             <div class="text-center">
                                 <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Waktu</p>
                                 <div class="flex items-center gap-1 text-slate-700">
-                                    <span class="text-sm font-bold font-mono">{{ date('H:i', strtotime($lembur->lembur_mulai)) }}</span>
+                                    <span
+                                        class="text-sm font-bold font-mono">{{ date('H:i', strtotime($lembur->lembur_mulai)) }}</span>
                                     <span class="text-slate-300">-</span>
-                                    <span class="text-sm font-bold font-mono">{{ date('H:i', strtotime($lembur->lembur_selesai)) }}</span>
+                                    <span
+                                        class="text-sm font-bold font-mono">{{ date('H:i', strtotime($lembur->lembur_selesai)) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -268,7 +320,9 @@
                         <!-- MAP SECTION -->
                         <div class="w-full text-center mt-2">
                             <p class="text-[10px] text-slate-400 font-bold uppercase mb-2">Lokasi Anda</p>
-                            <div id="map" class="w-full h-48 rounded-2xl border border-slate-200 shadow-sm overflow-hidden z-20 relative"></div>
+                            <div id="map"
+                                class="w-full h-48 rounded-2xl border border-slate-200 shadow-sm overflow-hidden z-20 relative">
+                            </div>
                         </div>
 
                     </div>
@@ -277,28 +331,58 @@
 
             <!-- Loading Map Placeholder -->
             <div id="map-loading" class="hidden"></div>
-            
-             <!-- Animation Styles -->
-             <style>
+
+            <!-- Animation Styles -->
+            <style>
                 @keyframes scan {
-                    0% { top: 0; opacity: 0; }
-                    10% { opacity: 1; }
-                    90% { opacity: 1; }
-                    100% { top: 100%; opacity: 0; }
+                    0% {
+                        top: 0;
+                        opacity: 0;
+                    }
+
+                    10% {
+                        opacity: 1;
+                    }
+
+                    90% {
+                        opacity: 1;
+                    }
+
+                    100% {
+                        top: 100%;
+                        opacity: 0;
+                    }
                 }
-                .animate-scan { animation: scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+
+                .animate-scan {
+                    animation: scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                }
             </style>
         </div>
-        
+
         <!-- Hidden Audio Assets -->
         <div class="hidden">
-            <audio id="notifikasi_radius"><source src="{{ asset('assets/sound/radius.mp3') }}" type="audio/mpeg"></audio>
-            <audio id="notifikasi_mulaiabsen"><source src="{{ asset('assets/sound/mulaiabsen.wav') }}" type="audio/mpeg"></audio>
-            <audio id="notifikasi_akhirabsen"><source src="{{ asset('assets/sound/akhirabsen.wav') }}" type="audio/mpeg"></audio>
-            <audio id="notifikasi_sudahabsen"><source src="{{ asset('assets/sound/sudahabsen.wav') }}" type="audio/mpeg"></audio>
-            <audio id="notifikasi_absenmasuk"><source src="{{ asset('assets/sound/absenmasuk.wav') }}" type="audio/mpeg"></audio>
-            <audio id="notifikasi_sudahabsenpulang"><source src="{{ asset('assets/sound/sudahabsenpulang.mp3') }}" type="audio/mpeg"></audio>
-            <audio id="notifikasi_absenpulang"><source src="{{ asset('assets/sound/absenpulang.mp3') }}" type="audio/mpeg"></audio>
+            <audio id="notifikasi_radius">
+                <source src="{{ asset('assets/sound/radius.mp3') }}" type="audio/mpeg">
+            </audio>
+            <audio id="notifikasi_mulaiabsen">
+                <source src="{{ asset('assets/sound/mulaiabsen.wav') }}" type="audio/mpeg">
+            </audio>
+            <audio id="notifikasi_akhirabsen">
+                <source src="{{ asset('assets/sound/akhirabsen.wav') }}" type="audio/mpeg">
+            </audio>
+            <audio id="notifikasi_sudahabsen">
+                <source src="{{ asset('assets/sound/sudahabsen.wav') }}" type="audio/mpeg">
+            </audio>
+            <audio id="notifikasi_absenmasuk">
+                <source src="{{ asset('assets/sound/absenmasuk.wav') }}" type="audio/mpeg">
+            </audio>
+            <audio id="notifikasi_sudahabsenpulang">
+                <source src="{{ asset('assets/sound/sudahabsenpulang.mp3') }}" type="audio/mpeg">
+            </audio>
+            <audio id="notifikasi_absenpulang">
+                <source src="{{ asset('assets/sound/absenpulang.mp3') }}" type="audio/mpeg">
+            </audio>
         </div>
     </div>
 @endsection
@@ -441,11 +525,11 @@
                 const loadingIndicator = document.createElement('div');
                 loadingIndicator.id = 'face-recognition-loading';
                 loadingIndicator.innerHTML = `
-                        <div class="spinner-border text-light" role="status">
-                            <span class="sr-only">Memuat pengenalan wajah...</span>
-                        </div>
-                        <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                    `;
+                                    <div class="spinner-border text-light" role="status">
+                                        <span class="sr-only">Memuat pengenalan wajah...</span>
+                                    </div>
+                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                `;
                 loadingIndicator.style.position = 'absolute';
                 loadingIndicator.style.top = '50%';
                 loadingIndicator.style.left = '50%';
@@ -542,11 +626,11 @@
                         const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
                         const video = document.querySelector('.webcam-capture video');
                         if (!video) { setTimeout(startFaceRecognition, 1000); return; }
-                        
+
                         // Waiting for video ready state
                         if (!video.videoWidth || !video.videoHeight || video.readyState < 2) {
-                             setTimeout(startFaceRecognition, 500);
-                             return;
+                            setTimeout(startFaceRecognition, 500);
+                            return;
                         }
 
                         const parent = video.parentElement;
@@ -554,7 +638,7 @@
                         if (existingCanvas) existingCanvas.remove();
                         const canvas = faceapi.createCanvasFromMedia(video);
                         await new Promise(resolve => setTimeout(resolve, 100)); // stabilize
-                        
+
                         const videoWidth = video.videoWidth || video.clientWidth;
                         const videoHeight = video.videoHeight || video.clientHeight;
                         canvas.width = videoWidth;
@@ -591,14 +675,14 @@
                         const historySize = isMobile ? 3 : 5;
 
                         async function detectFaces() {
-                             if (video.paused || video.ended) return [];
-                             if (isMobile) {
-                                 const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.4 })).withFaceLandmarks().withFaceDescriptor();
-                                 return detection ? [detection] : [];
-                             } else {
-                                 const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 })).withFaceLandmarks().withFaceDescriptor();
-                                 return detection ? [detection] : [];
-                             }
+                            if (video.paused || video.ended) return [];
+                            if (isMobile) {
+                                const detection = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.4 })).withFaceLandmarks().withFaceDescriptor();
+                                return detection ? [detection] : [];
+                            } else {
+                                const detection = await faceapi.detectSingleFace(video, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 })).withFaceLandmarks().withFaceDescriptor();
+                                return detection ? [detection] : [];
+                            }
                         }
 
                         function updateCanvas() {
@@ -613,7 +697,7 @@
                                         const hasFace = resizedDetections && resizedDetections.length > 0;
                                         detectionHistory.push(hasFace);
                                         if (detectionHistory.length > historySize) detectionHistory.shift();
-                                        
+
                                         const positiveDetections = detectionHistory.filter(d => d).length;
                                         const detectionRatio = positiveDetections / detectionHistory.length;
 
@@ -713,25 +797,25 @@
                                             }
                                         } else if (noFaceCount >= maxNoFaceFrames) {
                                             // UI Wajah Tidak Terdeteksi
-                                             const label = "Wajah Tidak Terdeteksi";
-                                             const fontSize = 28;
-                                             ctx.font = `bold ${fontSize}px Arial`;
-                                             ctx.textAlign = "center";
-                                             ctx.textBaseline = "middle";
-                                             const centerX = canvas.width / 2;
-                                             const centerY = canvas.height / 2;
-                                             ctx.save();
-                                             ctx.globalAlpha = 0.85;
-                                             ctx.fillStyle = "#F44336";
-                                             ctx.roundRect(centerX - 150, centerY - 25, 300, 50, 16); // Approx box
-                                             ctx.fill();
-                                             ctx.restore();
-                                             ctx.fillStyle = "#fff";
-                                             ctx.fillText(label, centerX, centerY);
-                                             absenButtons.forEach(btn => btn.disabled = true);
+                                            const label = "Wajah Tidak Terdeteksi";
+                                            const fontSize = 28;
+                                            ctx.font = `bold ${fontSize}px Arial`;
+                                            ctx.textAlign = "center";
+                                            ctx.textBaseline = "middle";
+                                            const centerX = canvas.width / 2;
+                                            const centerY = canvas.height / 2;
+                                            ctx.save();
+                                            ctx.globalAlpha = 0.85;
+                                            ctx.fillStyle = "#F44336";
+                                            ctx.roundRect(centerX - 150, centerY - 25, 300, 50, 16); // Approx box
+                                            ctx.fill();
+                                            ctx.restore();
+                                            ctx.fillStyle = "#fff";
+                                            ctx.fillText(label, centerX, centerY);
+                                            absenButtons.forEach(btn => btn.disabled = true);
                                         }
                                         isProcessing = false;
-                                    }).catch (err => { isProcessing = false; });
+                                    }).catch(err => { isProcessing = false; });
                                 }
                             }
                             if (isMobile) setTimeout(updateCanvas, detectionInterval);
@@ -747,10 +831,10 @@
             // ACTION BUTTONS HANDLER
             $("#absenmasuk").click(function (e) {
                 if (faceRecognition == 1 && faceRecognitionDetected == 0) {
-                     Swal.fire({ title: 'Wajah Tidak Dikenali!', text: 'Silahkan posisikan wajah anda di dalam area kamera sampai terdeteksi.', icon: 'warning', confirmButtonText: 'OK', confirmButtonColor: '#F59E0B' });
-                     return false;
+                    Swal.fire({ title: 'Wajah Tidak Dikenali!', text: 'Silahkan posisikan wajah anda di dalam area kamera sampai terdeteksi.', icon: 'warning', confirmButtonText: 'OK', confirmButtonColor: '#F59E0B' });
+                    return false;
                 }
-                var status = 1; 
+                var status = 1;
                 // AJAX call inside Webcam.snap
                 Webcam.snap(function (data_uri) {
                     var image = data_uri;
@@ -785,12 +869,12 @@
                 });
             });
 
-             $("#absenpulang").click(function (e) {
+            $("#absenpulang").click(function (e) {
                 if (faceRecognition == 1 && faceRecognitionDetected == 0) {
-                     Swal.fire({ title: 'Wajah Tidak Dikenali!', text: 'Silahkan posisikan wajah anda di dalam area kamera sampai terdeteksi.', icon: 'warning', confirmButtonText: 'OK', confirmButtonColor: '#F59E0B' });
-                     return false;
+                    Swal.fire({ title: 'Wajah Tidak Dikenali!', text: 'Silahkan posisikan wajah anda di dalam area kamera sampai terdeteksi.', icon: 'warning', confirmButtonText: 'OK', confirmButtonColor: '#F59E0B' });
+                    return false;
                 }
-                var status = 2; 
+                var status = 2;
                 Webcam.snap(function (data_uri) {
                     var image = data_uri;
                     $.ajax({
@@ -817,7 +901,7 @@
                         error: function (xhr) {
                             let errorMessage = xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi Kesalahan Server';
                             let notifikasi = xhr.responseJSON ? xhr.responseJSON.notifikasi : null;
-                             if (notifikasi == "notifikasi_radius" && notifikasi_radius) notifikasi_radius.play();
+                            if (notifikasi == "notifikasi_radius" && notifikasi_radius) notifikasi_radius.play();
                             Swal.fire({ icon: 'error', title: 'Gagal', text: errorMessage, confirmButtonText: 'OK', confirmButtonColor: '#EF4444' });
                         }
                     });
