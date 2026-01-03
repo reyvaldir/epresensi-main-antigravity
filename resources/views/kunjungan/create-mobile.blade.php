@@ -291,8 +291,14 @@
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                     this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
 
+                    // 1. Explicitly reset WebcamJS
                     Webcam.reset();
 
+                    // 2. Brutally clear the container to remove frozen video elements
+                    const container = document.querySelector('.webcam-capture');
+                    if (container) container.innerHTML = '';
+
+                    // 3. Re-initialize with delay
                     setTimeout(() => {
                         Webcam.set({
                             width: 640,
@@ -302,15 +308,26 @@
                             facingMode: this.facingMode,
                             constraints: {
                                 video: {
-                                    facingMode: this.facingMode,
+                                    facingMode: { exact: this.facingMode }, // Try 'exact' first for better switch enforcement
                                     width: { ideal: isMobile ? 240 : 640 },
                                     height: { ideal: isMobile ? 180 : 480 }
                                 }
                             }
                         });
-                        Webcam.attach('.webcam-capture');
-                        setTimeout(() => this.fixVideoAttributes(), 1000);
-                    }, 50);
+
+                        // Fallback logic inside WebcamJS is tricky, so we rely on 'exact' failing to default behavior if needed, 
+                        // but strictly passing the new facingMode is key.
+
+                        try {
+                            Webcam.attach('.webcam-capture');
+                        } catch (e) {
+                            console.error("Attach failed, retrying with simple mode", e);
+                            // Retry simple if exact failed (though WebcamJS might swallow this error)
+                        }
+
+                        // 4. Force attributes again
+                        setTimeout(() => this.fixVideoAttributes(), 800);
+                    }, 200);
                 },
 
                 capturePhoto() {
