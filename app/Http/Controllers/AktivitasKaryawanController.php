@@ -128,14 +128,14 @@ class AktivitasKaryawanController extends Controller
                 $fotoName = time() . '_aktivitas.' . $image_type;
 
                 // Save file
-                Storage::put('public/uploads/aktivitas/' . $fotoName, $image_base64);
+                Storage::disk('public')->put('uploads/aktivitas/' . $fotoName, $image_base64);
                 $data['foto'] = $fotoName;
             }
         } elseif ($request->hasFile('foto')) {
             // Handle file upload (for admin)
             $foto = $request->file('foto');
             $fotoName = time() . '_' . $foto->getClientOriginalName();
-            $foto->storeAs('public/uploads/aktivitas', $fotoName);
+            $foto->storeAs('uploads/aktivitas', $fotoName, 'public');
             $data['foto'] = $fotoName;
         }
 
