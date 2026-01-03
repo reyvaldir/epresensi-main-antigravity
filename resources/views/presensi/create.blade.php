@@ -409,12 +409,16 @@
                 }
 
                 /* Disabled Button Styling */
-                button:disabled, .btn:disabled {
-                    background-color: #e5e7eb !important; /* Gray-200 */
+                button:disabled,
+                .btn:disabled {
+                    background-color: #e5e7eb !important;
+                    /* Gray-200 */
                     border-color: #e5e7eb !important;
-                    color: #9ca3af !important; /* Gray-400 */
+                    color: #374151 !important;
+                    /* Gray-700 */
                     cursor: not-allowed !important;
-                    opacity: 1 !important; /* Override Bootstrap opacity */
+                    opacity: 1 !important;
+                    /* Override Bootstrap opacity */
                 }
             </style>
         </div>
@@ -735,11 +739,11 @@
                     const loadingIndicator = document.createElement('div');
                     loadingIndicator.id = 'face-recognition-loading';
                     loadingIndicator.innerHTML = `
-                                                                                                                                                                                                                                                            <div class="spinner-border text-light" role="status">
-                                                                                                                                                                                                                                                                <span class="sr-only">Memuat pengenalan wajah...</span>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                                                                                                                                                                                                                                                                                                             `;
+                                                                                                                                                                                                                                                                <div class="spinner-border text-light" role="status">
+                                                                                                                                                                                                                                                                    <span class="sr-only">Memuat pengenalan wajah...</span>
+                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                                                                                                                                                                                                                                                                                                 `;
                     loadingIndicator.style.position = 'absolute';
                     loadingIndicator.style.top = '50%';
                     loadingIndicator.style.left = '50%';
@@ -814,11 +818,11 @@
                         const faceDataLoading = document.createElement('div');
                         faceDataLoading.id = 'face-data-loading';
                         faceDataLoading.innerHTML = `
-                                                                                                                                                                                                                                                                <div class="spinner-border text-light" role="status">
-                                                                                                                                                                                                                                                                    <span class="sr-only">Memuat data wajah...</span>
-                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                <div class="mt-2 text-light">Memuat data wajah...</div>
-                                                                                                                                                                                                                                                            `;
+                                                                                                                                                                                                                                                                    <div class="spinner-border text-light" role="status">
+                                                                                                                                                                                                                                                                        <span class="sr-only">Memuat data wajah...</span>
+                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                    <div class="mt-2 text-light">Memuat data wajah...</div>
+                                                                                                                                                                                                                                                                `;
                         faceDataLoading.style.position = 'absolute';
                         faceDataLoading.style.top = '50%';
                         faceDataLoading.style.left = '50%';
