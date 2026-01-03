@@ -1354,6 +1354,23 @@
                         '<div class="spinner-border text-light mr-2" role="status"><span class="sr-only">Loading...</span></div> <span style="font-size:16px">Loading...</span>'
 
                     );
+                    
+                    if (!lokasi) {
+                        swal.fire({
+                            icon: 'warning',
+                            title: 'Lokasi Belum Ditemukan',
+                            text: 'Sedang mengambil lokasi Anda. Pastikan GPS aktif dan izin lokasi diberikan.',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                        $("#absenmasuk").prop('disabled', false);
+                         $("#absenpulang").prop('disabled', false);
+                        $("#absenmasuk").html(
+                            '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Masuk</span>'
+                        );
+                        return false;
+                    }
+
                     let status = '1';
                     Webcam.snap(function (uri) {
                         image = uri;
@@ -1444,6 +1461,24 @@
                         '<div class="spinner-border text-light mr-2" role="status"><span class="sr-only">Loading...</span></div> <span style="font-size:16px">Loading...</span>'
 
                     );
+
+
+                    if (!lokasi) {
+                         swal.fire({
+                            icon: 'warning',
+                            title: 'Lokasi Belum Ditemukan',
+                            text: 'Sedang mengambil lokasi Anda. Pastikan GPS aktif dan izin lokasi diberikan.',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                        $("#absenmasuk").prop('disabled', false);
+                        $("#absenpulang").prop('disabled', false);
+                         $("#absenpulang").html(
+                            '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Pulang</span>'
+                        );
+                        return false;
+                    }
+
                     let status = '2';
                     Webcam.snap(function (uri) {
                         image = uri;

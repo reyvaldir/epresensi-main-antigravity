@@ -258,8 +258,17 @@ class PresensiController extends Controller
         //Jika Presensi Kemarin Status Lintas Hari nya 1 Makan Tanggal Presensi Sekarang adalah Tanggal Kemarin
         //$tanggal_presensi = $lintas_hari == 1 ? $tanggal_kemarin : $tanggal_sekarang;
 
+        // Validasi Lokasi User
+        if (empty($lokasi)) {
+            return response()->json(['status' => false, 'message' => 'Lokasi Anda belum ditemukan. Tunggu sejenak atau pastikan GPS aktif.'], 400);
+        }
+
         //Get Lokasi User
         $koordinat_user = explode(",", $lokasi);
+        if (count($koordinat_user) < 2) {
+            return response()->json(['status' => false, 'message' => 'Format lokasi tidak valid.'], 400);
+        }
+
         $latitude_user = $koordinat_user[0];
         $longitude_user = $koordinat_user[1];
 
