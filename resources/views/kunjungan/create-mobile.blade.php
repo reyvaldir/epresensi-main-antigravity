@@ -254,16 +254,21 @@
                     });
                     Webcam.attach('.webcam-capture');
 
-                    Webcam.on('load', function () {
-                        setTimeout(() => {
-                            const video = document.querySelector('.webcam-capture video');
-                            if (video) {
-                                video.style.width = '100%';
-                                video.style.height = '100%';
-                                video.style.objectFit = 'cover';
-                            }
-                        }, 500);
-                    });
+                    Webcam.on('load', () => { setTimeout(() => this.fixVideoAttributes(), 500); });
+                },
+
+                fixVideoAttributes() {
+                    const video = document.querySelector('.webcam-capture video');
+                    if (video) {
+                        video.removeAttribute('style');
+                        video.style.width = '100%';
+                        video.style.height = '100%';
+                        video.style.objectFit = 'cover';
+                        video.setAttribute('playsinline', 'true');
+                        video.setAttribute('muted', 'true');
+                        video.setAttribute('autoplay', 'true');
+                        video.play().catch(e => console.log(e));
+                    }
                 },
 
                 initLocation() {
@@ -288,14 +293,13 @@
 
                     Webcam.reset();
 
-                    // Short delay to ensure stream is fully stopped before restarting
                     setTimeout(() => {
                         Webcam.set({
                             width: 640,
                             height: 480,
                             image_format: 'jpeg',
                             jpeg_quality: 90,
-                            facingMode: this.facingMode, // LEGACY SUPPORT
+                            facingMode: this.facingMode,
                             constraints: {
                                 video: {
                                     facingMode: this.facingMode,
@@ -305,6 +309,7 @@
                             }
                         });
                         Webcam.attach('.webcam-capture');
+                        setTimeout(() => this.fixVideoAttributes(), 1000);
                     }, 50);
                 },
 
