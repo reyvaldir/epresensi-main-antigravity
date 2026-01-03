@@ -142,7 +142,7 @@
                     </div>
 
                     <!-- Main Content (Scrollable) -->
-                    <div class="pb-20 pt-10 px-6 overflow-y-auto">
+                    <div class="pb-20 pt-14 px-6 overflow-y-auto">
 
                         <!-- Floating Action Buttons (Capture + Switch Camera) -->
                         <div class="absolute -top-[70px] left-0 right-0 z-[60] px-6">
@@ -169,7 +169,7 @@
 
                         <!-- Location Capsule -->
                         <div
-                            class="w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden mx-auto -mt-2 mb-4">
+                            class="w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden mx-auto mb-6">
                             <div class="flex items-center gap-3 flex-1 min-w-0">
                                 <div
                                     class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/30">
