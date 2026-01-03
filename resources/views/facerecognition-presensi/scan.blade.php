@@ -405,17 +405,17 @@
         function initQRScanner() {
             html5QrcodeScanner = new Html5QrcodeScanner(
                 "qr-reader", {
-                    fps: 10,
-                    qrbox: {
-                        width: 250,
-                        height: 250
-                    },
-                    aspectRatio: 1.0,
-                    showTorchButtonIfSupported: true,
-                    showZoomSliderIfSupported: true,
-                    rememberLastUsedCamera: true,
-                    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 250
                 },
+                aspectRatio: 1.0,
+                showTorchButtonIfSupported: true,
+                showZoomSliderIfSupported: true,
+                rememberLastUsedCamera: true,
+                supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+            },
                 false
             );
 
@@ -552,10 +552,16 @@
                     location = `${position.coords.latitude},${position.coords.longitude}`;
                 } catch (error) {
                     console.error('Error getting location:', error);
-                    location = '0,0'; // Default location
+                    showStatus('Gagal mengambil lokasi. Pastikan GPS aktif.', 'error');
+                    document.getElementById('loading').style.display = 'none';
+                    enableButtons();
+                    return;
                 }
             } else {
-                location = '0,0'; // Default location
+                showStatus('Browser tidak mendukung Geolocation.', 'error');
+                document.getElementById('loading').style.display = 'none';
+                enableButtons();
+                return;
             }
 
             // Get cabang location from database
@@ -648,17 +654,17 @@
         }
 
         // Initialize QR Scanner when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Request camera permission immediately
             navigator.mediaDevices.getUserMedia({
-                    video: true
-                })
-                .then(function(stream) {
+                video: true
+            })
+                .then(function (stream) {
                     // Camera permission granted, initialize scanner
                     initQRScanner();
                     stream.getTracks().forEach(track => track.stop()); // Stop the test stream
                 })
-                .catch(function(err) {
+                .catch(function (err) {
                     console.log('Camera permission denied, but continuing...');
                     initQRScanner();
                 });

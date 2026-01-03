@@ -98,7 +98,21 @@ class KunjunganController extends Controller
                 ->withInput();
         }
 
-        $data = $request->only(['nik',  'deskripsi', 'lokasi', 'tanggal_kunjungan']);
+        // Custom Location Validation
+        $lokasi = $request->lokasi;
+        if (empty($lokasi) || strpos($lokasi, ',') === false) {
+            return redirect()->back()
+                ->with('error', 'Lokasi tidak valid. Pastikan GPS aktif.')
+                ->withInput();
+        }
+        $koordinat = explode(",", $lokasi);
+        if (count($koordinat) < 2) {
+            return redirect()->back()
+                ->with('error', 'Format lokasi tidak valid.')
+                ->withInput();
+        }
+
+        $data = $request->only(['nik', 'deskripsi', 'lokasi', 'tanggal_kunjungan']);
 
         // Handle foto upload (base64 or file)
         if ($request->filled('foto')) {
@@ -161,7 +175,7 @@ class KunjunganController extends Controller
                 ->withInput();
         }
 
-        $data = $request->only(['nik',  'deskripsi', 'lokasi', 'tanggal_kunjungan']);
+        $data = $request->only(['nik', 'deskripsi', 'lokasi', 'tanggal_kunjungan']);
 
         // Handle foto upload (file or base64)
         if ($request->hasFile('foto')) {

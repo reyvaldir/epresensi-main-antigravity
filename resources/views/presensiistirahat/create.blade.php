@@ -409,6 +409,7 @@
             let notifikasi_absenpulang = document.getElementById('notifikasi_absenpulang');
 
             let faceRecognitionDetected = 0;
+            let faceMatchState = 0; // 0: No Face, 1: Matched, 2: Unknown/Not Matched
             let faceRecognition = "{{ $general_setting->face_recognition }}";
 
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -519,11 +520,11 @@
                 const loadingIndicator = document.createElement('div');
                 loadingIndicator.id = 'face-recognition-loading';
                 loadingIndicator.innerHTML = `
-                                    <div class="spinner-border text-light" role="status">
-                                        <span class="sr-only">Memuat pengenalan wajah...</span>
-                                    </div>
-                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                                `;
+                                                        <div class="spinner-border text-light" role="status">
+                                                            <span class="sr-only">Memuat pengenalan wajah...</span>
+                                                        </div>
+                                                        <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                                    `;
                 loadingIndicator.style.position = 'absolute';
                 loadingIndicator.style.top = '50%';
                 loadingIndicator.style.left = '50%';
@@ -577,11 +578,11 @@
                     const faceDataLoading = document.createElement('div');
                     faceDataLoading.id = 'face-data-loading';
                     faceDataLoading.innerHTML = `
-                                        <div class="spinner-border text-light" role="status">
-                                            <span class="sr-only">Loading...</span>
-                                        </div>
-                                        <div class="mt-2 text-light">Memuat data wajah...</div>
-                                    `;
+                                                            <div class="spinner-border text-light" role="status">
+                                                                <span class="sr-only">Loading...</span>
+                                                            </div>
+                                                            <div class="mt-2 text-light">Memuat data wajah...</div>
+                                                        `;
                     faceDataLoading.style.position = 'absolute';
                     faceDataLoading.style.top = '50%';
                     faceDataLoading.style.left = '50%';
@@ -860,6 +861,8 @@
                                                 if (noFaceCount >= maxNoFaceFrames) {
                                                     stableDetectionCount = 0;
                                                     lastValidDetection = null;
+                                                    // Reset state jika tidak ada wajah
+                                                    faceMatchState = 0;
                                                 }
                                             }
 
@@ -890,6 +893,7 @@
                                                         labelColor = 'rgba(255, 193, 7, 0.8)';
                                                         labelText = 'Wajah Tidak Dikenali';
                                                         consecutiveMatches = 0;
+                                                        faceMatchState = 2; // Set state to Unknown
                                                     } else {
                                                         // Wajah dikenali - warna hijau
                                                         boxColor = '#4CAF50';
@@ -898,6 +902,7 @@
                                                         consecutiveMatches++;
                                                         if (consecutiveMatches >= requiredConsecutiveMatches) {
                                                             faceRecognitionDetected = 1;
+                                                            faceMatchState = 1; // Set state to Matched
                                                         }
                                                     }
 
@@ -1102,104 +1107,67 @@
             // --- FACE RECOGNITION BLOCK END ---
 
             // ACTION BUTTONS HANDLER
-            $("#absenmasuk").click(function (e) {
-                // Check face recognition requirement first
-                if (faceRecognition == 1 && faceRecognitionDetected == 0) {
+            // HELPER: Validate Face
+            function validateFace() {
+                if (faceRecognition != 1) return true;
+
+                if (faceMatchState == 2) {
                     Swal.fire({
-                        title: 'Wajah Tidak Dikenali!',
-                        text: 'Silahkan posisikan wajah anda di dalam area kamera sampai terdeteksi.',
-                        icon: 'warning',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#F59E0B' // Amber color
-                    });
-                    return false; // Stop process
-                }
-
-                // If Passed or Face Recog disabled, proceed
-                var status = 1;
-                var kode_jam_kerja = "{{ $presensi->kode_jam_kerja }}"; // Use presensi record jamkerja
-
-                // FIXED: Webcam.snap is async - AJAX must be inside the callback
-                Webcam.snap(function (data_uri) {
-                    var image = data_uri;
-
-                    $.ajax({
-                        type: 'POST',
-                        url: '{{ route('presensiistirahat.store') }}',
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            image: image,
-                            status: status,
-                            lokasi: lokasi,
-                            kode_jam_kerja: kode_jam_kerja,
-                            lokasi_cabang: lokasi_cabang
-                        },
-                        cache: false,
-                        success: function (respond) {
-                            var status = respond.status;
-                            if (status == true) {
-                                if (notifikasi_mulaiabsen) notifikasi_absenmasuk.play();
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: respond.message,
-                                    confirmButtonText: 'OK',
-                                    confirmButtonColor: '#10B981'
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        window.location.href = '/dashboard';
-                                    }
-                                });
-                            } else {
-                                if (notifikasi_radius) notifikasi_radius.play();
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: respond.message,
-                                    confirmButtonText: 'OK',
-                                    confirmButtonColor: '#EF4444'
-                                });
-                            }
-                        },
-                        error: function (xhr) {
-                            // Parse error message
-                            let errorMessage = xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi Kesalahan Server';
-                            let notifikasi = xhr.responseJSON ? xhr.responseJSON.notifikasi : null;
-
-                            if (notifikasi == "notifikasi_radius" && notifikasi_radius) notifikasi_radius.play();
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: errorMessage,
-                                confirmButtonText: 'OK',
-                                confirmButtonColor: '#EF4444'
-                            });
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Wajah tidak dikenali',
+                        didClose: function () {
+                            $("#absenmasuk").prop('disabled', false);
+                            $("#absenpulang").prop('disabled', false);
                         }
                     });
-                });
-            });
-
-            $("#absenpulang").click(function (e) {
-                // Check face recognition requirement first
-                if (faceRecognition == 1 && faceRecognitionDetected == 0) {
+                    return false;
+                } else if (faceMatchState == 0) {
                     Swal.fire({
-                        title: 'Wajah Tidak Dikenali!',
-                        text: 'Silahkan posisikan wajah anda di dalam area kamera sampai terdeteksi.',
-                        icon: 'warning',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#F59E0B' // Amber color
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Wajah tidak terdeteksi',
+                        didClose: function () {
+                            $("#absenmasuk").prop('disabled', false);
+                            $("#absenpulang").prop('disabled', false);
+                        }
                     });
                     return false;
                 }
 
-                // If Passed or Face Recog disabled, proceed
-                var status = 2; // OUT
-                var kode_jam_kerja = "{{ $presensi->kode_jam_kerja }}";
+                if (faceRecognitionDetected == 0) {
+                    Swal.fire({
+                        title: 'Oops...',
+                        text: 'Wajah tidak dikenali / Belum terdeteksi sepenuhnya',
+                        icon: 'warning',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#F59E0B'
+                    });
+                    return false;
+                }
+                return true;
+            }
 
-                // FIXED: Webcam.snap is async - AJAX must be inside the callback
+            // HELPER: Submit Presensi Istirahat
+            function submitPresensi(status, successAudioObj) {
+                // Check Location first
+                if (!lokasi) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lokasi Belum Ditemukan',
+                        text: 'Sedang mengambil lokasi Anda. Pastikan GPS aktif dan izin lokasi diberikan.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    return false;
+                }
+
+                // Check Face
+                if (!validateFace()) return false;
+
                 Webcam.snap(function (data_uri) {
                     var image = data_uri;
+                    var kode_jam_kerja = "{{ $presensi->kode_jam_kerja }}";
 
                     $.ajax({
                         type: 'POST',
@@ -1214,9 +1182,8 @@
                         },
                         cache: false,
                         success: function (respond) {
-                            var status = respond.status;
-                            if (status == true) {
-                                if (notifikasi_akhirabsen) notifikasi_absenpulang.play();
+                            if (respond.status == true) {
+                                if (successAudioObj) successAudioObj.play();
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Berhasil',
@@ -1240,10 +1207,8 @@
                             }
                         },
                         error: function (xhr) {
-                            // Parse error message
                             let errorMessage = xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi Kesalahan Server';
                             let notifikasi = xhr.responseJSON ? xhr.responseJSON.notifikasi : null;
-
                             if (notifikasi == "notifikasi_radius" && notifikasi_radius) notifikasi_radius.play();
 
                             Swal.fire({
@@ -1256,6 +1221,15 @@
                         }
                     });
                 });
+            }
+
+            // ACTION BUTTONS HANDLER
+            $("#absenmasuk").click(function (e) {
+                submitPresensi(1, notifikasi_absenmasuk);
+            });
+
+            $("#absenpulang").click(function (e) {
+                submitPresensi(2, notifikasi_absenpulang);
             });
 
             $("#cabang").change(function () {

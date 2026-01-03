@@ -356,6 +356,16 @@
                         return;
                     }
 
+                    const lokasi = document.getElementById('lokasiData').value;
+                    if (!lokasi) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Lokasi Belum Ditemukan',
+                            text: 'Sedang mengambil lokasi Anda. Pastikan GPS aktif!',
+                        });
+                        return;
+                    }
+
                     document.getElementById('aktivitasData').value = desc;
 
                     Swal.fire({

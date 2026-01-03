@@ -415,6 +415,7 @@
             let notifikasi_absenpulang = document.getElementById('notifikasi_absenpulang');
 
             let faceRecognitionDetected = 0;
+            let faceMatchState = 0; // 0: No Face, 1: Matched, 2: Unknown/Not Matched
             let faceRecognition = "{{ $general_setting->face_recognition ?? 0 }}";
 
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -525,11 +526,11 @@
                 const loadingIndicator = document.createElement('div');
                 loadingIndicator.id = 'face-recognition-loading';
                 loadingIndicator.innerHTML = `
-                                    <div class="spinner-border text-light" role="status">
-                                        <span class="sr-only">Memuat pengenalan wajah...</span>
-                                    </div>
-                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                                `;
+                                                    <div class="spinner-border text-light" role="status">
+                                                        <span class="sr-only">Memuat pengenalan wajah...</span>
+                                                    </div>
+                                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                                `;
                 loadingIndicator.style.position = 'absolute';
                 loadingIndicator.style.top = '50%';
                 loadingIndicator.style.left = '50%';
@@ -710,6 +711,8 @@
                                             if (noFaceCount >= maxNoFaceFrames) {
                                                 stableDetectionCount = 0;
                                                 lastValidDetection = null;
+                                                // Reset state jika tidak ada wajah
+                                                faceMatchState = 0;
                                             }
                                         }
 
@@ -729,10 +732,14 @@
                                                 if (isUnknown || isNotRecognized) {
                                                     boxColor = '#FFC107'; labelColor = 'rgba(255, 193, 7, 0.8)'; labelText = 'Wajah Tidak Dikenali';
                                                     consecutiveMatches = 0;
+                                                    faceMatchState = 2; // Set state to Unknown
                                                 } else {
                                                     boxColor = '#4CAF50'; labelColor = 'rgba(76, 175, 80, 0.8)'; labelText = "{{ $lembur->nama_karyawan }}";
                                                     consecutiveMatches++;
-                                                    if (consecutiveMatches >= requiredConsecutiveMatches) faceRecognitionDetected = 1;
+                                                    if (consecutiveMatches >= requiredConsecutiveMatches) {
+                                                        faceRecognitionDetected = 1;
+                                                        faceMatchState = 1; // Set state to Matched
+                                                    }
                                                 }
 
                                                 ctx.strokeStyle = boxColor;
@@ -829,52 +836,42 @@
             }
 
             // ACTION BUTTONS HANDLER
-            $("#absenmasuk").click(function (e) {
-                if (faceRecognition == 1 && faceRecognitionDetected == 0) {
-                    Swal.fire({ title: 'Wajah Tidak Dikenali!', text: 'Silahkan posisikan wajah anda di dalam area kamera sampai terdeteksi.', icon: 'warning', confirmButtonText: 'OK', confirmButtonColor: '#F59E0B' });
-                    return false;
-                }
-                var status = 1;
-                // AJAX call inside Webcam.snap
-                Webcam.snap(function (data_uri) {
-                    var image = data_uri;
-                    $.ajax({
-                        type: 'POST',
-                        url: '{{ route("lembur.storepresensi") }}',
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            image: image,
-                            status: status,
-                            lokasi: lokasi,
-                            id_lembur: "{{ $lembur->id }}", // Important for Overtime
-                            lokasi_cabang: lokasi_cabang
-                        },
-                        cache: false,
-                        success: function (respond) {
-                            if (respond.status == true) {
-                                if (notifikasi_mulaiabsen) notifikasi_absenmasuk.play();
-                                Swal.fire({ icon: 'success', title: 'Berhasil', text: respond.message, confirmButtonText: 'OK', confirmButtonColor: '#10B981' }).then((result) => { if (result.isConfirmed) window.location.href = '/dashboard'; });
-                            } else {
-                                if (notifikasi_radius) notifikasi_radius.play();
-                                Swal.fire({ icon: 'error', title: 'Gagal', text: respond.message, confirmButtonText: 'OK', confirmButtonColor: '#EF4444' });
-                            }
-                        },
-                        error: function (xhr) {
-                            let errorMessage = xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi Kesalahan Server';
-                            let notifikasi = xhr.responseJSON ? xhr.responseJSON.notifikasi : null;
-                            if (notifikasi == "notifikasi_radius" && notifikasi_radius) notifikasi_radius.play();
-                            Swal.fire({ icon: 'error', title: 'Gagal', text: errorMessage, confirmButtonText: 'OK', confirmButtonColor: '#EF4444' });
-                        }
-                    });
-                });
-            });
+            // HELPER: Validate Face (Handles Alerts)
+            function validateFace() {
+                if (faceRecognition != 1) return true; // Skip if disabled
 
-            $("#absenpulang").click(function (e) {
-                if (faceRecognition == 1 && faceRecognitionDetected == 0) {
-                    Swal.fire({ title: 'Wajah Tidak Dikenali!', text: 'Silahkan posisikan wajah anda di dalam area kamera sampai terdeteksi.', icon: 'warning', confirmButtonText: 'OK', confirmButtonColor: '#F59E0B' });
+                if (faceMatchState == 2) {
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Wajah tidak dikenali', confirmButtonText: 'OK', confirmButtonColor: '#EF4444' });
+                    return false;
+                } else if (faceMatchState == 0) {
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Wajah tidak terdeteksi', confirmButtonText: 'OK', confirmButtonColor: '#EF4444' });
                     return false;
                 }
-                var status = 2;
+
+                if (faceRecognitionDetected == 0) {
+                    Swal.fire({ title: 'Oops...', text: 'Wajah tidak dikenali / Belum terdeteksi sepenuhnya', icon: 'warning', confirmButtonText: 'OK', confirmButtonColor: '#F59E0B' });
+                    return false;
+                }
+                return true;
+            }
+
+            // HELPER: Submit Presensi
+            function submitPresensi(status, successAudioObj, successAudioFileId) {
+                // Check Location first
+                if (!lokasi) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lokasi Belum Ditemukan',
+                        text: 'Sedang mengambil lokasi Anda. Pastikan GPS aktif dan izin lokasi diberikan.',
+                        timer: 3000,
+                        showConfirmButton: false
+                    });
+                    return false;
+                }
+
+                // Check Face
+                if (!validateFace()) return false;
+
                 Webcam.snap(function (data_uri) {
                     var image = data_uri;
                     $.ajax({
@@ -891,7 +888,7 @@
                         cache: false,
                         success: function (respond) {
                             if (respond.status == true) {
-                                if (notifikasi_akhirabsen) notifikasi_absenpulang.play();
+                                if (successAudioObj) successAudioObj.play();
                                 Swal.fire({ icon: 'success', title: 'Berhasil', text: respond.message, confirmButtonText: 'OK', confirmButtonColor: '#10B981' }).then((result) => { if (result.isConfirmed) window.location.href = '/dashboard'; });
                             } else {
                                 if (notifikasi_radius) notifikasi_radius.play();
@@ -906,6 +903,15 @@
                         }
                     });
                 });
+            }
+
+            // ACTION BUTTONS HANDLER
+            $("#absenmasuk").click(function (e) {
+                submitPresensi(1, notifikasi_mulaiabsen, 'notifikasi_absenmasuk');
+            });
+
+            $("#absenpulang").click(function (e) {
+                submitPresensi(2, notifikasi_akhirabsen, 'notifikasi_absenpulang');
             });
 
             $("#cabang").change(function () {

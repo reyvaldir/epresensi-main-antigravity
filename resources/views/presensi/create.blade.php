@@ -271,7 +271,8 @@
                                     </button>
                                 @else
                                     {{-- Both clocked in and out - show completion message --}}
-                                    <div class="bg-slate-100 text-slate-600 h-14 rounded-2xl flex items-center justify-center gap-3 w-full border border-slate-200">
+                                    <div
+                                        class="bg-slate-100 text-slate-600 h-14 rounded-2xl flex items-center justify-center gap-3 w-full border border-slate-200">
                                         <ion-icon name="checkmark-circle" class="text-emerald-500 text-xl"></ion-icon>
                                         <span class="font-bold">Presensi Selesai</span>
                                     </div>
@@ -311,9 +312,7 @@
                                     class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-50 text-xs"
                                     onchange="document.getElementById('location-display').innerText = this.options[this.selectedIndex].text">
                                     @foreach ($cabang as $item)
-                                        <option value="{{ $item->lokasi_cabang }}"
-                                            {{ $item->kode_cabang == $karyawan->kode_cabang ? 'selected' : '' }}
-                                            class="text-black bg-white text-xs">
+                                        <option value="{{ $item->lokasi_cabang }}" {{ $item->kode_cabang == $karyawan->kode_cabang ? 'selected' : '' }} class="text-black bg-white text-xs">
                                             {{ $item->nama_cabang }}
                                         </option>
                                     @endforeach
@@ -505,6 +504,7 @@
 
                 // Variabel untuk menampung status face recognition
                 let faceRecognitionDetected = 0; // Inisialisasi variabel face recognition detected
+                let faceMatchState = 0; // 0: No Face, 1: Matched, 2: Unknown/Not Matched
                 // Mengambil nilai face recognition dari variabel $general_setting->face_recognition
                 let faceRecognition = "{{ $general_setting->face_recognition }}";
 
@@ -726,11 +726,11 @@
                     const loadingIndicator = document.createElement('div');
                     loadingIndicator.id = 'face-recognition-loading';
                     loadingIndicator.innerHTML = `
-                                                                                                                                                                                                                                    <div class="spinner-border text-light" role="status">
-                                                                                                                                                                                                                                        <span class="sr-only">Memuat pengenalan wajah...</span>
-                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
-                                                                                                                                                                                                                                                                  `;
+                                                                                                                                                                                                                                                    <div class="spinner-border text-light" role="status">
+                                                                                                                                                                                                                                                        <span class="sr-only">Memuat pengenalan wajah...</span>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                    <div class="mt-2 text-light">Memuat model pengenalan wajah...</div>
+                                                                                                                                                                                                                                                                                  `;
                     loadingIndicator.style.position = 'absolute';
                     loadingIndicator.style.top = '50%';
                     loadingIndicator.style.left = '50%';
@@ -805,11 +805,11 @@
                         const faceDataLoading = document.createElement('div');
                         faceDataLoading.id = 'face-data-loading';
                         faceDataLoading.innerHTML = `
-                                                                                                                                                                                                                                        <div class="spinner-border text-light" role="status">
-                                                                                                                                                                                                                                            <span class="sr-only">Memuat data wajah...</span>
-                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                        <div class="mt-2 text-light">Memuat data wajah...</div>
-                                                                                                                                                                                                                                    `;
+                                                                                                                                                                                                                                                        <div class="spinner-border text-light" role="status">
+                                                                                                                                                                                                                                                            <span class="sr-only">Memuat data wajah...</span>
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                        <div class="mt-2 text-light">Memuat data wajah...</div>
+                                                                                                                                                                                                                                                    `;
                         faceDataLoading.style.position = 'absolute';
                         faceDataLoading.style.top = '50%';
                         faceDataLoading.style.left = '50%';
@@ -1095,6 +1095,8 @@
                                                     if (noFaceCount >= maxNoFaceFrames) {
                                                         stableDetectionCount = 0;
                                                         lastValidDetection = null;
+                                                        // Reset state jika tidak ada wajah
+                                                        faceMatchState = 0;
                                                     }
                                                 }
 
@@ -1125,6 +1127,7 @@
                                                             labelColor = 'rgba(255, 193, 7, 0.8)';
                                                             labelText = 'Wajah Tidak Dikenali';
                                                             consecutiveMatches = 0;
+                                                            faceMatchState = 2; // Set state to Unknown
                                                         } else {
                                                             // Wajah dikenali - warna hijau
                                                             boxColor = '#4CAF50';
@@ -1133,6 +1136,7 @@
                                                             consecutiveMatches++;
                                                             if (consecutiveMatches >= requiredConsecutiveMatches) {
                                                                 faceRecognitionDetected = 1;
+                                                                faceMatchState = 1; // Set state to Matched
                                                             }
                                                         }
 
@@ -1346,56 +1350,79 @@
                     }
                 }
 
-                $("#absenmasuk").click(function () {
-                    // alert(lokasi);
+                // HELPER: Validate Face
+                function validateFace() {
+                    if (faceRecognition != 1) return true;
+
+                    if (faceMatchState == 2) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Wajah tidak dikenali',
+                            didClose: function () {
+                                resetButtons();
+                            }
+                        });
+                        return false;
+                    } else if (faceMatchState == 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Wajah tidak terdeteksi',
+                            didClose: function () {
+                                resetButtons();
+                            }
+                        });
+                        return false;
+                    }
+
+                    if (faceRecognitionDetected == 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Wajah tidak dikenali / Belum terdeteksi sepenuhnya',
+                            didClose: function () {
+                                resetButtons();
+                            }
+                        });
+                        return false;
+                    }
+                    return true;
+                }
+
+                function resetButtons() {
+                    $("#absenmasuk").prop('disabled', false);
+                    $("#absenpulang").prop('disabled', false);
+                    $("#absenmasuk").html('<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Masuk</span>');
+                    $("#absenpulang").html('<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Pulang</span>');
+                }
+
+                // HELPER: Submit Presensi
+                function submitPresensi(status) {
+                    // UI Loading
+                    let btnId = status == 1 ? "#absenmasuk" : "#absenpulang";
                     $("#absenmasuk").prop('disabled', true);
                     $("#absenpulang").prop('disabled', true);
-                    $("#absenmasuk").html(
-                        '<div class="spinner-border text-light mr-2" role="status"><span class="sr-only">Loading...</span></div> <span style="font-size:16px">Loading...</span>'
+                    $(btnId).html('<div class="spinner-border text-light mr-2" role="status"><span class="sr-only">Loading...</span></div> <span style="font-size:16px">Loading...</span>');
 
-                    );
-                    
                     if (!lokasi) {
-                        swal.fire({
+                        Swal.fire({
                             icon: 'warning',
                             title: 'Lokasi Belum Ditemukan',
                             text: 'Sedang mengambil lokasi Anda. Pastikan GPS aktif dan izin lokasi diberikan.',
                             timer: 3000,
                             showConfirmButton: false
                         });
-                        $("#absenmasuk").prop('disabled', false);
-                         $("#absenpulang").prop('disabled', false);
-                        $("#absenmasuk").html(
-                            '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Masuk</span>'
-                        );
+                        resetButtons();
                         return false;
                     }
 
-                    let status = '1';
                     Webcam.snap(function (uri) {
                         image = uri;
-                    });
 
-                    // alert(faceRecognitionDetected);
-                    // return false;
-                    if (faceRecognitionDetected == 0 && faceRecognition == 1) {
-                        swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Wajah tidak terdeteksi',
-                            didClose: function () {
-                                $("#absenmasuk").prop('disabled', false);
-                                $("#absenpulang").prop('disabled', false);
-                                $("#absenmasuk").html(
-                                    '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Masuk</span>'
-                                );
-                                $("#absenpulang").html(
-                                    '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Pulang</span>'
-                                )
-                            }
-                        })
-                        return false;
-                    } else {
+                        // Validate Face
+                        if (!validateFace()) return false;
+
                         $.ajax({
                             type: 'POST',
                             url: "{{ route('presensi.store') }}",
@@ -1409,8 +1436,12 @@
                             },
                             success: function (data) {
                                 if (data.status == true) {
-                                    notifikasi_absenmasuk.play();
-                                    swal.fire({
+                                    if (status == 1) {
+                                        notifikasi_absenmasuk.play();
+                                    } else {
+                                        notifikasi_absenpulang.play();
+                                    }
+                                    Swal.fire({
                                         icon: 'success',
                                         title: 'Berhasil',
                                         text: data.message,
@@ -1429,126 +1460,28 @@
                                 } else if (xhr.responseJSON.notifikasi == "notifikasi_akhirabsen") {
                                     notifikasi_akhirabsen.play();
                                 } else if (xhr.responseJSON.notifikasi == "notifikasi_sudahabsen") {
-                                    notifikasi_sudahabsen.play();
+                                    if (status == 1) notifikasi_sudahabsen.play();
+                                    else notifikasi_sudahabsenpulang.play();
                                 }
-                                swal.fire({
+                                Swal.fire({
                                     icon: 'error',
                                     title: 'Oops...',
                                     text: xhr.responseJSON.message,
                                     didClose: function () {
-                                        $("#absenmasuk").prop('disabled', false);
-                                        $("#absenpulang").prop('disabled', false);
-                                        $("#absenmasuk").html(
-                                            '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Masuk</span>'
-                                        );
-                                        $("#absenpulang").html(
-                                            '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Pulang</span>'
-                                        )
+                                        resetButtons();
                                     }
-
                                 });
                             }
                         });
-                    }
+                    });
+                }
 
+                $("#absenmasuk").click(function () {
+                    submitPresensi(1);
                 });
 
                 $("#absenpulang").click(function () {
-                    // alert(lokasi);
-                    $("#absenmasuk").prop('disabled', true);
-                    $("#absenpulang").prop('disabled', true);
-                    $("#absenpulang").html(
-                        '<div class="spinner-border text-light mr-2" role="status"><span class="sr-only">Loading...</span></div> <span style="font-size:16px">Loading...</span>'
-
-                    );
-
-
-                    if (!lokasi) {
-                         swal.fire({
-                            icon: 'warning',
-                            title: 'Lokasi Belum Ditemukan',
-                            text: 'Sedang mengambil lokasi Anda. Pastikan GPS aktif dan izin lokasi diberikan.',
-                            timer: 3000,
-                            showConfirmButton: false
-                        });
-                        $("#absenmasuk").prop('disabled', false);
-                        $("#absenpulang").prop('disabled', false);
-                         $("#absenpulang").html(
-                            '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Pulang</span>'
-                        );
-                        return false;
-                    }
-
-                    let status = '2';
-                    Webcam.snap(function (uri) {
-                        image = uri;
-                    });
-                    if (faceRecognitionDetected == 0 && faceRecognition == 1) {
-                        swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Wajah tidak terdeteksi',
-                            didClose: function () {
-                                $("#absenmasuk").prop('disabled', false);
-                                $("#absenpulang").prop('disabled', false);
-                                $("#absenpulang").html(
-                                    '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Pulang</span>'
-                                );
-                            }
-                        })
-                        return false;
-                    } else {
-                        $.ajax({
-                            type: 'POST',
-                            url: "{{ route('presensi.store') }}",
-                            data: {
-                                _token: "{{ csrf_token() }}",
-                                image: image,
-                                status: status,
-                                lokasi: lokasi,
-                                lokasi_cabang: lokasi_cabang,
-                                kode_jam_kerja: "{{ $jam_kerja->kode_jam_kerja }}"
-                            },
-                            success: function (data) {
-                                if (data.status == true) {
-                                    notifikasi_absenpulang.play();
-                                    swal.fire({
-                                        icon: 'success',
-                                        title: 'Berhasil',
-                                        text: data.message,
-                                        showConfirmButton: false,
-                                        timer: 4000
-                                    }).then(function () {
-                                        window.location.href = '/dashboard';
-                                    });
-                                }
-                            },
-                            error: function (xhr) {
-                                if (xhr.responseJSON.notifikasi == "notifikasi_radius") {
-                                    notifikasi_radius.play();
-                                } else if (xhr.responseJSON.notifikasi == "notifikasi_mulaiabsen") {
-                                    notifikasi_mulaiabsen.play();
-                                } else if (xhr.responseJSON.notifikasi == "notifikasi_akhirabsen") {
-                                    notifikasi_akhirabsen.play();
-                                } else if (xhr.responseJSON.notifikasi == "notifikasi_sudahabsen") {
-                                    notifikasi_sudahabsenpulang.play();
-                                }
-                                swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: xhr.responseJSON.message,
-                                    didClose: function () {
-                                        $("#absenmasuk").prop('disabled', false);
-                                        $("#absenpulang").prop('disabled', true);
-                                        $("#absenpulang").html(
-                                            '<ion-icon name="finger-print-outline" style="font-size: 24px !important"></ion-icon><span style="font-size:14px">Pulang</span>'
-                                        );
-                                    }
-
-                                });
-                            }
-                        });
-                    }
+                    submitPresensi(2);
                 });
 
                 $("#cabang").change(function () {

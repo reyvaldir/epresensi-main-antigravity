@@ -94,7 +94,13 @@ class FacerecognitionpresensiController extends Controller
         $lintas_hari = $presensi_kemarin ? $presensi_kemarin->lintashari : 0;
 
         // Get Lokasi User
+        if (empty($lokasi) || strpos($lokasi, ',') === false) {
+            return response()->json(['status' => false, 'message' => 'Lokasi tidak terdeteksi. Pastikan GPS aktif.', 'notifikasi' => 'notifikasi_radius'], 400);
+        }
         $koordinat_user = explode(",", $lokasi);
+        if (count($koordinat_user) < 2) {
+            return response()->json(['status' => false, 'message' => 'Format lokasi tidak valid.', 'notifikasi' => 'notifikasi_radius'], 400);
+        }
         $latitude_user = $koordinat_user[0];
         $longitude_user = $koordinat_user[1];
 

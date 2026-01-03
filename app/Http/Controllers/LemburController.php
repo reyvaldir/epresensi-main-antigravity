@@ -290,7 +290,13 @@ class LemburController extends Controller
         $jam_sekarang = date("H:i");
 
         //Get Lokasi User
+        if (empty($lokasi) || strpos($lokasi, ',') === false) {
+            return response()->json(['status' => false, 'message' => 'Lokasi tidak terdeteksi. Pastikan GPS aktif.', 'notifikasi' => 'notifikasi_radius'], 400); // Changed 500 to 400
+        }
         $koordinat_user = explode(",", $lokasi);
+        if (count($koordinat_user) < 2) {
+            return response()->json(['status' => false, 'message' => 'Format lokasi tidak valid.', 'notifikasi' => 'notifikasi_radius'], 400); // Changed 500 to 400
+        }
         $latitude_user = $koordinat_user[0];
         $longitude_user = $koordinat_user[1];
 
@@ -324,7 +330,7 @@ class LemburController extends Controller
         $jam_mulai_masuk = date('Y-m-d H:i', strtotime('-' . $batas_jam_absen . ' minutes', strtotime($mulai_lembur)));
 
         //Jamulai Absen Pulang adalah 1 Jam dari Jam Masuk
-        $jam_mulai_pulang =  date('Y-m-d H:i', strtotime('+' . $batas_jam_absen . ' minutes', strtotime($mulai_lembur)));
+        $jam_mulai_pulang = date('Y-m-d H:i', strtotime('+' . $batas_jam_absen . ' minutes', strtotime($mulai_lembur)));
 
 
         //return $jam_mulai_pulang;

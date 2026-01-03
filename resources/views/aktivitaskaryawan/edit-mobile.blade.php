@@ -280,6 +280,25 @@
                     return;
                 }
 
+                if (!aktivitas) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Deskripsi Kosong',
+                        text: 'Mohon isi deskripsi aktivitas!',
+                    });
+                    return;
+                }
+
+                const lokasi = $('#lokasiData').val();
+                if (!lokasi) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Lokasi Belum Ditemukan',
+                        text: 'Lokasi tidak valid. Silahkan klik tombol Refresh Lokasi.',
+                    });
+                    return;
+                }
+
                 const btn = $(this);
                 btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm mr-2"></span> Menyimpan...');
 

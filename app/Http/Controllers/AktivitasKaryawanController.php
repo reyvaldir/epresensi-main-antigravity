@@ -97,6 +97,20 @@ class AktivitasKaryawanController extends Controller
                 ->withInput();
         }
 
+        // Custom Location Validation
+        $lokasi = $request->lokasi;
+        if (empty($lokasi) || strpos($lokasi, ',') === false) {
+            return redirect()->back()
+                ->with('error', 'Lokasi tidak valid. Pastikan GPS aktif.')
+                ->withInput();
+        }
+        $koordinat = explode(",", $lokasi);
+        if (count($koordinat) < 2) {
+            return redirect()->back()
+                ->with('error', 'Format lokasi tidak valid.')
+                ->withInput();
+        }
+
         $data = $request->only(['nik', 'aktivitas', 'lokasi']);
 
         // Handle foto upload (base64 or file)
