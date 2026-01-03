@@ -109,7 +109,7 @@
                     </div>
 
                     <!-- Main Content (Scrollable) -->
-                    <div class="pb-20 pt-14 px-6 overflow-y-auto">
+                    <div class="pb-20 pt-10 px-6 overflow-y-auto">
 
                         <!-- Floating Action Buttons (Capture + Switch Camera) -->
                         <div class="absolute -top-[70px] left-0 right-0 z-[60] px-6">
@@ -136,7 +136,7 @@
 
                         <!-- Location Capsule -->
                         <div
-                            class="w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden mx-auto mb-6">
+                            class="w-[90%] max-w-sm bg-slate-900 text-white p-1.5 pr-4 rounded-full shadow-xl flex items-center justify-between ring-4 ring-white/10 backdrop-blur-sm relative overflow-hidden mx-auto -mt-2 mb-4">
                             <div class="flex items-center gap-3 flex-1 min-w-0">
                                 <div
                                     class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
@@ -283,36 +283,29 @@
                 },
 
                 switchCamera() {
-                    this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                    Webcam.reset();
-                    Webcam.set({
-                        width: 640,
-                        height: 480,
-                        image_format: 'jpeg',
-                        jpeg_quality: 90,
-                        constraints: {
-                            video: {
-                                facingMode: { exact: this.facingMode }, /* Use exact for switching if possible, or fallback */
-                            }
-                        }
-                    });
+                    this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
 
-                    /* Retry with simpler constraint if exact fails (simulated logic) - keeping it simple for now matching init */
-                    Webcam.set({
-                        width: 640,
-                        height: 480,
-                        image_format: 'jpeg',
-                        jpeg_quality: 90,
-                        constraints: {
-                            video: {
-                                facingMode: this.facingMode,
-                                width: { ideal: isMobile ? 240 : 640 },
-                                height: { ideal: isMobile ? 180 : 480 }
+                    Webcam.reset();
+
+                    // Short delay to ensure stream is fully stopped before restarting
+                    setTimeout(() => {
+                        Webcam.set({
+                            width: 640,
+                            height: 480,
+                            image_format: 'jpeg',
+                            jpeg_quality: 90,
+                            facingMode: this.facingMode, // LEGACY SUPPORT
+                            constraints: {
+                                video: {
+                                    facingMode: this.facingMode,
+                                    width: { ideal: isMobile ? 240 : 640 },
+                                    height: { ideal: isMobile ? 180 : 480 }
+                                }
                             }
-                        }
-                    });
-                    Webcam.attach('.webcam-capture');
+                        });
+                        Webcam.attach('.webcam-capture');
+                    }, 50);
                 },
 
                 capturePhoto() {
