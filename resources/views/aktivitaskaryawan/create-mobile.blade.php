@@ -132,7 +132,7 @@
                 Current: 40px for minimal collapsed state
                 --}}
                 <!-- 3. BOTTOM SHEET -->
-                <div class="absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] max-h-[80vh] flex flex-col"
+                <div class="absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] max-h-[70vh] flex flex-col"
                     :class="isOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'">
 
                     <!-- Toggle Handle Area (Fixed at top) -->
@@ -270,12 +270,19 @@
                 },
 
                 initCamera() {
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                     Webcam.set({
                         width: 640,
                         height: 480,
                         image_format: 'jpeg',
                         jpeg_quality: 90,
-                        facingMode: this.facingMode
+                        constraints: {
+                            video: {
+                                facingMode: this.facingMode,
+                                width: { ideal: isMobile ? 240 : 640 },
+                                height: { ideal: isMobile ? 180 : 480 }
+                            }
+                        }
                     });
                     Webcam.attach('.webcam-capture');
 
@@ -309,13 +316,20 @@
 
                 switchCamera() {
                     this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                     Webcam.reset();
                     Webcam.set({
                         width: 640,
                         height: 480,
                         image_format: 'jpeg',
                         jpeg_quality: 90,
-                        facingMode: this.facingMode
+                        constraints: {
+                            video: {
+                                facingMode: this.facingMode,
+                                width: { ideal: isMobile ? 240 : 640 },
+                                height: { ideal: isMobile ? 180 : 480 }
+                            }
+                        }
                     });
                     Webcam.attach('.webcam-capture');
                 },
