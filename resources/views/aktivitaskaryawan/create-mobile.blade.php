@@ -380,6 +380,7 @@
                         });
                         return;
                     }
+                    // Force update
 
                     document.getElementById('aktivitasData').value = desc;
 
