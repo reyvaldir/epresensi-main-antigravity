@@ -292,7 +292,7 @@
                         </a>
                     </li>
                     <li class="menu-item {{ request()->is(['permissions', 'permissions/*']) ? 'active' : '' }}"">
-                                 <a href=" {{ route('permissions.index') }}" class="menu-link">
+                                     <a href=" {{ route('permissions.index') }}" class="menu-link">
                         <div>Permission</div>
                         </a>
                     </li>
@@ -311,14 +311,14 @@
                 </ul>
             </li>
         @endif
-        @if (auth()->user()->hasRole(['super admin']))
+        <!-- @if (auth()->user()->hasRole(['super admin']))
             <li class="menu-item {{ request()->is(['wagateway', 'wagateway/*']) ? 'active' : '' }}">
                 <a href="{{ route('wagateway.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-brand-whatsapp"></i>
                     <div>WA Gateway</div>
                 </a>
             </li>
-        @endif
+        @endif -->
     </ul>
 </aside>
 <!-- / Menu -->

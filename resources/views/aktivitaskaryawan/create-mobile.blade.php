@@ -88,7 +88,10 @@
 
                 <!-- 2. CAMERA LAYER -->
                 <div id="camera-wrapper" class="absolute inset-0 z-0">
-                    <div class="webcam-capture w-full h-full object-cover" id="webcam-container"></div>
+                    <div class="webcam-capture w-full h-full object-cover rounded-2xl overflow-hidden relative">
+                        <video id="camera-feed" class="w-full h-full object-cover" autoplay playsinline muted></video>
+                        <canvas id="camera-canvas" class="hidden"></canvas>
+                    </div>
 
                     <!-- Date & Time Pills -->
                     <div class="absolute top-24 left-4 z-10">
@@ -263,43 +266,34 @@
                 hasCaptured: false,
                 capturedImage: null,
                 facingMode: 'user', // Front camera default
+                currentStream: null,
 
                 init() {
                     this.initCamera();
                     this.initLocation();
                 },
 
-                initCamera() {
-                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                    Webcam.set({
-                        width: 640,
-                        height: 480,
-                        image_format: 'jpeg',
-                        jpeg_quality: 90,
-                        constraints: {
-                            video: {
-                                facingMode: this.facingMode,
-                                width: { ideal: isMobile ? 240 : 640 },
-                                height: { ideal: isMobile ? 180 : 480 }
-                            }
+                async initCamera() {
+                    const video = document.getElementById('camera-feed');
+                    if (!video) return;
+
+                    const constraints = {
+                        video: {
+                            facingMode: this.facingMode,
+                            width: { ideal: 640 },
+                            height: { ideal: 480 }
                         }
-                    });
-                    Webcam.attach('.webcam-capture');
+                    };
 
-                    Webcam.on('load', () => { setTimeout(() => this.fixVideoAttributes(), 500); });
-                },
-
-                fixVideoAttributes() {
-                    const video = document.querySelector('.webcam-capture video');
-                    if (video) {
-                        video.removeAttribute('style');
-                        video.style.width = '100%';
-                        video.style.height = '100%';
-                        video.style.objectFit = 'cover';
-                        video.setAttribute('playsinline', 'true');
-                        video.setAttribute('muted', 'true');
-                        video.setAttribute('autoplay', 'true');
-                        video.play().catch(e => console.log(e));
+                    try {
+                        if (this.currentStream) {
+                            this.currentStream.getTracks().forEach(track => track.stop());
+                        }
+                        this.currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                        video.srcObject = this.currentStream;
+                    } catch (err) {
+                        console.error("Camera Error: ", err);
+                        alert("Gagal mengakses kamera: " + err.message);
                     }
                 },
 
@@ -320,47 +314,24 @@
                 },
 
                 switchCamera() {
-                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                     this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
-
-                    // 1. Explicitly reset WebcamJS
-                    Webcam.reset();
-
-                    // 2. Brutally clear the container to remove frozen video elements
-                    const container = document.querySelector('.webcam-capture');
-                    if (container) container.innerHTML = '';
-
-                    // 3. Re-initialize with delay
-                    setTimeout(() => {
-                        Webcam.set({
-                            width: 640,
-                            height: 480,
-                            image_format: 'jpeg',
-                            jpeg_quality: 90,
-                            facingMode: this.facingMode,
-                            constraints: {
-                                video: {
-                                    facingMode: { exact: this.facingMode }, // Try 'exact' first
-                                    width: { ideal: isMobile ? 240 : 640 },
-                                    height: { ideal: isMobile ? 180 : 480 }
-                                }
-                            }
-                        });
-
-                        Webcam.attach('.webcam-capture');
-
-                        // 4. Force attributes again
-                        setTimeout(() => this.fixVideoAttributes(), 800);
-                    }, 200);
+                    this.initCamera();
                 },
 
                 capturePhoto() {
-                    Webcam.snap((data_uri) => {
-                        this.capturedImage = data_uri;
+                    const video = document.getElementById('camera-feed');
+                    const canvas = document.getElementById('camera-canvas');
+
+                    if (video && canvas) {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        this.capturedImage = canvas.toDataURL('image/jpeg', 0.8);
                         this.hasCaptured = true;
-                        this.isOpen = true; // EXPAND sheet after capture so user can fill description
-                        document.getElementById('fotoData').value = data_uri;
-                    });
+                        this.isOpen = true;
+                        document.getElementById('fotoData').value = this.capturedImage;
+                    }
                 },
 
                 resetAll() {
