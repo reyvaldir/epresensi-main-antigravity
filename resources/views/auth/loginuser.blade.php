@@ -93,6 +93,9 @@
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-4 md:p-8">
+    @php
+        $namainstansi = App\Models\Pengaturanumum::first()->nama_perusahaan ?? 'E-Presensi';
+    @endphp
 
     <!-- Main Card Container -->
     <main
@@ -135,7 +138,7 @@
 
             <!-- Footer for Desktop (Hidden on Mobile) -->
             <div class="absolute bottom-8 left-0 w-full text-center hidden md:block">
-                <p class="text-blue-200/60 text-xs">&copy; {{ date('Y') }} PT. Anti Gravity</p>
+                <p class="text-blue-200/60 text-xs">&copy; {{ date('Y') }} {{ $namainstansi }}</p>
             </div>
         </div>
 
@@ -183,7 +186,7 @@
                             </div>
                             <input type="text" name="id_user"
                                 class="form-input w-full rounded-2xl border border-slate-200 py-3.5 pl-11 pr-4 text-sm font-semibold text-slate-700 placeholder:text-slate-300 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
-                                placeholder="Masukan NIK atau Email" value="{{ old('id_user') }}" required
+                                placeholder="Masukan Username atau Email" value="{{ old('id_user') }}" required
                                 autocomplete="off">
                         </div>
                     </div>
@@ -239,7 +242,7 @@
 
             <!-- Footer for Mobile (Hidden on Desktop) -->
             <div class="mt-8 text-center md:hidden">
-                <p class="text-slate-400 text-xs">&copy; {{ date('Y') }} PT. Anti Gravity</p>
+                <p class="text-slate-400 text-xs">&copy; {{ date('Y') }} {{ $namainstansi }}</p>
             </div>
 
         </div>
