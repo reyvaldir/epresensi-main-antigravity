@@ -356,11 +356,11 @@
                     if (!lokasi) {
                         Swal.fire({
                             icon: 'warning',
+                            title: 'Lokasi Belum Ditemukan',
                             text: 'Sedang mengambil lokasi Anda. Pastikan GPS aktif!',
                         });
                         return;
                     }
-                    // Force update
 
                     document.getElementById('deskripsiData').value = desc;
 
