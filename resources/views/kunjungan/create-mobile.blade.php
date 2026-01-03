@@ -99,7 +99,7 @@
                 </div>
 
                 <!-- 3. BOTTOM SHEET -->
-                <div class="absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] max-h-[70vh] flex flex-col"
+                <div class="absolute bottom-0 left-0 right-0 z-50 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.3)] transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] max-h-[80vh] flex flex-col"
                     :class="isOpen ? 'translate-y-0' : 'translate-y-[calc(100%-60px)]'">
 
                     <!-- Toggle Handle Area (Fixed at top) -->
@@ -109,7 +109,7 @@
                     </div>
 
                     <!-- Main Content (Scrollable) -->
-                    <div class="pb-20 pt-10 px-6 overflow-y-auto flex-1">
+                    <div class="pb-20 pt-10 px-6 overflow-y-auto">
 
                         <!-- Floating Action Buttons (Capture + Switch Camera) -->
                         <div class="absolute -top-[70px] left-0 right-0 z-[60] px-6">
