@@ -24,13 +24,13 @@
             display: inline-block;
             position: relative;
             /*
-          SIZE OF SWITCH
-          ==============
-          All sizes are in em - therefore
-          changing the font-size here
-          will change the size of the switch.
-          See .rocker-small below as example.
-          */
+              SIZE OF SWITCH
+              ==============
+              All sizes are in em - therefore
+              changing the font-size here
+              will change the size of the switch.
+              See .rocker-small below as example.
+              */
             font-size: 2em;
             font-weight: bold;
             text-align: center;
@@ -301,6 +301,11 @@
 
                 <input type="hidden" name="provider_wa" value="{{ $setting->provider_wa ?? 'ig' }}">
                 <input type="hidden" name="tujuan_notifikasi_wa" value="{{ $setting->tujuan_notifikasi_wa ?? 0 }}">
+                <input type="hidden" name="wa_api_key" value="{{ $setting->wa_api_key ?? '' }}">
+                <input type="hidden" name="domain_wa_gateway" value="{{ $setting->domain_wa_gateway ?? '' }}">
+                <input type="hidden" name="id_group_wa" value="{{ $setting->id_group_wa ?? '' }}">
+                <input type="hidden" name="cloud_id" value="{{ $setting->cloud_id ?? '' }}">
+                <input type="hidden" name="api_key" value="{{ $setting->api_key ?? '' }}">
                 {{-- <div class="card mb-3">
                     <div class="card-header">
                         <h6 class="mb-0">Whatsapp Gateway</h6>
@@ -596,16 +601,16 @@
                             let html = '';
                             response.forEach(function (icon) {
                                 html += `
-                                    <div class="col-2 mb-2">
-                                        <div class="text-center">
-                                            <img src="${icon.url}"
-                                                 alt="Icon ${icon.size}"
-                                                 class="img-thumbnail"
-                                                 style="width: 50px; height: 50px;">
-                                            <small class="d-block">${icon.size}</small>
+                                        <div class="col-2 mb-2">
+                                            <div class="text-center">
+                                                <img src="${icon.url}"
+                                                     alt="Icon ${icon.size}"
+                                                     class="img-thumbnail"
+                                                     style="width: 50px; height: 50px;">
+                                                <small class="d-block">${icon.size}</small>
+                                            </div>
                                         </div>
-                                    </div>
-                                `;
+                                    `;
                             });
 
                             $('#iconsGrid').html(html);

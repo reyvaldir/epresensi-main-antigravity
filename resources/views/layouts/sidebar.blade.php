@@ -319,15 +319,6 @@
                 </li>
             @endcan
 
-            @can('bersihkanfoto.index')
-                <li class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*']) ? 'active' : '' }}">
-                    <a href="{{ route('bersihkanfoto.index') }}" class="menu-link">
-                        <i class="menu-icon tf-icons ti ti-trash"></i>
-                        <div>Bersihkan Foto</div>
-                    </a>
-                </li>
-            @endcan
-
             {{-- WA Gateway (Disabled/Commented) --}}
             {{--
             @if (auth()->user()->hasRole(['super admin']))
@@ -339,6 +330,16 @@
             </li>
             @endif
             --}}
+
+
+            @can('bersihkanfoto.index')
+                <li class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*']) ? 'active' : '' }}">
+                    <a href="{{ route('bersihkanfoto.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons ti ti-trash"></i>
+                        <div>Bersihkan Foto</div>
+                    </a>
+                </li>
+            @endcan
 
             {{-- Header: Akses User --}}
             @if (auth()->user()->hasRole(['super admin']))

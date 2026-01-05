@@ -110,8 +110,12 @@ class IzindinasController extends Controller
         DB::beginTransaction();
         try {
             $jmlhari = hitungHari($request->dari, $request->sampai);
-            if ($jmlhari > 3) {
-                return Redirect::back()->with(messageError('Tidak Boleh Lebih dari 3 Hari!'));
+
+            $pengaturan_umum = \App\Models\Pengaturanumum::where('id', 1)->first();
+            if ($pengaturan_umum && $pengaturan_umum->batasi_hari_izin == 1) {
+                if ($jmlhari > $pengaturan_umum->jml_hari_izin_max) {
+                    return Redirect::back()->with(messageError('Maksimal Izin Dinas adalah ' . $pengaturan_umum->jml_hari_izin_max . ' Hari!'));
+                }
             }
 
             $cek_izin_dinas = Izindinas::where('nik', $nik)
@@ -128,7 +132,7 @@ class IzindinasController extends Controller
                 ->orderBy("kode_izin_dinas", "desc")
                 ->first();
             $last_kode_izin = $lastizin != null ? $lastizin->kode_izin_dinas : '';
-            $kode_izin_dinas  = buatkode($last_kode_izin, "ID"  . date('ym', strtotime($request->dari)), 4);
+            $kode_izin_dinas = buatkode($last_kode_izin, "ID" . date('ym', strtotime($request->dari)), 4);
 
             Izindinas::create([
                 'kode_izin_dinas' => $kode_izin_dinas,
