@@ -12,10 +12,13 @@ class Permission_groupController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
 
         $query = Permission_group::query();
+        if (!empty($request->name)) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
         $permission_groups = $query->paginate(15);
 
         return view('settings.permission_groups.index', compact('permission_groups'));

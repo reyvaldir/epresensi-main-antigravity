@@ -21,6 +21,9 @@ class PermissionController extends Controller
         if (!empty($request->id_permission_group)) {
             $query->where('id_permission_group', $request->id_permission_group);
         }
+        if (!empty($request->name)) {
+            $query->where('permissions.name', 'like', '%' . $request->name . '%');
+        }
         $query->orderBy('id_permission_group');
         $permissions = $query->paginate(10);
 
@@ -81,7 +84,7 @@ class PermissionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,  $id)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'required',
