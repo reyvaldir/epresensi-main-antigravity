@@ -126,23 +126,31 @@
             <span class="menu-header-text">Manajemen Presensi</span>
         </li>
 
-        @can('presensi.index')
-            <li class="menu-item {{ request()->is(['presensi', 'presensi/*']) ? 'active' : '' }}">
-                <a href="{{ route('presensi.index') }}" class="menu-link">
+        @if (auth()->user()->hasAnyPermission(['presensi.index', 'trackingpresensi.index']))
+            <li
+                class="menu-item {{ request()->is(['presensi', 'presensi/*', 'trackingpresensi', 'trackingpresensi/*']) ? 'open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-device-desktop"></i>
                     <div>Monitoring Presensi</div>
                 </a>
+                <ul class="menu-sub">
+                    @can('presensi.index')
+                        <li class="menu-item {{ request()->is(['presensi', 'presensi/*']) ? 'active' : '' }}">
+                            <a href="{{ route('presensi.index') }}" class="menu-link">
+                                <div>Data Presensi</div>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('trackingpresensi.index')
+                        <li class="menu-item {{ request()->is(['trackingpresensi', 'trackingpresensi/*']) ? 'active' : '' }}">
+                            <a href="{{ route('trackingpresensi.index') }}" class="menu-link">
+                                <div>Tracking Presensi</div>
+                            </a>
+                        </li>
+                    @endcan
+                </ul>
             </li>
-        @endcan
-
-        @can('trackingpresensi.index')
-            <li class="menu-item {{ request()->is(['trackingpresensi', 'trackingpresensi/*']) ? 'active' : '' }}">
-                <a href="{{ route('trackingpresensi.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons ti ti-map-pin"></i>
-                    <div>Tracking Presensi</div>
-                </a>
-            </li>
-        @endcan
+        @endif
 
         @can('aktivitaskaryawan.index')
             <li class="menu-item {{ request()->is(['aktivitaskaryawan', 'aktivitaskaryawan/*']) ? 'active' : '' }}">
@@ -183,7 +191,7 @@
                 class="menu-item {{ request()->is(['kunjungan', 'kunjungan/*', 'tracking-kunjungan', 'tracking-kunjungan/*']) ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-map"></i>
-                    <div>Data Kunjungan & Tracking</div>
+                    <div>Monitoring Kunjungan</div>
                 </a>
                 <ul class="menu-sub">
                     <li class="menu-item {{ request()->is(['kunjungan', 'kunjungan/*']) ? 'active' : '' }}">
