@@ -18,8 +18,8 @@
     <meta name="theme-color" content="#2563EB"> <!-- Updated to Primary Blue -->
 
     <!-- PWA Manifest & Icons -->
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/assets/img/icons/pwa/icon-192x192.png">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/icons/pwa/icon-192x192.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
