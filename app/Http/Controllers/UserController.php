@@ -97,7 +97,7 @@ class UserController extends Controller
             ];
 
             if (!empty($request->password)) {
-                 $request->validate([
+                $request->validate([
                     'password' => 'min:6'
                 ]);
                 $data['password'] = bcrypt($request->password);
@@ -147,6 +147,15 @@ class UserController extends Controller
             'passwordbaru' => 'required',
             'konfirmasipassword' => 'required|same:passwordbaru'
         ]);
+
+        if (auth()->user()->id == $id) {
+            $request->validate([
+                'passwordlama' => 'required'
+            ]);
+            if (!Hash::check($request->passwordlama, auth()->user()->password)) {
+                return Redirect::back()->with(['error' => 'Password lama tidak sesuai']);
+            }
+        }
         try {
             User::where('id', $id)->update([
                 'password' => Hash::make($request->passwordbaru)

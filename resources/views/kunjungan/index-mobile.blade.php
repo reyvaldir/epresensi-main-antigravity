@@ -81,13 +81,10 @@
                 <div class="flex items-start gap-4 pr-10">
                     <!-- Photo Thumbnail -->
                     @if ($item->foto)
-                        @if (str_starts_with($item->foto, 'http'))
-                            <img src="{{ $item->foto }}" alt="Foto Kunjungan"
-                                class="flex-shrink-0 w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-100">
-                        @else
-                            <img src="{{ asset('storage/uploads/kunjungan/' . $item->foto) }}" alt="Foto Kunjungan"
-                                class="flex-shrink-0 w-14 h-14 rounded-xl object-cover shadow-sm border border-slate-100">
-                        @endif
+                        <div
+                            class="flex-shrink-0 w-14 h-14 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+                            <ion-icon name="briefcase-outline" class="text-2xl"></ion-icon>
+                        </div>
                     @else
                         <div
                             class="flex-shrink-0 w-14 h-14 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
@@ -178,21 +175,21 @@
             if (data.foto) {
                 let imageUrl = data.foto.startsWith('http') ? data.foto : `/storage/uploads/kunjungan/${data.foto}`;
                 imageHtml = `
-                                        <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 mb-4 shadow-sm group">
-                                            <img src="${imageUrl}" class="w-full h-full object-cover">
-                                            <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white" onclick="Swal.fire({imageUrl: '${imageUrl}', showCloseButton:true, showConfirmButton:false})">
-                                                <ion-icon name="expand-outline" class="text-3xl"></ion-icon>
+                                            <div class="relative w-full aspect-video rounded-xl overflow-hidden border border-slate-200 mb-4 shadow-sm group">
+                                                <img src="${imageUrl}" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white" onclick="Swal.fire({imageUrl: '${imageUrl}', showCloseButton:true, showConfirmButton:false})">
+                                                    <ion-icon name="expand-outline" class="text-3xl"></ion-icon>
+                                                </div>
                                             </div>
-                                        </div>
-                                    `;
+                                        `;
             } else {
                 imageHtml = `
-                                        <div class="w-full aspect-[3/1] bg-slate-50 rounded-xl flex items-center justify-center border border-dashed border-slate-200 mb-4">
-                                            <span class="text-xs text-slate-400 flex items-center gap-1">
-                                                <ion-icon name="image-outline"></ion-icon> Tidak ada foto
-                                            </span>
-                                        </div>
-                                    `;
+                                            <div class="w-full aspect-[3/1] bg-slate-50 rounded-xl flex items-center justify-center border border-dashed border-slate-200 mb-4">
+                                                <span class="text-xs text-slate-400 flex items-center gap-1">
+                                                    <ion-icon name="image-outline"></ion-icon> Tidak ada foto
+                                                </span>
+                                            </div>
+                                        `;
             }
 
             Swal.fire({
@@ -201,36 +198,36 @@
                 confirmButtonText: 'Tutup',
                 buttonsStyling: false,
                 html: `
-                                        <div class="text-center">
-                                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 mb-4">
-                                                <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-2">
-                                                    <ion-icon name="location-outline" class="text-2xl"></ion-icon>
-                                                </div>
-                                                <h3 class="text-lg font-bold text-emerald-700 leading-tight">Detail Kunjungan</h3>
-                                                <p class="text-sm text-slate-500 mt-2 font-medium bg-white/60 py-1 rounded-lg inline-block px-3">
-                                                    ${date} • ${time}
-                                                </p>
-                                            </div>
-
-                                            ${imageHtml}
-
-                                            <div class="text-left space-y-3">
-                                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Deskripsi</span>
-                                                    <p class="text-slate-700 text-sm font-medium leading-relaxed">
-                                                        "${data.deskripsi}"
+                                            <div class="text-center">
+                                                <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100 mb-4">
+                                                    <div class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 mb-2">
+                                                        <ion-icon name="location-outline" class="text-2xl"></ion-icon>
+                                                    </div>
+                                                    <h3 class="text-lg font-bold text-emerald-700 leading-tight">Detail Kunjungan</h3>
+                                                    <p class="text-sm text-slate-500 mt-2 font-medium bg-white/60 py-1 rounded-lg inline-block px-3">
+                                                        ${date} • ${time}
                                                     </p>
                                                 </div>
 
-                                                ${data.lokasi ? `
-                                                <div class="flex items-start gap-2 text-xs text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                                                    <ion-icon name="location-sharp" class="text-rose-500 mt-0.5 text-sm"></ion-icon>
-                                                    <span class="leading-tight font-medium">${data.lokasi}</span>
+                                                ${imageHtml}
+
+                                                <div class="text-left space-y-3">
+                                                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Deskripsi</span>
+                                                        <p class="text-slate-700 text-sm font-medium leading-relaxed">
+                                                            "${data.deskripsi}"
+                                                        </p>
+                                                    </div>
+
+                                                    ${data.lokasi ? `
+                                                    <div class="flex items-start gap-2 text-xs text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                                        <ion-icon name="location-sharp" class="text-rose-500 mt-0.5 text-sm"></ion-icon>
+                                                        <span class="leading-tight font-medium">${data.lokasi}</span>
+                                                    </div>
+                                                    ` : ''}
                                                 </div>
-                                                ` : ''}
                                             </div>
-                                        </div>
-                                    `,
+                                        `,
                 customClass: {
                     popup: 'rounded-2xl shadow-xl w-[90%] md:w-full md:max-w-md p-0 overflow-hidden',
                     htmlContainer: '!m-0 !px-4 !pt-4 !pb-0',

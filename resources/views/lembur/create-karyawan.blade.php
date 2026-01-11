@@ -16,7 +16,7 @@
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
         <form action="{{ route('lembur.store') }}" method="POST" id="formLembur" autocomplete="off" class="space-y-4">
             @csrf
-            
+
             <!-- Hidden Inputs for Submission -->
             <input type="hidden" name="dari" id="dari">
             <input type="hidden" name="sampai" id="sampai">
@@ -101,9 +101,9 @@
         new Rolldate({
             el: '#dari_tgl',
             format: 'YYYY-MM-DD',
-            lang: { 
-                title: 'Pilih Tanggal', 
-                cancel: 'Batal', 
+            lang: {
+                title: 'Pilih Tanggal',
+                cancel: 'Batal',
                 confirm: 'Set',
                 year: '',
                 month: '',
@@ -113,9 +113,9 @@
         new Rolldate({
             el: '#sampai_tgl',
             format: 'YYYY-MM-DD',
-            lang: { 
-                title: 'Pilih Tanggal', 
-                cancel: 'Batal', 
+            lang: {
+                title: 'Pilih Tanggal',
+                cancel: 'Batal',
                 confirm: 'Set',
                 year: '',
                 month: '',
@@ -127,9 +127,9 @@
         new Rolldate({
             el: '#dari_jam',
             format: 'hh:mm',
-            lang: { 
-                title: 'Pilih Jam', 
-                cancel: 'Batal', 
+            lang: {
+                title: 'Pilih Jam',
+                cancel: 'Batal',
                 confirm: 'Set',
                 hour: '',
                 min: ''
@@ -138,9 +138,9 @@
         new Rolldate({
             el: '#sampai_jam',
             format: 'hh:mm',
-            lang: { 
-                title: 'Pilih Jam', 
-                cancel: 'Batal', 
+            lang: {
+                title: 'Pilih Jam',
+                cancel: 'Batal',
                 confirm: 'Set',
                 hour: '',
                 min: ''
@@ -161,6 +161,21 @@
             // Set hidden inputs
             $('#dari').val(dari);
             $('#sampai').val(sampai);
+
+            if (sampai < dari) {
+                Swal.fire({
+                    title: "Waktu Tidak Valid",
+                    text: 'Waktu Selesai tidak boleh LEBIH KECIL dari Waktu Mulai',
+                    icon: "warning",
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold'
+                    },
+                    buttonsStyling: false
+                });
+                return false;
+            }
 
             if (dari_tgl == "" || dari_jam == "" || sampai_tgl == "" || sampai_jam == "") {
                 Swal.fire({
@@ -193,12 +208,12 @@
             // Disable button
             $("#btnSimpan").prop('disabled', true);
             $("#btnSimpan").html(`
-                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Mengirim...
-                    `);
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Mengirim...
+                        `);
         });
     </script>
 @endpush

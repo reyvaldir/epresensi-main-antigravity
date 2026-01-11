@@ -106,6 +106,11 @@ class LemburController extends Controller
             ]);
         }
 
+        // Validasi Jam Selesai tidak boleh kurang dari Jam Mulai
+        if (strtotime($request->sampai) < strtotime($request->dari)) {
+            return Redirect::back()->with('error', 'Jam Selesai lembur tidak boleh kurang dari jam mulai lembur');
+        }
+
 
         try {
             Lembur::create([

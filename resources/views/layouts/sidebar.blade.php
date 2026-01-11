@@ -178,7 +178,7 @@
             <li class="menu-item {{ request()->is(['lembur', 'lembur/*']) ? 'active' : '' }}">
                 <a href="{{ route('lembur.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons ti ti-calendar-time"></i> {{-- Changed Icon --}}
-                    <div>Lembur</div>
+                    <div>Pengajuan Lembur</div>
                     @if (!empty($notifikasi_lembur))
                         <div class="badge bg-danger rounded-pill ms-auto">{{ $notifikasi_lembur }}</div>
                     @endif
@@ -208,7 +208,6 @@
                 </ul>
             </li>
         @endif
-
 
         <!-- 4. PAYROLL (Pusat Keuangan) -->
         @if (auth()->user()->hasAnyPermission(['gajipokok.index', 'jenistunjangan.index', 'tunjangan.index', 'bpjskesehatan.index', 'bpjstenagakerja.index', 'penyesuaiangaji.index', 'denda.index', 'slipgaji.index']))
@@ -296,7 +295,6 @@
                 </ul>
             </li>
         @endif
-
 
         <!-- 5. LAPORAN -->
         @if (auth()->user()->hasAnyPermission(['laporan.presensi']))

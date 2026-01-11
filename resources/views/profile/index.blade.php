@@ -110,6 +110,18 @@
             @method('PUT')
 
             <div class="space-y-1">
+                <label class="text-xs font-semibold text-slate-500 ml-1">Password Lama</label>
+                <div class="relative">
+                    <input type="password" id="passwordlama" name="passwordlama" placeholder="Password Lama"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                    <button type="button" onclick="togglePassword('passwordlama')"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors">
+                        <ion-icon name="eye-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-1">
                 <label class="text-xs font-semibold text-slate-500 ml-1">Password Baru</label>
                 <div class="relative">
                     <input type="password" id="passwordbaru" name="passwordbaru" placeholder="Minimal 6 karakter"

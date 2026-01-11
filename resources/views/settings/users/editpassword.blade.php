@@ -31,12 +31,16 @@
     <div id="content-section">
         <div class="row" style="margin-top: 80px">
             <div class="col pl-3 pr-3">
-                <form action="{{ route('users.updatepassword', Crypt::encrypt($user->id)) }}" method="POST" id="formIzin" autocomplete="off">
+                <form action="{{ route('users.updatepassword', Crypt::encrypt($user->id)) }}" method="POST" id="formIzin"
+                    autocomplete="off">
                     @csrf
                     @method('PUT')
-                    <input type="password" class="feedback-input passwordbaru" name="passwordbaru" placeholder="Password Baru" id="passwordbaru" />
-                    <input type="password" class="feedback-input konfirmasipassword" name="konfirmasipassword" placeholder="Konfirmasi Password"
-                        id="konfirmasipassword" />
+                    <input type="password" class="feedback-input passwordlama" name="passwordlama"
+                        placeholder="Password Lama" id="passwordlama" />
+                    <input type="password" class="feedback-input passwordbaru" name="passwordbaru"
+                        placeholder="Password Baru" id="passwordbaru" />
+                    <input type="password" class="feedback-input konfirmasipassword" name="konfirmasipassword"
+                        placeholder="Konfirmasi Password" id="konfirmasipassword" />
                     <div class="form-group">
                         <input type="checkbox" id="show-password" onclick="tooglePassword()" />
                         <label for="show-password">Tampilkan Password</label>

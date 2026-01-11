@@ -35,6 +35,7 @@ if (document.getElementById('layout-menu')) {
         menu = new Menu(element, {
             orientation: isHorizontalLayout ? 'horizontal' : 'vertical',
             closeChildren: isHorizontalLayout ? true : false,
+            accordion: false, // Allow multiple groups to be open
             // ? This option only works with Horizontal menu
             showDropdownOnHover: localStorage.getItem('templateCustomizer-' + templateName + '--ShowDropdownOnHover') // If value(showDropdownOnHover) is set in local storage
                 ? localStorage.getItem('templateCustomizer-' + templateName + '--ShowDropdownOnHover') === 'true' // Use the local storage value
