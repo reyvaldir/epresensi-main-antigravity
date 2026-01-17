@@ -1,5 +1,8 @@
 @extends('layouts.mobile.app')
 @section('content')
+    @php
+        /** @var \App\Models\User $user */
+    @endphp
     <style>
         /* Tambahkan style untuk header dan content */
         #header-section {

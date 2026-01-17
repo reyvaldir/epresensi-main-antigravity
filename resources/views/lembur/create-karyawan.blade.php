@@ -165,7 +165,7 @@
             if (sampai < dari) {
                 Swal.fire({
                     title: "Waktu Tidak Valid",
-                    text: 'Waktu Selesai tidak boleh LEBIH KECIL dari Waktu Mulai',
+                    text: 'Waktu Selesai lembur tidak boleh kurang dari waktu mulai lembur',
                     icon: "warning",
                     confirmButtonText: 'OK',
                     customClass: {
