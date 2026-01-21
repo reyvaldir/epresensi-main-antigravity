@@ -77,11 +77,11 @@ class DummyKaryawanSeeder extends Seeder
             Karyawan::create([
                 'nik' => $nik,
                 'nama_karyawan' => $name,
-                'no_ktp' => $faker->nik,
+                'no_ktp' => '320101' . str_pad($index, 10, '0', STR_PAD_LEFT), // Deterministic KTP
                 'tempat_lahir' => $faker->city,
                 'tanggal_lahir' => $faker->date('Y-m-d', '2000-01-01'),
                 'alamat' => $faker->address,
-                'no_hp' => '08' . $faker->numerify('##########'), // Max 13 chars
+                'no_hp' => '0812' . str_pad($index, 8, '0', STR_PAD_LEFT), // Deterministic HP
                 'jenis_kelamin' => $faker->randomElement(['L', 'P']),
                 'kode_status_kawin' => $faker->randomElement($status_kawin),
                 'pendidikan_terakhir' => $faker->randomElement(['S1', 'D3', 'SMA']),
@@ -97,7 +97,7 @@ class DummyKaryawanSeeder extends Seeder
                 'foto' => null, // default
                 'password' => Hash::make('12345'), // Default Password demo
 
-                'kode_jadwal' => 'JK01', // Asumsi JK01 ada (Jam Kerja Normal)
+                'kode_jadwal' => DB::table('presensi_jamkerja')->value('kode_jam_kerja') ?? 'JK01', // Dynamic Fetch
                 'lock_location' => '0', // Bebas absen dimana saja (untuk kemudahan demo)
             ]);
 
