@@ -145,9 +145,6 @@ class DummyTransactionSeeder extends Seeder
             'nik' => $karyawan->nik,
             'tanggal' => $tgl,
             'jam_in' => $jamIn,
-            'jam_out' => $isOvertime ? null : $jamOut, // If overtime, jam_out might be overwritten or updated? 
-            // Usually presensi table stores the actual scan out. If overtime, scan out is later.
-            // Let's make scan out later if overtime.
             'jam_out' => $isOvertime ? ($tgl . ' ' . rand(19, 21) . ':00:00') : $jamOut,
             'foto_in' => 'dummy_in.jpg',
             'foto_out' => 'dummy_out.jpg',
