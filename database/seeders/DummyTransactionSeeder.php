@@ -26,14 +26,17 @@ class DummyTransactionSeeder extends Seeder
         $shiftCodes = DB::table('presensi_jamkerja')->pluck('kode_jam_kerja')->toArray();
         $defaultShift = !empty($shiftCodes) ? reset($shiftCodes) : 'JK01';
 
-        // 3. Define Period
+        // 3. Define Period (Thesis: Nov 2025 - Jan 2026)
         $startDate = Carbon::create(2025, 11, 1);
-        $endDate = Carbon::create(2026, 1, 17);
+        $endDate = Carbon::create(2026, 1, 31);
 
         $this->command->info("Generating Unified Transactions from {$startDate->toDateString()} to {$endDate->toDateString()}...");
 
         foreach ($karyawans as $karyawan) {
             $currentDate = $startDate->copy();
+
+            // Check Department for Location Logic
+            $isFieldWorker = in_array($karyawan->kode_dept, ['TKL', 'OTK']); // Teknisi Lapangan / Operasional Toko
 
             while ($currentDate <= $endDate) {
                 // Variables for this day
@@ -44,8 +47,8 @@ class DummyTransactionSeeder extends Seeder
                 // 1. Weekend Logic
                 if ($isWeekend) {
                     // 5% chance of Overtime even on Sunday
-                    if (rand(1, 100) > 95) {
-                        $this->createLembur($karyawan->nik, $tgl, true);
+                    if (rand(1, 100) <= 5) {
+                        $this->createLembur($karyawan->nik, $tgl, true, $isFieldWorker);
                     }
                     $currentDate->addDay();
                     continue;
@@ -56,9 +59,9 @@ class DummyTransactionSeeder extends Seeder
 
                 if ($rand <= 92) {
                     // HADIR (92%)
-                    $this->createHadir($karyawan, $tgl, $shiftCodes, $defaultShift, $faker);
+                    $this->createHadir($karyawan, $tgl, $shiftCodes, $defaultShift, $faker, $isFieldWorker);
                 } else {
-                    // TIDAK HADIR (8%) - Distribute types (5 types: Sakit, Cuti, Izin, Dinas, Alpha)
+                    // TIDAK HADIR (8%)
                     $typeRand = rand(1, 5);
 
                     if ($typeRand == 1) {
@@ -69,44 +72,62 @@ class DummyTransactionSeeder extends Seeder
                         $this->createIzinAbsen($karyawan->nik, $tgl);
                     } elseif ($typeRand == 4) {
                         $this->createIzinDinas($karyawan->nik, $tgl);
-                    } else {
-                        // ALPHA - Do nothing (No Presensi record = Alpha)
                     }
                 }
 
                 $currentDate->addDay();
             }
         }
-
         $this->command->info('Unified Dummy Transactions Generated!');
     }
 
     private function getStatus($tgl)
     {
-        // Logic:
-        // Nov-Dec 2025: 100% Processed (85% Approved '1', 15% Rejected '2')
-        // Jan 2026: 100% Pending '0'
-
+        // Permission Status Logic:
+        // Nov-Dec 2025: Processed (85% Approved '1', 15% Rejected '2')
+        // Jan 2026: Pending '0'
         $date = Carbon::parse($tgl);
-
-        if ($date->year == 2026 && $date->month >= 1) {
-            // JANUARI 2026 -> ALL PENDING
+        if ($date->year == 2026)
             return '0';
-        } else {
-            // NOV-DEC 2025 -> PROCESSED
-            // 85% Approved, 15% Rejected
-            return rand(1, 100) <= 85 ? '1' : '2';
-        }
+        return rand(1, 100) <= 85 ? '1' : '2';
     }
 
-    private function createHadir($karyawan, $tgl, $shiftCodes, $defaultShift, $faker)
+    private function getLemburStatus($tgl)
     {
-        // ... (Same logic for Presensi, Aktivitas, Kunjungan) ...
+        // Lembur Status Logic:
+        // Nov-Dec 2025: Approved '1'
+        // Jan 2026: Pending '0'
+        $date = Carbon::parse($tgl);
+        if ($date->year == 2026)
+            return '0';
+        return '1';
+    }
+
+    private function getLocation($isFieldWorker)
+    {
+        if ($isFieldWorker) {
+            // Balikpapan Spread Logic
+            // Base: -1.265386, 116.831200
+            // Jitter: +/- 0.05 to 0.08
+            $latBase = -1.265386;
+            $lonBase = 116.831200;
+
+            $lat = $latBase + (rand(-8000, 8000) / 100000); // +/- 0.08
+            $lon = $lonBase + (rand(-8000, 8000) / 100000);
+            return number_format($lat, 6) . ',' . number_format($lon, 6);
+        }
+        // Default Office
+        return '-6.175392,106.827153';
+    }
+
+    private function createHadir($karyawan, $tgl, $shiftCodes, $defaultShift, $faker, $isFieldWorker)
+    {
         $shift = !empty($shiftCodes) ? $faker->randomElement($shiftCodes) : $defaultShift;
 
         // Time Logic
-        $isLate = rand(1, 100) <= 20;
-        $isOvertime = rand(1, 100) <= 10;
+        $isLate = rand(1, 100) <= 20; // 20% Late
+        // Overtime check (Weekday) - 5% chance
+        $isOvertime = rand(1, 100) <= 5;
 
         if ($isLate) {
             $jamIn = $tgl . ' ' . rand(8, 8) . ':' . str_pad(rand(5, 30), 2, '0', STR_PAD_LEFT) . ':00';
@@ -114,20 +135,20 @@ class DummyTransactionSeeder extends Seeder
             $jamIn = $tgl . ' ' . rand(7, 7) . ':' . str_pad(rand(30, 55), 2, '0', STR_PAD_LEFT) . ':00';
         }
 
-        if ($isOvertime) {
-            $jamOut = $tgl . ' ' . rand(18, 20) . ':' . str_pad(rand(0, 59), 2, '0', STR_PAD_LEFT) . ':00';
-        } else {
-            $jamOut = $tgl . ' ' . rand(17, 17) . ':' . str_pad(rand(0, 45), 2, '0', STR_PAD_LEFT) . ':00';
-        }
+        // Jam Out Logic
+        $jamOut = $tgl . ' ' . rand(17, 17) . ':' . str_pad(rand(0, 45), 2, '0', STR_PAD_LEFT) . ':00';
 
-        $lokasi = '-6.175392,106.827153';
+        // Lokasi Logic
+        $lokasi = $this->getLocation($isFieldWorker);
 
-        // Insert Presensi
         DB::table('presensi')->insert([
             'nik' => $karyawan->nik,
             'tanggal' => $tgl,
             'jam_in' => $jamIn,
-            'jam_out' => $jamOut,
+            'jam_out' => $isOvertime ? null : $jamOut, // If overtime, jam_out might be overwritten or updated? 
+            // Usually presensi table stores the actual scan out. If overtime, scan out is later.
+            // Let's make scan out later if overtime.
+            'jam_out' => $isOvertime ? ($tgl . ' ' . rand(19, 21) . ':00:00') : $jamOut,
             'foto_in' => 'dummy_in.jpg',
             'foto_out' => 'dummy_out.jpg',
             'lokasi_in' => $lokasi,
@@ -144,63 +165,89 @@ class DummyTransactionSeeder extends Seeder
             'updated_at' => now()
         ]);
 
-        // Aktivitas
-        if (rand(1, 100) <= 80) { // Not always active
-            DB::table('aktivitas_karyawan')->insert([
-                'nik' => $karyawan->nik,
-                'aktivitas' => $faker->randomElement(['Meeting Internal', 'Coding Feature', 'Cleaning Data', 'Rekap Laporan']),
-                'foto' => 'dummy_activity.jpg',
-                'lokasi' => $lokasi,
-                'created_at' => $jamIn,
-                'updated_at' => $jamIn
-            ]);
+        // Activities & Visits (Only if Field Worker)
+        if ($isFieldWorker) {
+            // Activity (80% chance)
+            if (rand(1, 100) <= 80) {
+                DB::table('aktivitas_karyawan')->insert([
+                    'nik' => $karyawan->nik,
+                    'aktivitas' => $faker->randomElement(['Kunjungan Outlet', 'Maintenance Alat', 'Kanvasing Area', 'Meeting Client']),
+                    'foto' => 'dummy_activity.jpg',
+                    'lokasi' => $this->getLocation(true), // Always randomized field location
+                    'created_at' => $jamIn,
+                    'updated_at' => $jamIn
+                ]);
+            }
+            // Visit (20% chance)
+            if (rand(1, 100) <= 20) {
+                DB::table('kunjungan')->insert([
+                    'nik' => $karyawan->nik,
+                    'deskripsi' => 'Visit Customer ' . $faker->company,
+                    'foto' => 'dummy_visit.jpg',
+                    'lokasi' => $this->getLocation(true),
+                    'tanggal_kunjungan' => $tgl,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+        } else {
+            // Office Worker Activity
+            if (rand(1, 100) <= 60) {
+                DB::table('aktivitas_karyawan')->insert([
+                    'nik' => $karyawan->nik,
+                    'aktivitas' => $faker->randomElement(['Meeting Internal', 'Rekap Laporan', 'Coding', 'Admin Work']),
+                    'foto' => 'dummy_activity.jpg',
+                    'lokasi' => $this->getLocation(false), // Office
+                    'created_at' => $jamIn,
+                    'updated_at' => $jamIn
+                ]);
+            }
         }
 
-        // Kunjungan
-        if (rand(1, 100) <= 10) {
-            DB::table('kunjungan')->insert([
-                'nik' => $karyawan->nik,
-                'deskripsi' => 'Visit Customer ' . $faker->company,
-                'foto' => 'dummy_visit.jpg',
-                'lokasi' => $lokasi,
-                'tanggal_kunjungan' => $tgl,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
-        }
-
-        // Lembur
-        // Lembur
+        // Lembur (Weekdays)
         if ($isOvertime) {
-            $lemburMulai = $tgl . ' 18:00:00';
-            $lemburSelesai = $jamOut;
-            $statusLembur = $this->getStatus($tgl);
-
-            DB::table('lembur')->insert([
-                'tanggal' => $tgl,
-                'nik' => $karyawan->nik,
-                'lembur_mulai' => $lemburMulai,
-                'lembur_selesai' => $lemburSelesai,
-                'lembur_in' => $lemburMulai,
-                'lembur_out' => $lemburSelesai,
-                'foto_lembur_in' => 'dummy_lembur_in.jpg',
-                'foto_lembur_out' => 'dummy_lembur_out.jpg',
-                'lokasi_lembur_in' => $lokasi,
-                'lokasi_lembur_out' => $lokasi,
-                'status' => $statusLembur,
-                'keterangan' => 'Lembur Kejar Target',
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            $this->createLembur($karyawan->nik, $tgl, false, $isFieldWorker);
         }
+    }
+
+    private function createLembur($nik, $tgl, $isWeekend, $isFieldWorker)
+    {
+        $status = $this->getLemburStatus($tgl);
+        $lokasi = $this->getLocation($isFieldWorker);
+
+        if ($isWeekend) {
+            $start = $tgl . ' 09:00:00';
+            $end = $tgl . ' 14:00:00';
+        } else {
+            $start = $tgl . ' 17:00:00';
+            $end = $tgl . ' 20:00:00';
+        }
+
+        DB::table('lembur')->insert([
+            'tanggal' => $tgl,
+            'nik' => $nik,
+            'lembur_mulai' => $start,
+            'lembur_selesai' => $end,
+            'lembur_in' => $start,
+            'lembur_out' => $end, // Assuming auto-checkout style or diligent user
+            'foto_lembur_in' => 'dummy_lembur_in.jpg',
+            'foto_lembur_out' => 'dummy_lembur_out.jpg',
+            'lokasi_lembur_in' => $lokasi,
+            'lokasi_lembur_out' => $lokasi,
+            'status' => $status,
+            'keterangan' => $isWeekend ? 'Lembur Weekend Support' : 'Lembur Project Deadline',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
     }
 
     private function createIzinSakit($nik, $tgl)
     {
+        // ... (Keep existing logic, ensure no conflicts)
+        // Re-implementing essentially the same but clean
         $kode = 'IZ' . date('ymd', strtotime($tgl)) . rand(100, 999);
         if ($this->checkConflict($nik, $tgl))
             return;
-
         $status = $this->getStatus($tgl);
 
         DB::table('presensi_izinsakit')->insert([
@@ -216,9 +263,8 @@ class DummyTransactionSeeder extends Seeder
             'updated_at' => now()
         ]);
 
-        if ($status == '1') { // Only Approved creates Presensi
+        if ($status == '1')
             $this->createPresensiStatus($nik, $tgl, 's');
-        }
     }
 
     private function createIzinAbsen($nik, $tgl)
@@ -226,7 +272,6 @@ class DummyTransactionSeeder extends Seeder
         $kode = 'IZ' . date('ymd', strtotime($tgl)) . rand(100, 999);
         if ($this->checkConflict($nik, $tgl))
             return;
-
         $status = $this->getStatus($tgl);
 
         DB::table('presensi_izinabsen')->insert([
@@ -235,25 +280,22 @@ class DummyTransactionSeeder extends Seeder
             'dari' => $tgl,
             'sampai' => $tgl,
             'nik' => $nik,
-            'keterangan' => 'Izin Keluarga',
+            'keterangan' => 'Urusan Keluarga',
             'status' => $status,
             'keterangan_hrd' => ($status == '1') ? 'ACC' : null,
             'created_at' => now(),
             'updated_at' => now()
         ]);
 
-        if ($status == '1') {
+        if ($status == '1')
             $this->createPresensiStatus($nik, $tgl, 'i');
-        }
     }
 
     private function createIzinDinas($nik, $tgl)
     {
-        // Table: presensi_izindinas, PK: kode_izin_dinas
         $kode = 'DN' . date('ymd', strtotime($tgl)) . rand(100, 999);
         if ($this->checkConflict($nik, $tgl))
             return;
-
         $status = $this->getStatus($tgl);
 
         DB::table('presensi_izindinas')->insert([
@@ -269,9 +311,8 @@ class DummyTransactionSeeder extends Seeder
             'updated_at' => now()
         ]);
 
-        if ($status == '1') {
-            $this->createPresensiStatus($nik, $tgl, 'i'); // Dinas counts as Izin usually
-        }
+        if ($status == '1')
+            $this->createPresensiStatus($nik, $tgl, 'i');
     }
 
     private function createCuti($nik, $tgl)
@@ -279,12 +320,10 @@ class DummyTransactionSeeder extends Seeder
         $kode = 'CT' . date('ymd', strtotime($tgl)) . rand(100, 999);
         if ($this->checkConflict($nik, $tgl))
             return;
-
-        $kodeCuti = DB::table('cuti')->value('kode_cuti');
-        if (!$kodeCuti)
-            $kodeCuti = 'C01';
-
         $status = $this->getStatus($tgl);
+
+        // Fetch kode_cuti safely
+        $kodeCuti = DB::table('cuti')->value('kode_cuti') ?? 'C01';
 
         DB::table('presensi_izincuti')->insert([
             'kode_izin_cuti' => $kode,
@@ -294,61 +333,36 @@ class DummyTransactionSeeder extends Seeder
             'kode_cuti' => $kodeCuti,
             'nik' => $nik,
             'keterangan' => 'Cuti Tahunan',
-            'keterangan_hrd' => ($status == '1') ? 'ACC' : null,
             'status' => $status,
+            'keterangan_hrd' => ($status == '1') ? 'ACC' : null,
             'id_user' => 1,
             'created_at' => now(),
             'updated_at' => now()
         ]);
 
-        if ($status == '1') {
+        if ($status == '1')
             $this->createPresensiStatus($nik, $tgl, 'c');
-        }
     }
 
     private function createPresensiStatus($nik, $tgl, $status)
     {
-        // "Pending" permission -> Do we insert into Presensi table?
-        // Usually NO. Presensi table is for "Realized" status.
-        // If approved ('a'), we insert. If pending ('p'), we DO NOT insert into presensi table yet.
-        // This simulates REAL process: User requests -> Admin Approves -> System trigger inserts Presensi.
-        // So I will wrap this.
+        // Logic: Insert into presensi if approved ('1').
+        // Note: The caller methods check status == '1' before calling this.
+        // However, check if presensi exists?
+        if (DB::table('presensi')->where('nik', $nik)->where('tanggal', $tgl)->exists())
+            return;
 
-        // Wait, current logic inserts 's'/'i'/'c' into presensi.
-        // If approval is 'p', then presensi table should likely NOT have this record (it would be Alpha or Null).
-        // Let's only insert into Presensi if status is 'a' (Approved) OR if it is 's' (Sakit usually doesn't need approval? depends on system).
-        // Request says "70% approved".
-
-        // REVISION: I will NOT insert into `presensi` table if the permission is Pending ('p').
-        // This correctly simulates "Menunggu Persetujuan".
-
-        // But wait, if I don't insert, and it's a weekday... does it become Alpha?
-        // Yes, that's how it should work.
-
-        // However, looking at seeded data for 'createHadir', we always insert.
-        // For Permissions, I will create a presensi record ONLY if Approved.
-        // But to make the chart look nice (92%), we might want them to appear.
-        // Let's stick to logic: Pending = No Presensi Record.
-    }
-
-    private function createLembur($nik, $tgl, $isDayOff)
-    {
-        // Standalone Lembur (e.g. Sunday)
-        $status = $this->getStatus($tgl);
-
-        DB::table('lembur')->insert([
-            'tanggal' => $tgl,
+        DB::table('presensi')->insert([
             'nik' => $nik,
-            'lembur_mulai' => $tgl . ' 09:00:00',
-            'lembur_selesai' => $tgl . ' 14:00:00',
-            'lembur_in' => $tgl . ' 09:00:00',
-            'lembur_out' => $tgl . ' 14:00:00',
-            'foto_lembur_in' => 'dummy_lembur_in.jpg',
-            'foto_lembur_out' => 'dummy_lembur_out.jpg',
-            'lokasi_lembur_in' => '-6.175392,106.827153',
-            'lokasi_lembur_out' => '-6.175392,106.827153',
+            'tanggal' => $tgl,
+            'jam_in' => null,
+            'jam_out' => null,
+            'foto_in' => null,
+            'foto_out' => null,
+            'lokasi_in' => null,
+            'lokasi_out' => null,
+            'kode_jam_kerja' => 'JK01',
             'status' => $status,
-            'keterangan' => 'Lembur Weekend',
             'created_at' => now(),
             'updated_at' => now()
         ]);
@@ -356,12 +370,6 @@ class DummyTransactionSeeder extends Seeder
 
     private function checkConflict($nik, $tgl)
     {
-        // Ensure no double insert on same day
-        $tables = ['presensi_izinabsen', 'presensi_izinsakit', 'presensi_izincuti', 'presensi_izindinas'];
-        // Note: Field names differ (kode_izin, kode_izin_sakit...). 
-        // Better check presensi table? No, pending reqs aren't there.
-        // Check date & nik in each.
-
         if (DB::table('presensi_izinabsen')->where('tanggal', $tgl)->where('nik', $nik)->exists())
             return true;
         if (DB::table('presensi_izinsakit')->where('tanggal', $tgl)->where('nik', $nik)->exists())
@@ -370,7 +378,6 @@ class DummyTransactionSeeder extends Seeder
             return true;
         if (DB::table('presensi_izindinas')->where('tanggal', $tgl)->where('nik', $nik)->exists())
             return true;
-
         return false;
     }
 }

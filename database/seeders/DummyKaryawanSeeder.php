@@ -49,14 +49,19 @@ class DummyKaryawanSeeder extends Seeder
             'Dedi Mulyadi',
             'Lina Marlina',
             'Iwan Setiawan',
-            'Maya Putri'
+            'Maya Putri',
+            'Reza Rahadian',
+            'Andi Wijaya',
+            'Siska Amelia',
+            'Doni Saputra',
+            'Gita Gutawa'
         ];
 
         $this->command->info("Found " . count($depts) . " Departments, " . count($cabangs) . " Branches, " . count($jabatans) . " Positions.");
-        $this->command->info('Creating 15 Dummy Employees...');
+        $this->command->info('Creating 20 Dummy Employees...');
 
         foreach ($dummy_names as $index => $name) {
-            $nik = '2401' . str_pad($index + 10, 4, '0', STR_PAD_LEFT); // ex: 24010010
+            $nik = '2401' . str_pad($index + 10, 4, '0', STR_PAD_LEFT); // ex: 24010010 - 24010029
 
             // Cek exist
             if (Karyawan::where('nik', $nik)->exists()) {

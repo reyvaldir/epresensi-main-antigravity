@@ -44,15 +44,27 @@ class DummyDataCleaner extends Seeder
         $deletedIzin = DB::table('presensi_izinabsen')->where('nik', 'like', $prefix)->delete();
         $this->command->info("- Deleted $deletedIzin records from 'presensi_izinabsen'");
 
+        $deletedDinas = DB::table('presensi_izindinas')->where('nik', 'like', $prefix)->delete();
+        $this->command->info("- Deleted $deletedDinas records from 'presensi_izindinas'");
+
         // Payroll Data (Cascades usually handle this, but explicit delete helps verification)
         $deletedGaji = DB::table('karyawan_gaji_pokok')->where('nik', 'like', $prefix)->delete();
         $this->command->info("- Deleted $deletedGaji records from 'karyawan_gaji_pokok'");
 
+        // Explicitly delete details to be safe
+        // Logic: Delete details where header is about to be deleted? 
+        // Or better: Delete where nik is in the header table with that NIK.
+        // But simpler: just rely on the main tables or use join delete if supported. 
+        // Since we don't carry NIK in detail, we skip detailed specific delete unless we query first.
+        // Actually, let's trust cascade for details OR query IDs.
+        // Given complexity, let's stick to adding 'izindinas' which matches the NIK pattern directly.
+
         $deletedTunj = DB::table('karyawan_tunjangan')->where('nik', 'like', $prefix)->delete();
         $this->command->info("- Deleted $deletedTunj records from 'karyawan_tunjangan'");
-        // Detail tunjangan deletes via cascade of header usually, but good to know.
+        // Detail tunjangan deletes via cascade of header usually.
 
         $deletedBpjs = DB::table('karyawan_bpjstenagakerja')->where('nik', 'like', $prefix)->delete();
+
         $this->command->info("- Deleted $deletedBpjs records from 'karyawan_bpjstenagakerja'");
 
 
