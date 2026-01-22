@@ -10,103 +10,107 @@ use App\Models\Karyawan;
 
 class DummyKaryawanSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
+        $this->command->info('Creating 30 Dummy Employees (Rule-Based)...');
+
         $faker = Faker::create('id_ID');
 
-        // Referensi Data Master (Dynamic Fetching)
-        $depts = DB::table('departemen')->pluck('kode_dept')->toArray();
-        $cabangs = DB::table('cabang')->pluck('kode_cabang')->toArray();
-        $jabatans = DB::table('jabatan')->pluck('kode_jabatan')->toArray();
-        $status_kawin = DB::table('status_kawin')->pluck('kode_status_kawin')->toArray();
+        // Master Data Check
+        $branches = ['KRJ', 'CRB', 'SPG']; // User Constraint
+        $depts = ['ADM', 'OPL', 'OTK'];     // User Constraint
 
-        // Fallback for demo if tables are empty (Optional, but better to warn)
-        if (empty($depts) || empty($cabangs) || empty($jabatans)) {
-            $this->command->error("Data Master (Departemen/Cabang/Jabatan) Kosong! Harap jalankan seeder master terlebih dahulu.");
-            return;
-        }
+        // 1. Administration (6 Pax) -> KRJ ONLY
+        // 1 Head (J03) + 5 Staff (J04)
+        $this->createAdminTeam($faker);
 
-        if (empty($status_kawin)) {
-            $status_kawin = ['TK', 'K0', 'K1', 'K2'];
-        }
-
-        // Daftar Nama Realistis untuk Demo Skripsi
-        $dummy_names = [
-            'Budi Santoso',
-            'Siti Aminah',
-            'Rudi Hartono',
-            'Dewi Sartika',
-            'Agus Pratama',
-            'Rina Wati',
-            'Joko Susilo',
-            'Eka Kurniawan',
-            'Sari Indah',
-            'Hendra Jaya',
-            'Tri Utami',
-            'Dedi Mulyadi',
-            'Lina Marlina',
-            'Iwan Setiawan',
-            'Maya Putri',
-            'Reza Rahadian',
-            'Andi Wijaya',
-            'Siska Amelia',
-            'Doni Saputra',
-            'Gita Gutawa'
-        ];
-
-        $this->command->info("Found " . count($depts) . " Departments, " . count($cabangs) . " Branches, " . count($jabatans) . " Positions.");
-        $this->command->info('Creating 20 Dummy Employees...');
-
-        foreach ($dummy_names as $index => $name) {
-            $nik = '2401' . str_pad($index + 10, 4, '0', STR_PAD_LEFT); // ex: 24010010 - 24010029
-
-            // Cek exist
-            if (Karyawan::where('nik', $nik)->exists()) {
-                continue;
-            }
-
-            $dept = $faker->randomElement($depts);
-            $cabang = $faker->randomElement($cabangs);
-            $jabatan = $faker->randomElement($jabatans);
-
-            // Logic Jabatan & Gaji/Tunjangan bisa dikembangkan nanti
-
-            Karyawan::create([
-                'nik' => $nik,
-                'nama_karyawan' => $name,
-                'no_ktp' => '320101' . str_pad($index, 10, '0', STR_PAD_LEFT), // Deterministic KTP
-                'tempat_lahir' => $faker->city,
-                'tanggal_lahir' => $faker->date('Y-m-d', '2000-01-01'),
-                'alamat' => $faker->address,
-                'no_hp' => '0812' . str_pad($index, 8, '0', STR_PAD_LEFT), // Deterministic HP
-                'jenis_kelamin' => $faker->randomElement(['L', 'P']),
-                'kode_status_kawin' => $faker->randomElement($status_kawin),
-                'pendidikan_terakhir' => $faker->randomElement(['S1', 'D3', 'SMA']),
-
-                'kode_cabang' => $cabang,
-                'kode_dept' => $dept,
-                'kode_jabatan' => $jabatan,
-
-                'tanggal_masuk' => '2023-01-01',
-                'status_karyawan' => $faker->randomElement(['T', 'K']), // Tetap / Kontrak
-                'status_aktif_karyawan' => '1',
-
-                'foto' => null, // default
-                'password' => Hash::make('12345'), // Default Password demo
-
-                'kode_jadwal' => DB::table('presensi_jamkerja')->value('kode_jam_kerja') ?? 'JK01', // Dynamic Fetch
-                'lock_location' => '0', // Bebas absen dimana saja (untuk kemudahan demo)
-            ]);
-
-            // Assign User Permission / Role if using Spatie for Login
-            // But this system uses `karyawan` auth guard table directly.
-
-            // Assign Facerecognition dummy (optional)
-        }
+        // 2. Leadership & Field Distribution (Remaining 24 Pax)
+        $this->createFieldAndOpsTeam($faker);
 
         $this->command->info('Dummy Employees Created Successfully!');
+    }
+
+    private function createAdminTeam($faker)
+    {
+        // 1 Head Admin (J03) at KRJ
+        $this->insertKaryawan(1, 'KRJ', 'ADM', 'J03', $faker);
+
+        // 5 Staff Admin (J04) at KRJ
+        for ($i = 2; $i <= 6; $i++) {
+            $this->insertKaryawan($i, 'KRJ', 'ADM', 'J04', $faker);
+        }
+    }
+
+    private function createFieldAndOpsTeam($faker)
+    {
+        // Remaining 24 Employees (Index 7 to 30)
+        // Distribution:
+        // KRJ: Need 1 OPL Head (J05), 1 Toko Head (J01)
+        // CRB: Need 1 OPL Head (J05), 1 Toko Head (J01)
+        // SPG: Need 1 OPL Head (J05), 1 Toko Head (J01)
+        // Rest: Spread OPL/OTK Staff
+
+        $startIndex = 7;
+        $branches = ['KRJ', 'CRB', 'SPG'];
+
+        // A. Assign Leaders First (6 Pax)
+        foreach ($branches as $branch) {
+            // Head OPL (J05)
+            $this->insertKaryawan($startIndex++, $branch, 'OPL', 'J05', $faker);
+            // Head Toko (J01)
+            $this->insertKaryawan($startIndex++, $branch, 'OTK', 'J01', $faker);
+        }
+
+        // B. Remainder (30 - 6 - 6 = 18 Pax) -> Staff (J06/J07 roughly)
+        // We will assign them OPL or OTK randomly, distributed across branches
+        // Current Index is 13. Target is 30.
+
+        $branchPointer = 0;
+        for ($i = $startIndex; $i <= 30; $i++) {
+            $branch = $branches[$branchPointer % 3]; // Round Robin Distribution
+            $dept = $faker->randomElement(['OPL', 'OTK']);
+            $this->insertKaryawan($i, $branch, $dept, 'J06', $faker);
+            $branchPointer++;
+        }
+    }
+
+    private function insertKaryawan($index, $kode_cabang, $kode_dept, $kode_jabatan, $faker)
+    {
+        $nik = '2401' . str_pad($index, 4, '0', STR_PAD_LEFT);
+
+        // Skip if exists
+        if (Karyawan::where('nik', $nik)->exists())
+            return;
+
+        $name = $faker->firstName . ' ' . $faker->lastName;
+
+        // Dynamic Schedule
+        $jadwal = DB::table('presensi_jamkerja')->value('kode_jam_kerja') ?? 'JK01';
+
+        Karyawan::create([
+            'nik' => $nik,
+            'nama_karyawan' => $name,
+            'kode_dept' => $kode_dept,
+            'kode_cabang' => $kode_cabang,
+            'kode_jabatan' => $kode_jabatan, // User Specified
+            'kode_status_kawin' => 'TK',
+            'foto' => null,
+            'password' => Hash::make('12345'),
+            'kode_jadwal' => $jadwal,
+            'lock_location' => '0',
+
+            // Deterministic Unique Keys
+            'no_ktp' => '320101' . str_pad($index, 10, '0', STR_PAD_LEFT),
+            'no_hp' => '0812' . str_pad($index, 8, '0', STR_PAD_LEFT),
+
+            'tempat_lahir' => substr($faker->city, 0, 20),
+            'tanggal_lahir' => $faker->date('Y-m-d', '2000-01-01'),
+            'alamat' => $faker->address,
+            'jenis_kelamin' => $faker->randomElement(['L', 'P']),
+            'pendidikan_terakhir' => 'S1',
+            'status_karyawan' => 'K',
+            'status_aktif_karyawan' => '1', // Required field
+            'tanggal_masuk' => '2023-01-01',
+        ]);
     }
 }

@@ -24,6 +24,7 @@ class DummyPayrollSeeder extends Seeder
             ['kode_jenis_tunjangan' => 'TJ01', 'jenis_tunjangan' => 'Makan'],
             ['kode_jenis_tunjangan' => 'TJ02', 'jenis_tunjangan' => 'Transport'],
             ['kode_jenis_tunjangan' => 'TJ03', 'jenis_tunjangan' => 'Jabatan'],
+            ['kode_jenis_tunjangan' => 'TJ04', 'jenis_tunjangan' => 'Tanggung Jawab'], // New
         ];
 
         foreach ($tunjangans as $tj) {
@@ -31,16 +32,6 @@ class DummyPayrollSeeder extends Seeder
                 ['kode_jenis_tunjangan' => $tj['kode_jenis_tunjangan']],
                 ['jenis_tunjangan' => $tj['jenis_tunjangan'], 'created_at' => now(), 'updated_at' => now()]
             );
-        }
-
-        // 2. Ensure Global Denda Configuration
-        if (DB::table('denda')->count() == 0) {
-            DB::table('denda')->insert([
-                ['dari' => 5, 'sampai' => 15, 'denda' => 5000, 'created_at' => now()],
-                ['dari' => 16, 'sampai' => 30, 'denda' => 10000, 'created_at' => now()],
-                ['dari' => 31, 'sampai' => 60, 'denda' => 25000, 'created_at' => now()],
-            ]);
-            $this->command->info('Seeded Denda configuration.');
         }
 
         // 3. Define Salary Tiers per Jabatan
@@ -76,6 +67,13 @@ class DummyPayrollSeeder extends Seeder
                 ]
             );
 
+            // Calculate Position-Based Allowances
+            // Heads (J01, J03, J05) get more than Staff (J04, J06, others)
+            $isHead = in_array($k->kode_jabatan, ['J01', 'J03', 'J05']);
+
+            $uJabatan = $isHead ? 1000000 : 500000;
+            $uTanggungJawab = $isHead ? 750000 : 250000;
+
             // B. Tunjangan Header
             $kodeTunjRecord = 'TR' . substr($k->nik, -5);
             DB::table('karyawan_tunjangan')->updateOrInsert(
@@ -88,13 +86,16 @@ class DummyPayrollSeeder extends Seeder
                 ]
             );
 
-            // C. Tunjangan Detail (Makan & Transport)
+            // C. Tunjangan Detail (Makan, Transport, Jabatan, Tanggung Jawab)
             $details = [
-                ['kode_jenis_tunjangan' => 'TJ01', 'jumlah' => 500000],
-                ['kode_jenis_tunjangan' => 'TJ02', 'jumlah' => 300000],
+                ['kode_jenis_tunjangan' => 'TJ01', 'jumlah' => 500000], // Makan
+                ['kode_jenis_tunjangan' => 'TJ02', 'jumlah' => 300000], // Transport
+                ['kode_jenis_tunjangan' => 'TJ03', 'jumlah' => $uJabatan], // Jabatan
+                ['kode_jenis_tunjangan' => 'TJ04', 'jumlah' => $uTanggungJawab], // Tanggung Jawab
             ];
 
             foreach ($details as $d) {
+                // ... (Insert Logic)
                 DB::table('karyawan_tunjangan_detail')
                     ->where('kode_tunjangan', $kodeTunjRecord)
                     ->where('kode_jenis_tunjangan', $d['kode_jenis_tunjangan'])
@@ -118,6 +119,21 @@ class DummyPayrollSeeder extends Seeder
                 [
                     'kode_bpjs_tk' => $kodeBpjs,
                     'jumlah' => $bpjsAmount,
+                    'tanggal_berlaku' => '2023-01-01',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            );
+            // E. BPJS Kesehatan (1% Employee)
+            // Assumed Table: karyawan_bpjskesehatan
+            $kodeBpjsKes = 'KS' . substr($k->nik, -5);
+            $bpjsKesAmount = $fixSalary * 0.01;
+
+            DB::table('karyawan_bpjskesehatan')->updateOrInsert(
+                ['nik' => $k->nik],
+                [
+                    'kode_bpjs_kesehatan' => $kodeBpjsKes,
+                    'jumlah' => $bpjsKesAmount,
                     'tanggal_berlaku' => '2023-01-01',
                     'created_at' => now(),
                     'updated_at' => now()
