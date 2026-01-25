@@ -148,17 +148,17 @@
                                     <div class="flex items-center gap-1.5 align-middle">
                                         @if ($d->jam_in)
                                             <span
-                                                class="{{ $is_late ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border">
+                                                class="{{ $is_late ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border whitespace-nowrap">
                                                 IN: {{ date('H:i', strtotime($d->jam_in)) }}
                                             </span>
                                             @if ($is_late && $late_msg)
                                                 <span
-                                                    class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">
+                                                    class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100 whitespace-nowrap">
                                                     {{ $late_msg }}
                                                 </span>
                                             @endif
                                         @else
-                                            <span class="bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">Belum Absen</span>
+                                            <span class="bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100 whitespace-nowrap">Belum Absen</span>
                                         @endif
                                     </div>
 
@@ -169,17 +169,17 @@
                                     <div class="flex items-center gap-1.5 align-middle">
                                         @if ($d->jam_out)
                                             <span
-                                                class="{{ $is_early_out ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border">
+                                                class="{{ $is_early_out ? 'bg-rose-50 text-rose-500 border-rose-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100' }} px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border whitespace-nowrap">
                                                 OUT: {{ date('H:i', strtotime($d->jam_out)) }}
                                             </span>
                                             @if ($is_early_out && $early_msg)
                                                 <span
-                                                    class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100">
+                                                    class="bg-rose-50 text-rose-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-rose-100 whitespace-nowrap">
                                                     {{ $early_msg }}
                                                 </span>
                                             @endif
                                         @else
-                                            <span class="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-slate-200">Belum Pulang</span>
+                                            <span class="bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-tight inline-block leading-none border border-slate-200 whitespace-nowrap">Belum Pulang</span>
                                         @endif
                                     </div>
                                 </div>
@@ -199,8 +199,7 @@
                             @endif
                         </div>
 
-                        <!-- Right Column -->
-                        <div class="text-right flex flex-col gap-1 mt-0.5 shrink-0">
+                        <div class="text-right flex flex-col gap-1 mt-0.5 max-w-[40%]">
                             <h3 class="font-bold text-slate-800 text-[10px] uppercase leading-tight">{{ $d->nama_jam_kerja ?? 'Shift Umum' }}</h3>
                             <p class="text-[10px] font-medium text-teal-500 whitespace-nowrap">
                                 {{ isset($d->jam_masuk) ? date('H:i', strtotime($d->jam_masuk)) : '--:--' }} -

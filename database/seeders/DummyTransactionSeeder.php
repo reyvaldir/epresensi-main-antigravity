@@ -44,12 +44,12 @@ class DummyTransactionSeeder extends Seeder
             $cabangLon = trim($locParts[1]);
 
             while ($currentDate <= $endDate) {
-                // Determine Status (Weekdays vs Weekends)
-                $isWeekend = $currentDate->isWeekend();
+                // Determine Status (Sunday is Holiday, Saturday is Workday)
+                $isSunday = $currentDate->isSunday();
                 $tgl = $currentDate->toDateString();
 
-                // 92% Presence on Weekdays, 0% on Weekends (unless overtime)
-                if (!$isWeekend) {
+                // 92% Presence on Workdays (Mon-Sat), 0% on Sunday
+                if (!$isSunday) {
                     $dice = rand(1, 100);
                     if ($dice <= 92) {
                         $status = 'h';
@@ -217,8 +217,8 @@ class DummyTransactionSeeder extends Seeder
                         $overtimeData = [
                             'nik' => $karyawan->nik,
                             'tanggal' => $tgl,
-                            'lembur_mulai' => $tgl . ' ' . ($isWeekend ? '09:00:00' : '17:00:00'),
-                            'lembur_selesai' => $tgl . ' ' . ($isWeekend ? '14:00:00' : '20:00:00'),
+                            'lembur_mulai' => $tgl . ' ' . ($isSunday ? '09:00:00' : '17:00:00'),
+                            'lembur_selesai' => $tgl . ' ' . ($isSunday ? '14:00:00' : '20:00:00'),
                             'keterangan' => 'Project Deadline',
                             'status' => $statusLembur,
                             'created_at' => now(),

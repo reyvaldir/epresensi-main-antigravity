@@ -281,10 +281,10 @@
                                                             tanggal="{{ $tanggal_presensi }}"><i
                                                                 class="ti ti-edit text-success"></i></a>
 
-                                                        <a href="#" class="btngetDatamesin" pin="{{ $d->pin }}"
+                                                        {{-- <a href="#" class="btngetDatamesin" pin="{{ $d->pin }}"
                                                             tanggal="{{ !empty(Request('tanggal')) ? Request('tanggal') : date('Y-m-d') }}">
                                                             <i class="ti ti-device-desktop text-primary"></i>
-                                                        </a>
+                                                        </a> --}}
                                                     </div>
                                                 </td>
                                             </tr>
