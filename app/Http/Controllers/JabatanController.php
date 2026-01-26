@@ -12,6 +12,15 @@ class JabatanController extends Controller
     public function index(Request $request)
     {
         $query = Jabatan::query();
+        // Sorting Logic
+        $sortColumn = $request->get('sort', 'kode_jabatan');
+        $sortOrder = $request->get('order', 'asc');
+        $allowedColumns = ['kode_jabatan', 'nama_jabatan'];
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'kode_jabatan';
+        }
+        $query->orderBy($sortColumn, $sortOrder);
+
         $data['jabatan'] = $query->get();
         return view('datamaster.jabatan.index', $data);
     }

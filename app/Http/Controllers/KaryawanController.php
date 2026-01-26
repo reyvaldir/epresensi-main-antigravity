@@ -49,8 +49,23 @@ class KaryawanController extends Controller
         if (!empty($request->nama_karyawan)) {
             $query->where('nama_karyawan', 'like', '%' . $request->nama_karyawan . '%');
         }
-        $query->orderBy('nama_karyawan', 'asc');
+        if (!empty($request->nama_karyawan)) {
+            $query->where('nama_karyawan', 'like', '%' . $request->nama_karyawan . '%');
+        }
+
+        // Sorting Logic
+        $sortColumn = $request->get('sort', 'nama_karyawan');
+        $sortOrder = $request->get('order', 'asc');
+
+        // whitelist columns
+        $allowedColumns = ['nik', 'nama_karyawan', 'nama_dept', 'nama_jabatan', 'nama_cabang', 'status_aktif_karyawan', 'tanggal_masuk'];
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'nama_karyawan';
+        }
+
+        $query->orderBy($sortColumn, $sortOrder);
         $karyawan = $query->paginate(15);
+        $karyawan->appends(['sort' => $sortColumn, 'order' => $sortOrder]); // Keep sort params in pagination links
 
         $data['karyawan'] = $karyawan;
         $data['departemen'] = Departemen::orderBy('kode_dept')->get();
@@ -103,13 +118,13 @@ class KaryawanController extends Controller
 
             $lastNumber = 0;
             if ($last) {
-                $lastNumber = (int)substr($last->nik, 4, 5);
+                $lastNumber = (int) substr($last->nik, 4, 5);
             }
             $nextNumber = $lastNumber + 1;
-            $nikAuto = $prefix . str_pad((string)$nextNumber, 5, '0', STR_PAD_LEFT);
+            $nikAuto = $prefix . str_pad((string) $nextNumber, 5, '0', STR_PAD_LEFT);
             $data_foto = [];
             if ($request->hasfile('foto')) {
-                $foto_name =  $nikAuto . "." . $request->file('foto')->getClientOriginalExtension();
+                $foto_name = $nikAuto . "." . $request->file('foto')->getClientOriginalExtension();
                 $destination_foto_path = "/public/karyawan";
                 $foto = $foto_name;
                 $data_foto = [
@@ -189,7 +204,7 @@ class KaryawanController extends Controller
             $karyawan = Karyawan::where('nik', $nik)->first();
             $data_foto = [];
             if ($request->hasfile('foto')) {
-                $foto_name =  $nik . "." . $request->file('foto')->getClientOriginalExtension();
+                $foto_name = $nik . "." . $request->file('foto')->getClientOriginalExtension();
                 $destination_foto_path = "/public/karyawan";
                 $foto = $foto_name;
                 $data_foto = [

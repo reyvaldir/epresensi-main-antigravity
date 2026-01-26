@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Faker\Factory as Faker;
 use App\Models\Karyawan;
+use App\Models\User;
+use App\Models\Userkaryawan;
+use App\Models\Pengaturanumum;
 
 class DummyKaryawanSeeder extends Seeder
 {
@@ -69,7 +72,11 @@ class DummyKaryawanSeeder extends Seeder
         for ($i = $startIndex; $i <= 30; $i++) {
             $branch = $branches[$branchPointer % 3]; // Round Robin Distribution
             $dept = $faker->randomElement(['OPL', 'OTK']);
-            $this->insertKaryawan($i, $branch, $dept, 'J06', $faker);
+
+            // Fix Jabatan Mapping
+            $jabatan = ($dept == 'OTK') ? 'J02' : 'J06';
+
+            $this->insertKaryawan($i, $branch, $dept, $jabatan, $faker);
             $branchPointer++;
         }
     }
@@ -84,8 +91,27 @@ class DummyKaryawanSeeder extends Seeder
 
         $name = $faker->firstName . ' ' . $faker->lastName;
 
-        // Dynamic Schedule
-        $jadwal = DB::table('presensi_jamkerja')->value('kode_jam_kerja') ?? 'JK01';
+        // Dynamic Schedule Map (Strict User Rules)
+        $jadwal = 'JK01'; // Default
+        if ($kode_dept == 'ADM') {
+            // Rule 1: ADM -> KRJ Only -> JK02
+            if ($kode_cabang == 'KRJ')
+                $jadwal = 'JK02';
+        } elseif ($kode_dept == 'OPL') {
+            // Rule 2: OPL + KRJ/SPG -> JK03
+            if (in_array($kode_cabang, ['KRJ', 'SPG']))
+                $jadwal = 'JK03';
+            // Rule 4: OPL + CRB -> JK05
+            elseif ($kode_cabang == 'CRB')
+                $jadwal = 'JK05';
+        } elseif ($kode_dept == 'OTK') {
+            // Rule 3: OTK + KRJ/SPG -> JK01
+            if (in_array($kode_cabang, ['KRJ', 'SPG']))
+                $jadwal = 'JK01';
+            // Rule 5: OTK + CRB -> JK04
+            elseif ($kode_cabang == 'CRB')
+                $jadwal = 'JK04';
+        }
 
         Karyawan::create([
             'nik' => $nik,
@@ -112,5 +138,23 @@ class DummyKaryawanSeeder extends Seeder
             'status_aktif_karyawan' => '1', // Required field
             'tanggal_masuk' => '2023-01-01',
         ]);
+
+        // Create User for this Karyawan (Mimic createuser function)
+        $generalsetting = Pengaturanumum::first(); // Should be cached ideally, but fine for 30 rows
+        $domainEmail = $generalsetting ? $generalsetting->domain_email : 'epresensi.com';
+
+        $user = User::create([
+            'name' => $name,
+            'username' => $nik,
+            'password' => Hash::make('12345'), // Same as employee password
+            'email' => strtolower(str_replace('.', '', $nik)) . '@' . $domainEmail,
+        ]);
+
+        Userkaryawan::create([
+            'nik' => $nik,
+            'id_user' => $user->id
+        ]);
+
+        $user->assignRole('karyawan');
     }
 }

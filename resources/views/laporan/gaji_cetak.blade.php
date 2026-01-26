@@ -21,7 +21,8 @@
             <tr>
                 <td>
                     @if ($generalsetting->logo && Storage::exists('public/logo/' . $generalsetting->logo))
-                        <img src="{{ asset('storage/logo/' . $generalsetting->logo) }}" alt="Logo Perusahaan" style="max-width: 100px;">
+                        <img src="{{ asset('storage/logo/' . $generalsetting->logo) }}" alt="Logo Perusahaan"
+                            style="max-width: 100px;">
                     @else
                         <img src="https://placehold.co/100x100?text=Logo" alt="Logo Default" style="max-width: 100px;">
                     @endif
@@ -183,8 +184,8 @@
                                             } else {
                                                 $potongan_jam_terlambat =
                                                     $terlambat['desimal_terlambat'] > $d[$tanggal_presensi]['total_jam']
-                                                        ? $d[$tanggal_presensi]['total_jam']
-                                                        : $terlambat['desimal_terlambat'];
+                                                    ? $d[$tanggal_presensi]['total_jam']
+                                                    : $terlambat['desimal_terlambat'];
                                                 $denda = 0;
                                             }
                                         } else {
@@ -207,12 +208,12 @@
 
                                         $potongan_tidak_absen_masuk_atau_pulang =
                                             empty($d[$tanggal_presensi]['jam_out']) || empty($d[$tanggal_presensi]['jam_in'])
-                                                ? $d[$tanggal_presensi]['total_jam']
-                                                : 0;
+                                            ? $d[$tanggal_presensi]['total_jam']
+                                            : 0;
                                         $potongan_jam =
                                             $potongan_tidak_absen_masuk_atau_pulang == 0
-                                                ? $pulangcepat + $potongan_jam_terlambat
-                                                : $potongan_tidak_absen_masuk_atau_pulang;
+                                            ? $pulangcepat + $potongan_jam_terlambat
+                                            : $potongan_tidak_absen_masuk_atau_pulang;
 
                                         // $ket =
                                         //     $ket_nama_jam_kerja .
@@ -253,6 +254,7 @@
                                     $bgcolor = 'red';
                                     $textcolor = 'white';
                                     $ket = '';
+
                                     //var_dump($ceklibur);
                                     if (!empty($ceklibur)) {
                                         $bgcolor = 'green';
@@ -260,6 +262,12 @@
                                         $ket = $ceklibur[0]['keterangan'];
                                     }
 
+                                    if (!empty($ceklembur)) {
+                                        $bgcolor = 'white';
+                                        $textcolor = 'black';
+                                        $ket_jam_lembur = '<p><span style="color:rgb(11, 153, 179)"> Lembur :' . $jml_jam_lembur . ' Jam</span></p>';
+                                        $ket = $ket_jam_lembur;
+                                    }
                                 @endphp
                             @endif
                             @php
@@ -315,7 +323,8 @@
                     <th style="text-align: right">{{ formatAngka($total_gaji_pokok) }}</th>
                     @foreach ($jenis_tunjangan as $d)
                         <th style="text-align: right">
-                            {{ formatAngka(${'total_tunjangan_' . $d->kode_jenis_tunjangan}) }}</th>
+                            {{ formatAngka(${'total_tunjangan_' . $d->kode_jenis_tunjangan}) }}
+                        </th>
                     @endforeach
                     <th style="text-align: right">{{ formatAngka($total_bruto) }}</th>
                     <th colspan="2"></th>

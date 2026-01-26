@@ -33,7 +33,7 @@ class IzincutiController extends Controller
         $qcuti->join('cuti', 'presensi_izincuti.kode_cuti', '=', 'cuti.kode_cuti');
         $qcuti->select('presensi_izincuti.*', 'karyawan.nama_karyawan', 'karyawan.nik_show', 'jabatan.nama_jabatan', 'departemen.nama_dept', 'cabang.nama_cabang', 'presensi_izincuti.keterangan as nama_cuti');
         if (!empty($request->dari) && !empty($request->sampai)) {
-            $qcuti->whereBetween('izincuti.dari', [$request->dari, $request->sampai]);
+            $qcuti->whereBetween('presensi_izincuti.dari', [$request->dari, $request->sampai]);
         }
         if (!empty($request->nama_karyawan)) {
             $qcuti->where('karyawan.nama_karyawan', 'like', '%' . $request->nama_karyawan . '%');
@@ -50,8 +50,35 @@ class IzincutiController extends Controller
             $qcuti->where('presensi_izincuti.status', $request->status);
         }
 
-        $qcuti->orderBy('presensi_izincuti.status');
-        $qcuti->orderBy('presensi_izincuti.dari', 'desc');
+        // Sorting Logic
+        // Sorting Logic
+        $sortColumn = $request->get('sort', 'dari');
+        $sortOrder = $request->get('order', 'desc');
+
+        // Map alias to actual column
+        $sortMap = [
+            'dari' => 'presensi_izincuti.dari',
+            'status' => 'presensi_izincuti.status',
+            'nik' => 'karyawan.nik',
+            'jenis_cuti' => 'cuti.jenis_cuti',
+            'nama_karyawan' => 'karyawan.nama_karyawan',
+            'nama_cabang' => 'cabang.nama_cabang',
+            'kode_izin_cuti' => 'presensi_izincuti.kode_izin_cuti',
+            'nama_dept' => 'departemen.nama_dept'
+        ];
+
+        // Valid allowed sort keys
+        $allowedColumns = array_keys($sortMap);
+
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'dari';
+        }
+
+        // Apply mapping
+        $finalSortColumn = $sortMap[$sortColumn];
+
+        $qcuti->orderBy($finalSortColumn, $sortOrder);
+
         $cuti = $qcuti->paginate(15);
         $cuti->appends($request->all());
         $data['izincuti'] = $cuti;

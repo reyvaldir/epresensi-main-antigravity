@@ -16,7 +16,15 @@ class CabangController extends Controller
         if (!empty($request->nama_cabang)) {
             $query->where('nama_cabang', 'like', '%' . $request->nama_cabang . '%');
         }
-        $query->orderBy('kode_cabang');
+        // Sorting Logic
+        $sortColumn = $request->get('sort', 'kode_cabang');
+        $sortOrder = $request->get('order', 'asc');
+        $allowedColumns = ['kode_cabang', 'nama_cabang', 'alamat_cabang', 'telepon_cabang', 'radius_cabang'];
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'kode_cabang';
+        }
+        $query->orderBy($sortColumn, $sortOrder);
+
         $cabang = $query->paginate(10);
         $cabang->appends(request()->all());
         return view('datamaster.cabang.index', compact('cabang'));

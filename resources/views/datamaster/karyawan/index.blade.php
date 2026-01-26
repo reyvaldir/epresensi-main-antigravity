@@ -48,18 +48,53 @@
                             <table class="table  table-hover table-bordered table-striped">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>NIK</th>
-                                        <th>Nama Karyawan</th>
-                                        <th>Dept</th>
-                                        <th>Jabatan</th>
-                                        <th>Cabang</th>
-                                        <th>Status</th>
-                                        <th>Tanggal Masuk</th>
-                                        <th class="text-center"><i class="ti ti-map-pin"></i></th>
-                                        <th class="text-center"><i class="ti ti-clock-hour-3"></i></th>
-                                        <th class="text-center"><i class="ti ti-fingerprint"></i></th>
-                                        <th>Foto</th>
-                                        <th>#</th>
+                                        <th class="text-center align-middle">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'nik', 'order' => request('sort') == 'nik' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                NIK 
+                                                @if(request('sort') == 'nik') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                            </a>
+                                        </th>
+                                        <th class="text-center align-middle">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'nama_karyawan', 'order' => request('sort') == 'nama_karyawan' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                NAMA KARYAWAN
+                                                @if(request('sort') == 'nama_karyawan') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                            </a>
+                                        </th>
+                                        <th class="text-center align-middle">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'nama_dept', 'order' => request('sort') == 'nama_dept' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                DEPARTEMEN
+                                                @if(request('sort') == 'nama_dept') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                            </a>
+                                        </th>
+                                        <th class="text-center align-middle">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'nama_jabatan', 'order' => request('sort') == 'nama_jabatan' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                JABATAN
+                                                @if(request('sort') == 'nama_jabatan') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                            </a>
+                                        </th>
+                                        <th class="text-center align-middle">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'nama_cabang', 'order' => request('sort') == 'nama_cabang' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                CABANG
+                                                @if(request('sort') == 'nama_cabang') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                            </a>
+                                        </th>
+                                        <th class="text-center align-middle">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'status_aktif_karyawan', 'order' => request('sort') == 'status_aktif_karyawan' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                STATUS
+                                                @if(request('sort') == 'status_aktif_karyawan') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                            </a>
+                                        </th>
+                                        <th class="text-center align-middle">
+                                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'tanggal_masuk', 'order' => request('sort') == 'tanggal_masuk' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                TANGGAL MASUK
+                                                @if(request('sort') == 'tanggal_masuk') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                            </a>
+                                        </th>
+                                        <th class="text-center align-middle"><i class="ti ti-map-pin"></i></th>
+                                        <th class="text-center align-middle"><i class="ti ti-clock-hour-3"></i></th>
+                                        <th class="text-center align-middle"><i class="ti ti-fingerprint"></i></th>
+                                        <th class="text-center align-middle">FOTO</th>
+                                        <th class="text-center align-middle">#</th>
                                     </tr>
                                 </thead>
                                 <tbody>

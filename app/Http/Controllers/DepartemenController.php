@@ -13,6 +13,15 @@ class DepartemenController extends Controller
     public function index(Request $request)
     {
         $query = Departemen::query();
+        // Sorting Logic
+        $sortColumn = $request->get('sort', 'kode_dept');
+        $sortOrder = $request->get('order', 'asc');
+        $allowedColumns = ['kode_dept', 'nama_dept'];
+        if (!in_array($sortColumn, $allowedColumns)) {
+            $sortColumn = 'kode_dept';
+        }
+        $query->orderBy($sortColumn, $sortOrder);
+
         $data['departemen'] = $query->get();
         return view('datamaster.departemen.index', $data);
     }

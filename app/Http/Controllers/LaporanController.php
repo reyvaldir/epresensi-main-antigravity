@@ -14,6 +14,9 @@ use App\Models\Jenistunjangan;
 use App\Models\Karyawan;
 use App\Models\Pengaturanumum;
 use App\Models\Presensi;
+use App\Models\Setjamkerjabydate;
+use App\Models\Setjamkerjabyday;
+use App\Models\Detailsetjamkerjabydept;
 use App\Models\User;
 use App\Models\Userkaryawan;
 use Illuminate\Http\Request;
@@ -36,6 +39,8 @@ class LaporanController extends Controller
 
     public function cetakpresensi(Request $request)
     {
+        set_time_limit(0); // Unlimited execution time
+        ini_set('memory_limit', '512M'); // Increase memory limit if needed
 
         $user = User::where('id', Auth::user()->id)->first();
         $userkaryawan = Userkaryawan::where('id_user', $user->id)->first();
@@ -60,8 +65,8 @@ class LaporanController extends Controller
             // Menambahkan nol di depan bulan jika bulan kurang dari 10
 
             $bulan = str_pad($bulan, 2, '0', STR_PAD_LEFT);
-            $periode_dari = $tahun . '-' . $bulan . '-' . $periode_laporan_dari;
-            $periode_sampai = $request->tahun . '-' . $request->bulan . '-' . $periode_laporan_sampai;
+            $periode_dari = $tahun . '-' . $bulan . '-' . str_pad($periode_laporan_dari, 2, '0', STR_PAD_LEFT);
+            $periode_sampai = $request->tahun . '-' . $request->bulan . '-' . str_pad($periode_laporan_sampai, 2, '0', STR_PAD_LEFT);
         } else {
             // Menambahkan nol di depan bulan jika bulan kurang dari 10
 
@@ -73,7 +78,7 @@ class LaporanController extends Controller
 
 
 
-        $presensi_detail  = Presensi::join('presensi_jamkerja', 'presensi.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
+        $presensi_detail = Presensi::join('presensi_jamkerja', 'presensi.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
             ->leftJoin('presensi_izinabsen_approve', 'presensi.id', '=', 'presensi_izinabsen_approve.id_presensi')
             ->leftJoin('presensi_izinabsen', 'presensi_izinabsen_approve.kode_izin', '=', 'presensi_izinabsen.kode_izin')
             ->leftJoin('presensi_izinsakit_approve', 'presensi.id', '=', 'presensi_izinsakit_approve.id_presensi')
@@ -265,7 +270,31 @@ class LaporanController extends Controller
             $data['presensi'] = $presensi;
             return view('laporan.presensi_karyawan_cetak', $data);
         } else {
-            $laporan_presensi = $presensi->groupBy('nik')->map(function ($rows) use ($jenis_tunjangan) {
+            // 1. Bulk Fetch Schedules
+            $niks = $presensi->pluck('nik')->unique();
+
+            // A. Schedule by Date
+            $scheduleByDate = Setjamkerjabydate::join('presensi_jamkerja', 'presensi_jamkerja_bydate.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
+                ->whereIn('nik', $niks)
+                ->whereBetween('tanggal', [$periode_dari, $periode_sampai])
+                ->get()
+                ->groupBy('nik');
+
+            // B. Schedule by Day
+            $scheduleByDay = Setjamkerjabyday::join('presensi_jamkerja', 'presensi_jamkerja_byday.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
+                ->whereIn('nik', $niks)
+                ->get()
+                ->groupBy('nik');
+
+            // C. Schedule by Dept (Default)
+            $scheduleByDept = Detailsetjamkerjabydept::join('presensi_jamkerja_bydept', 'presensi_jamkerja_bydept_detail.kode_jk_dept', '=', 'presensi_jamkerja_bydept.kode_jk_dept')
+                ->join('presensi_jamkerja', 'presensi_jamkerja_bydept_detail.kode_jam_kerja', '=', 'presensi_jamkerja.kode_jam_kerja')
+                ->get()
+                ->groupBy(function ($item) {
+                    return $item->kode_dept . '-' . $item->kode_cabang;
+                });
+
+            $laporan_presensi = $presensi->groupBy('nik')->map(function ($rows) use ($jenis_tunjangan, $periode_dari, $periode_sampai, $scheduleByDate, $scheduleByDay, $scheduleByDept) {
                 $data = [
                     'nik' => $rows->first()->nik,
                     'nik_show' => $rows->first()->nik_show,
@@ -279,7 +308,6 @@ class LaporanController extends Controller
                     'bpjs_tenagakerja' => $rows->first()->bpjs_tenagakerja,
                     'penambah' => $rows->first()->penambah,
                     'pengurang' => $rows->first()->pengurang,
-
                 ];
 
                 foreach ($jenis_tunjangan as $j) {
@@ -289,6 +317,7 @@ class LaporanController extends Controller
                     ];
                 }
 
+                // Map existing data
                 foreach ($rows as $row) {
                     $data[$row->tanggal] = [
                         'status' => $row->status,
@@ -308,6 +337,61 @@ class LaporanController extends Controller
                         'total_jam' => $row->total_jam
                     ];
                 }
+
+                // Fill Missing Dates with Alpha (In-Memory Lookup)
+                $current_date = $periode_dari;
+                while (strtotime($current_date) <= strtotime($periode_sampai)) {
+                    if (!isset($data[$current_date])) {
+                        $namahari = getnamaHari(date('D', strtotime($current_date)));
+
+
+
+                        $nik = $rows->first()->nik;
+                        $kode_dept = $rows->first()->kode_dept;
+                        $kode_cabang = $rows->first()->kode_cabang;
+                        $jamkerja = null;
+
+                        // 1. Check Schedule By Date
+                        if (isset($scheduleByDate[$nik])) {
+                            $jamkerja = $scheduleByDate[$nik]->firstWhere('tanggal', $current_date);
+                        }
+
+                        // 2. Check Schedule By Day
+                        if ($jamkerja == null && isset($scheduleByDay[$nik])) {
+                            $jamkerja = $scheduleByDay[$nik]->firstWhere('hari', $namahari);
+                        }
+
+                        // 3. Check Schedule By Dept
+                        if ($jamkerja == null) {
+                            $key = $kode_dept . '-' . $kode_cabang;
+                            if (isset($scheduleByDept[$key])) {
+                                $jamkerja = $scheduleByDept[$key]->firstWhere('hari', $namahari);
+                            }
+                        }
+
+                        if ($jamkerja != null) {
+                            $data[$current_date] = [
+                                'status' => 'a', // Alpha Synthetic
+                                'kode_jam_kerja' => $jamkerja->kode_jam_kerja,
+                                'nama_jam_kerja' => $jamkerja->nama_jam_kerja,
+                                'jam_masuk' => $jamkerja->jam_masuk,
+                                'jam_pulang' => $jamkerja->jam_pulang,
+                                'jam_in' => null,
+                                'jam_out' => null,
+                                'istirahat' => $jamkerja->istirahat,
+                                'jam_awal_istirahat' => $jamkerja->jam_awal_istirahat,
+                                'jam_akhir_istirahat' => $jamkerja->jam_akhir_istirahat,
+                                'lintashari' => $jamkerja->lintashari,
+                                'keterangan_izin_absen' => null,
+                                'keterangan_izin_sakit' => null,
+                                'keterangan_izin_cuti' => null,
+                                'total_jam' => $jamkerja->total_jam
+                            ];
+                        }
+                    }
+                    $current_date = date('Y-m-d', strtotime('+1 day', strtotime($current_date)));
+                }
+
                 return $data;
             });
             $data['laporan_presensi'] = $laporan_presensi;

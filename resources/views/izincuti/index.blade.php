@@ -91,15 +91,50 @@
                                 <table class="table table-striped table-hover table-bordered">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>Kode</th>
-                                            <th>Tanggal</th>
-                                            <th>Nik</th>
-                                            <th>Nama Karyawan</th>
-                                            <th>Cabang</th>
-                                            <th>Jenis Cuti</th>
-                                            <th>Lama</th>
-                                            <th>Status</th>
-                                            <th>#</th>
+                                            <th class="text-center align-middle">
+                                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'kode_izin_cuti', 'order' => request('sort') == 'kode_izin_cuti' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                    KODE
+                                                    @if(request('sort') == 'kode_izin_cuti') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                                </a>
+                                            </th>
+                                            <th class="text-center align-middle">
+                                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'dari', 'order' => request('sort') == 'dari' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                    TANGGAL
+                                                    @if(request('sort') == 'dari') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                                </a>
+                                            </th>
+                                            <th class="text-center align-middle">
+                                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'nik', 'order' => request('sort') == 'nik' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                    NIK
+                                                    @if(request('sort') == 'nik') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                                </a>
+                                            </th>
+                                            <th class="text-center align-middle">
+                                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'nama_karyawan', 'order' => request('sort') == 'nama_karyawan' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                    NAMA KARYAWAN
+                                                    @if(request('sort') == 'nama_karyawan') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                                </a>
+                                            </th>
+                                            <th class="text-center align-middle">
+                                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'nama_cabang', 'order' => request('sort') == 'nama_cabang' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                    CABANG
+                                                    @if(request('sort') == 'nama_cabang') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                                </a>
+                                            </th>
+                                            <th class="text-center align-middle">
+                                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'jenis_cuti', 'order' => request('sort') == 'jenis_cuti' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                    JENIS CUTI
+                                                    @if(request('sort') == 'jenis_cuti') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                                </a>
+                                            </th>
+                                            <th class="text-center align-middle">LAMA</th>
+                                            <th class="text-center align-middle">
+                                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'status', 'order' => request('sort') == 'status' && request('order') == 'asc' ? 'desc' : 'asc']) }}" class="text-white text-decoration-none">
+                                                    STATUS
+                                                    @if(request('sort') == 'status') <i class="ti ti-arrow-{{ request('order') == 'asc' ? 'up' : 'down' }}"></i> @endif
+                                                </a>
+                                            </th>
+                                            <th class="text-center align-middle">#</th>
                                         </tr>
                                     </thead>
                                     <tbody>
