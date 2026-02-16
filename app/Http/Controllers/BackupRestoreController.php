@@ -93,6 +93,13 @@ class BackupRestoreController extends Controller
         try {
             set_time_limit(600); // 10 minutes max
 
+            // Check if exec() is enabled
+            if (!function_exists('exec')) {
+                return response()->json([
+                    'error' => 'Fungsi exec() tidak aktif di server ini. Backup tidak dapat dijalankan.'
+                ], 500);
+            }
+
             $timestamp = date('Y-m-d_H-i-s');
             $zipFilename = "backup_{$timestamp}.zip";
             $backupPath = $this->backupPath();
@@ -222,6 +229,7 @@ class BackupRestoreController extends Controller
     {
         try {
             set_time_limit(600);
+            $backupPath = $this->backupPath();
 
             $zipPath = null;
             $isUpload = false;
@@ -233,19 +241,27 @@ class BackupRestoreController extends Controller
                 ]);
 
                 $uploadedFile = $request->file('backup_file');
-                $zipPath = $this->backupPath() . DIRECTORY_SEPARATOR . 'upload_' . time() . '.zip';
-                $uploadedFile->move($this->backupPath(), basename($zipPath));
+                $zipPath = $backupPath . DIRECTORY_SEPARATOR . 'upload_' . time() . '.zip';
+                $uploadedFile->move($backupPath, basename($zipPath));
                 $isUpload = true;
 
             } elseif ($request->filled('backup_filename')) {
                 $filename = basename($request->backup_filename);
-                $zipPath = $this->backupPath() . DIRECTORY_SEPARATOR . $filename;
+                $zipPath = $backupPath . DIRECTORY_SEPARATOR . $filename;
 
                 if (!File::exists($zipPath)) {
                     return response()->json(['error' => 'File backup tidak ditemukan.'], 404);
                 }
             } else {
                 return response()->json(['error' => 'Pilih file backup atau upload file ZIP.'], 400);
+            }
+
+            // Check if exec() is enabled
+            if (!function_exists('exec')) {
+                if ($isUpload) @unlink($zipPath); // Clean up uploaded file if exec is not available
+                return response()->json([
+                    'error' => 'Fungsi exec() tidak aktif di server ini. Restore tidak dapat dijalankan.'
+                ], 500);
             }
 
             // Validate ZIP contents
