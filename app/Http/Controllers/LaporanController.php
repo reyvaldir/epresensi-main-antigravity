@@ -399,16 +399,33 @@ class LaporanController extends Controller
 
 
             if ($user->hasRole('karyawan')) {
-                //dd($data);
-                return view('laporan.slip_karyawan_cetak', $data);
+                $viewName = 'laporan.slip_karyawan_cetak';
+                $fileName = 'slip_gaji';
             } else {
                 if ($request->format_laporan == 1) {
-                    return view('laporan.presensi_cetak', $data);
+                    $viewName = 'laporan.presensi_cetak';
+                    $fileName = 'laporan_presensi';
                 } else if ($request->format_laporan == 2) {
-                    return view('laporan.gaji_cetak', $data);
+                    $viewName = 'laporan.gaji_cetak';
+                    $fileName = 'laporan_gaji';
                 } else if ($request->format_laporan == 3) {
-                    return view('laporan.slip_cetak', $data);
+                    $viewName = 'laporan.slip_cetak';
+                    $fileName = 'slip_gaji';
                 }
+            }
+
+            $fullFileName = $fileName . '_' . $request->bulan . '_' . $request->tahun;
+
+            if ($request->output_type == 'excel') {
+                // Excel: download as .xls file with proper headers
+                $html = view($viewName, $data)->render();
+                return response($html)
+                    ->header('Content-Type', 'application/vnd.ms-excel')
+                    ->header('Content-Disposition', 'attachment; filename="' . $fullFileName . '.xls"');
+            } else {
+                // PDF: return HTML view (browser will auto-print for save as PDF)
+                $data['auto_print'] = true;
+                return view($viewName, $data);
             }
         }
     }

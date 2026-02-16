@@ -5,13 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Presensi {{ date('Y-m-d H:i:s') }}</title>
-    <link rel="stylesheet" href="{{ asset('assets/css/report.css') }}">
     <style>
+        /* Report styles (inlined for PDF compatibility) */
+        .datatable3 {
+            border: 1px solid #080909;
+            border-collapse: collapse;
+        }
+
+        .datatable3 td {
+            border: 1px solid #000000;
+            padding: 4px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .datatable3 th {
+            border: 1px solid #050506;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            padding: 4px;
+            font-size: 10pt;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #024a75;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        h4 {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 2px;
+        }
+
+        .right { text-align: right !important; }
+        .center { text-align: center !important; }
+        .green { background-color: #28a745 !important; color: white !important; }
+        .blue { background-color: #1e67c6 !important; color: white !important; }
+        .red { background-color: #c7473a !important; color: white !important; }
+
+        .subtotal {
+            border: 1px solid #050506;
+            font-weight: bold;
+            text-align: center;
+            padding: 4px;
+            font-size: 10pt;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #024a75;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .header { margin-top: 10px; }
+
         p {
             line-height: 1rem !important;
             margin: 0 !important;
             padding: 0 !important;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
         }
+
+        .header table { width: auto; }
+        .datatable3 { width: 100%; }
     </style>
 </head>
 
@@ -146,7 +203,7 @@
 
                                         $ket_nama_jam_kerja = $d[$tanggal_presensi]['nama_jam_kerja'];
                                         $ket_jadwal_kerja =
-                                            '<span style="color:blue">' .
+                                            '<span style="color:blue; font-family:Arial; font-size:10pt">' .
                                             date('H:i', strtotime($d[$tanggal_presensi]['jam_masuk'])) .
                                             ' - ' .
                                             date('H:i', strtotime($d[$tanggal_presensi]['jam_pulang'])) .
@@ -163,13 +220,13 @@
                                         $color_jam_out = !empty($d[$tanggal_presensi]['jam_out']) ? 'green' : 'red';
 
                                         $ket_presensi =
-                                            '<span style="color:' . $color_jam_in . '">' . $jam_in . '</span> - ' .
-                                            '<span style="color:' . $color_jam_out . '">' . $jam_out . '</span>';
+                                            '<span style="color:' . $color_jam_in . '; font-family:Arial; font-size:10pt">' . $jam_in . '</span> - ' .
+                                            '<span style="color:' . $color_jam_out . '; font-family:Arial; font-size:10pt">' . $jam_out . '</span>';
 
                                         $terlambat = hitungjamterlambat($d[$tanggal_presensi]['jam_in'], $jam_masuk);
                                         $color_terlambat = $terlambat != null ? $terlambat['color'] : '';
                                         $ket_terlambat = $terlambat != null
-                                            ? '<span style="color:' . $color_terlambat . '">' . $terlambat['show_laporan'] . '</span>'
+                                            ? '<span style="color:' . $color_terlambat . '; font-family:Arial; font-size:10pt">' . $terlambat['show_laporan'] . '</span>'
                                             : '';
 
                                         if ($terlambat != null) {
@@ -191,7 +248,7 @@
                                             $denda = 0;
                                         }
 
-                                        $ket_denda = $denda != 0 ? '<span style="color:red">Denda : ' . formatAngka($denda) . '</span>' : '';
+                                        $ket_denda = $denda != 0 ? '<span style="color:red; font-family:Arial; font-size:10pt">Denda : ' . formatAngka($denda) . '</span>' : '';
 
                                         $pulangcepat = hitungpulangcepat(
                                             $tanggal_presensi,
@@ -210,7 +267,7 @@
                                             $jml_pulangcepat++;
                                         }
                                         $ket_pulang_cepat =
-                                            $pulangcepat != null ? '<span style="color:red">PC : ' . $pulangcepat . ' Jam </span>' : '';
+                                            $pulangcepat != null ? '<span style="color:red; font-family:Arial; font-size:10pt">PC : ' . $pulangcepat . ' Jam </span>' : '';
                                         $color_pulang_cepat = $pulangcepat != null ? 'red' : '';
                                         $potongan_tidak_absen_masuk_atau_pulang =
                                             empty($d[$tanggal_presensi]['jam_out']) || empty($d[$tanggal_presensi]['jam_in'])
@@ -221,14 +278,14 @@
                                             ? $pulangcepat + $potongan_jam_terlambat
                                             : $potongan_tidak_absen_masuk_atau_pulang;
                                         $ket_potongan_jam = !empty($potongan_jam)
-                                            ? '<span style="color:red">PJ: ' . formatAngkaDesimal($potongan_jam) . ' Jam</span>'
+                                            ? '<span style="color:red; font-family:Arial; font-size:10pt">PJ: ' . formatAngkaDesimal($potongan_jam) . ' Jam</span>'
                                             : '';
 
                                         $ket_jam_lembur =
                                             $jml_jam_lembur > 0
-                                            ? '<span style="color:rgb(11, 153, 179)"> Lembur :' . $jml_jam_lembur . ' Jam</span>'
+                                            ? '<span style="color:rgb(11, 153, 179); font-family:Arial; font-size:10pt"> Lembur :' . $jml_jam_lembur . ' Jam</span>'
                                             : '';
-                                        $ket = '<b>' . $ket_nama_jam_kerja . '</b><br>' .
+                                        $ket = '<b style="font-family:Arial; font-size:10pt">' . $ket_nama_jam_kerja . '</b><br>' .
                                             $ket_jadwal_kerja . '<br>' .
                                             $ket_presensi . '<br>' .
                                             $ket_terlambat . '<br>' .
@@ -305,7 +362,7 @@
                                     if (!empty($ceklembur)) {
                                         $bgcolor = 'white';
                                         $textcolor = 'black';
-                                        $ket_jam_lembur = '<p><span style="color:rgb(11, 153, 179)"> Lembur :' . $jml_jam_lembur . ' Jam</span></p>';
+                                        $ket_jam_lembur = '<p><span style="color:rgb(11, 153, 179); font-family:Arial; font-size:10pt"> Lembur :' . $jml_jam_lembur . ' Jam</span></p>';
                                         $ket = $ket_jam_lembur;
                                     }
                                 @endphp
@@ -364,3 +421,11 @@
         </table>
     </div>
 </body>
+
+@if(!empty($auto_print))
+<script>
+    window.onload = function() {
+        window.print();
+    }
+</script>
+@endif

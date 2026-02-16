@@ -404,7 +404,7 @@ function hitungjamterlambat($jam_in, $jam_mulai)
                 'jamterlambat' => $jamterlambat,
                 'menitterlambat' => $menitterlambat,
                 'desimal_terlambat' => $desimal_terlambat,
-                'show' => '<span style="color:red">' . $show . '</span>',
+                'show' => '<span style="color:red; font-family:Arial; font-size:10pt">' . $show . '</span>',
                 'show_laporan' => 'Telat :' . $show,
                 'color' => 'red'
                 // 'color_terlambat' => $color_terlambat
@@ -414,7 +414,7 @@ function hitungjamterlambat($jam_in, $jam_mulai)
                 'menitterlambat' => 0,
                 'desimal_terlambat' => 0,
                 'color' => 'green',
-                'show' => '<span style="color:green">Tepat Waktu</span>',
+                'show' => '<span style="color:green; font-family:Arial; font-size:10pt">Tepat Waktu</span>',
                 'show_laporan' => 'Tepat Waktu'
             ];
         }

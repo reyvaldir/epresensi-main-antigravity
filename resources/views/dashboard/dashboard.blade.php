@@ -343,9 +343,9 @@
 @endsection
 @push('myscript')
     <script src="{{ $chart->cdn() }}"></script>
-    {{ $chart->script() }}
-    {{ $jkchart->script() }}
-    {{ $pddchart->script() }}
+    {!! $chart->script() !!}
+    {!! $jkchart->script() !!}
+    {!! $pddchart->script() !!}
     <script>
         // Fungsi untuk mengirim ucapan ulang tahun ke semua karyawan menggunakan job
         function kirimUcapanSemua() {

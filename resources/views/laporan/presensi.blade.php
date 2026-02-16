@@ -9,7 +9,7 @@
     <div class="col-lg-6 col-sm-12 col-xs-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('laporan.cetakpresensi') }}" method="POST" target="_blank" id="formPresensi">
+                <form action="{{ route('laporan.cetakpresensi') }}" method="POST" id="formPresensi">
                     @csrf
                     <div class="form-group mb-3">
                         <select name="kode_cabang" id="kode_cabang_presensi" class="form-select select2Kodecabangpresensi">
@@ -81,15 +81,16 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="output_type" id="output_type" value="pdf">
                     <div class="row">
-                        <div class="col-lg-10 col-md-12 col-sm-12">
-                            <button type="submit" name="submitButton" class="btn btn-primary w-100" id="submitButton">
-                                <i class="ti ti-printer me-1"></i> Cetak
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <button type="submit" class="btn btn-danger w-100" id="btnPdf" onclick="setOutputType('pdf')">
+                                <i class="ti ti-file-type-pdf me-1"></i> PDF
                             </button>
                         </div>
-                        <div class="col-lg-2 col-md-12 col-sm-12">
-                            <button type="submit" name="exportButton" class="btn btn-success w-100" id="exportButton">
-                                <i class="ti ti-download"></i>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <button type="submit" class="btn btn-success w-100" id="btnExcel" onclick="setOutputType('excel')">
+                                <i class="ti ti-file-spreadsheet me-1"></i> Excel
                             </button>
                         </div>
                     </div>
@@ -210,7 +211,20 @@
                 });
                 return false;
             }
+
+            // PDF opens in new tab, Excel downloads directly
+            const outputType = $("#output_type").val();
+            if (outputType == 'pdf') {
+                $(this).attr('target', '_blank');
+            } else {
+                $(this).removeAttr('target');
+            }
         });
     });
+
+    function setOutputType(type) {
+        document.getElementById('output_type').value = type;
+    }
 </script>
 @endpush
+

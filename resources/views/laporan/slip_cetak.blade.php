@@ -516,4 +516,12 @@
     </div>
 </body>
 
+@if(!empty($auto_print))
+<script>
+    window.onload = function() {
+        window.print();
+    }
+</script>
+@endif
+
 </html>

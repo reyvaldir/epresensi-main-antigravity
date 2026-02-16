@@ -5,12 +5,103 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Laporan Gaji {{ date('Y-m-d H:i:s') }}</title>
-    <link rel="stylesheet" href="{{ asset('assets/css/report.css') }}">
     <style>
+        /* Report styles (inlined for PDF compatibility) */
+        .datatable3 {
+            border: 1px solid #080909;
+            border-collapse: collapse;
+        }
+
+        .datatable3 td {
+            border: 1px solid #000000;
+            padding: 4px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .datatable3 th {
+            border: 1px solid #000000;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            padding: 4px;
+            font-size: 10pt;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #024a75;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        h4 {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 2px;
+        }
+
+        .right {
+            text-align: right !important;
+        }
+
+        .center {
+            text-align: center !important;
+        }
+
+        .green {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+
+        .blue {
+            background-color: #1e67c6 !important;
+            color: white !important;
+        }
+
+        .red {
+            background-color: #c7473a !important;
+            color: white !important;
+        }
+
+        .subtotal {
+            border: 1px solid #050506;
+            font-weight: bold;
+            text-align: center;
+            padding: 4px;
+            font-size: 10pt;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #024a75;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .header {
+            margin-top: 10px;
+        }
+
         p {
             line-height: 1rem !important;
             margin: 0 !important;
             padding: 0 !important;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10pt;
+        }
+
+        .angka {
+            text-align: right;
+            mso-number-format: '#\,##0';
+        }
+
+        .angka-desimal {
+            text-align: right;
+            mso-number-format: '#\,##0\.00';
+        }
+
+        .header table {
+            width: auto;
+        }
+
+        .datatable3 {
+            width: 100%;
         }
     </style>
 </head>
@@ -110,7 +201,7 @@
                         <td>{{ $d['nama_jabatan'] }}</td>
                         <td>{{ $d['kode_dept'] }}</td>
                         <td>{{ $d['kode_cabang'] }}</td>
-                        <td style="text-align: right">{{ formatAngka($d['gaji_pokok']) }}</td>
+                        <td class="angka">{{ $d['gaji_pokok'] }}</td>
                         @php
                             $total_tunjangan = 0;
                         @endphp
@@ -119,20 +210,20 @@
                                 $total_tunjangan += $d[$j->kode_jenis_tunjangan];
                                 ${'total_tunjangan_' . $j->kode_jenis_tunjangan} += $d[$j->kode_jenis_tunjangan];
                             @endphp
-                            <td style="text-align: right">{{ formatAngka($d[$j->kode_jenis_tunjangan]) }}</td>
+                            <td class="angka">{{ $d[$j->kode_jenis_tunjangan] }}</td>
                         @endforeach
-                        <td style="text-align: right">
+                        <td class="angka">
                             @php
                                 $bruto = $d['gaji_pokok'] + $total_tunjangan;
                             @endphp
-                            {{ formatAngka($bruto) }}
+                            {{ $bruto }}
                         </td>
                         <td style="text-align: center">{{ $generalsetting->total_jam_bulan }}</td>
-                        <td style="text-align: right">
+                        <td class="angka">
                             @php
                                 $upah_perjam = $d['gaji_pokok'] / $generalsetting->total_jam_bulan;
                             @endphp
-                            {{ formatAngka($upah_perjam) }}
+                            {{ round($upah_perjam) }}
                         </td>
                         @php
                             $total_denda = 0;
@@ -265,7 +356,7 @@
                                     if (!empty($ceklembur)) {
                                         $bgcolor = 'white';
                                         $textcolor = 'black';
-                                        $ket_jam_lembur = '<p><span style="color:rgb(11, 153, 179)"> Lembur :' . $jml_jam_lembur . ' Jam</span></p>';
+                                        $ket_jam_lembur = '<p><span style="color:rgb(11, 153, 179); font-family:Arial; font-size:10pt"> Lembur :' . $jml_jam_lembur . ' Jam</span></p>';
                                         $ket = $ket_jam_lembur;
                                     }
                                 @endphp
@@ -301,48 +392,56 @@
                             $gaji_bersih = $d['gaji_pokok'] + $total_tunjangan - $total_potongan + $d['penambah'] - $d['pengurang'] + $upah_lembur;
                             $total_gaji_bersih += $gaji_bersih;
                         @endphp
-                        <td style="text-align: right">{{ formatAngka($total_denda) }}</td>
-                        <td style="text-align: center">{{ formatAngkaDesimal($total_potongan_jam) }}</td>
-                        <td style="text-align: right">
-                            {{ formatAngka($jumlah_potongan_jam) }}
+                        <td class="angka">{{ $total_denda }}</td>
+                        <td class="angka-desimal">{{ round($total_potongan_jam, 2) }}</td>
+                        <td class="angka">
+                            {{ round($jumlah_potongan_jam) }}
                         </td>
-                        <td style="text-align: right">{{ formatAngka($d['bpjs_kesehatan']) }}</td>
-                        <td style="text-align: right">{{ formatAngka($d['bpjs_tenagakerja']) }}</td>
-                        <td style="text-align: right">{{ formatAngka($total_potongan) }}</td>
-                        <td style="text-align: right">{{ formatAngkaDesimal($total_jam_lembur) }}</td>
-                        <td style="text-align: right">{{ formatAngka($upah_lembur) }}</td>
-                        <td style="text-align: right">{{ formatAngka($d['penambah']) }}</td>
-                        <td style="text-align: right">{{ formatAngka($d['pengurang']) }}</td>
-                        <td style="text-align: right">{{ formatAngka($gaji_bersih) }}</td>
+                        <td class="angka">{{ $d['bpjs_kesehatan'] }}</td>
+                        <td class="angka">{{ $d['bpjs_tenagakerja'] }}</td>
+                        <td class="angka">{{ round($total_potongan) }}</td>
+                        <td class="angka-desimal">{{ round($total_jam_lembur, 2) }}</td>
+                        <td class="angka">{{ round($upah_lembur) }}</td>
+                        <td class="angka">{{ $d['penambah'] }}</td>
+                        <td class="angka">{{ $d['pengurang'] }}</td>
+                        <td class="angka">{{ round($gaji_bersih) }}</td>
                     </tr>
                 @endforeach
             </tbody>
             <tfoot>
                 <tr>
                     <th colspan="6">TOTAL</th>
-                    <th style="text-align: right">{{ formatAngka($total_gaji_pokok) }}</th>
+                    <th class="angka">{{ $total_gaji_pokok }}</th>
                     @foreach ($jenis_tunjangan as $d)
-                        <th style="text-align: right">
-                            {{ formatAngka(${'total_tunjangan_' . $d->kode_jenis_tunjangan}) }}
+                        <th class="angka">
+                            {{ ${'total_tunjangan_' . $d->kode_jenis_tunjangan} }}
                         </th>
                     @endforeach
-                    <th style="text-align: right">{{ formatAngka($total_bruto) }}</th>
+                    <th class="angka">{{ $total_bruto }}</th>
                     <th colspan="2"></th>
-                    <th style="text-align: right">{{ formatAngka($total_all_denda) }}</th>
+                    <th class="angka">{{ $total_all_denda }}</th>
                     <th></th>
-                    <th style="text-align: right">{{ formatAngka($total_jumlah_potongan_jam) }}</th>
-                    <th style="text-align: right">{{ formatAngka($total_bpjs_kesehatan) }}</th>
-                    <th style="text-align: right">{{ formatAngka($total_bpjs_tenagakerja) }}</th>
-                    <th style="text-align: right">{{ formatAngka($total_all_potongan) }}</th>
+                    <th class="angka">{{ round($total_jumlah_potongan_jam) }}</th>
+                    <th class="angka">{{ $total_bpjs_kesehatan }}</th>
+                    <th class="angka">{{ $total_bpjs_tenagakerja }}</th>
+                    <th class="angka">{{ round($total_all_potongan) }}</th>
                     <th></th>
-                    <th style="text-align: right">{{ formatAngka($total_upah_lembur) }}</th>
-                    <th style="text-align: right">{{ formatAngka($total_penambah) }}</th>
-                    <th style="text-align: right">{{ formatAngka($total_pengurang) }}</th>
-                    <th style="text-align: right">{{ formatAngka($total_gaji_bersih) }}</th>
+                    <th class="angka">{{ round($total_upah_lembur) }}</th>
+                    <th class="angka">{{ $total_penambah }}</th>
+                    <th class="angka">{{ $total_pengurang }}</th>
+                    <th class="angka">{{ round($total_gaji_bersih) }}</th>
                 </tr>
             </tfoot>
         </table>
     </div>
 </body>
+
+@if(!empty($auto_print))
+<script>
+    window.onload = function() {
+        window.print();
+    }
+</script>
+@endif
 
 </html>

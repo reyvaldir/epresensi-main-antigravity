@@ -3,19 +3,12 @@
 namespace App\Charts;
 
 use App\Models\Karyawan;
-use ArielMejiaDev\LarapexCharts\LarapexChart;
+use marineusde\LarapexCharts\Charts\BarChart;
 use Illuminate\Support\Facades\DB;
 
 class PendidikankaryawanChart
 {
-    protected $chart;
-
-    public function __construct(LarapexChart $chart)
-    {
-        $this->chart = $chart;
-    }
-
-    public function build($request = null): \ArielMejiaDev\LarapexCharts\BarChart
+    public function build($request = null): BarChart
     {
         // Ambil jumlah karyawan berdasarkan pendidikan_terakhir
 
@@ -54,11 +47,11 @@ class PendidikankaryawanChart
             $labels[] = $label;
             $data[] = $rawData[$key] ?? 0; // Jika tidak ada data, set 0
         }
-        return $this->chart->barChart()
+        return (new BarChart)
             // ->setTitle('Distribusi Pendidikan Karyawan')
             // ->setSubtitle('Berdasarkan Tingkat Pendidikan')
             ->addData('Jumlah Karyawan', array_map('intval', $data))
             ->setHeight(328)
-            ->setXAxis($labels);
+            ->setLabels($labels);
     }
 }
