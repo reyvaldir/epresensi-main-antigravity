@@ -338,12 +338,21 @@
             --}}
 
 
+            {{-- Header: Maintenance --}}
             @can('bersihkanfoto.index')
-                <li class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*']) ? 'active' : '' }}">
-                    <a href="{{ route('bersihkanfoto.index') }}" class="menu-link">
-                        <i class="menu-icon tf-icons ti ti-trash"></i>
-                        <div>Bersihkan Foto</div>
+                <li
+                    class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*']) ? 'open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                        <i class="menu-icon tf-icons ti ti-tool"></i>
+                        <div>Maintenance</div>
                     </a>
+                    <ul class="menu-sub">
+                        <li class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*']) ? 'active' : '' }}">
+                            <a href="{{ route('bersihkanfoto.index') }}" class="menu-link">
+                                <div>Bersihkan Foto</div>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             @endcan
 
