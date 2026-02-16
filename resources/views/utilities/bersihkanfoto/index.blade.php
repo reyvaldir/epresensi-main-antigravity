@@ -3,7 +3,7 @@
 
 @section('content')
 @section('navigasi')
-    <span>Utilities > Bersihkan Foto</span>
+    <span>Bersihkan Foto</span>
 @endsection
 
 <div class="row">

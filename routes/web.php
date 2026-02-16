@@ -40,6 +40,7 @@ use App\Http\Controllers\WagatewayController;
 use App\Http\Controllers\FacerecognitionpresensiController;
 use App\Http\Controllers\IconGeneratorController;
 use App\Http\Controllers\BersihkanfotoController;
+use App\Http\Controllers\BackupRestoreController;
 use App\Http\Controllers\TrackingPresensiController;
 use App\Http\Controllers\AktivitasKaryawanController;
 use App\Http\Controllers\UpdateController;
@@ -498,6 +499,15 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:super admin')->controller(BersihkanfotoController::class)->group(function () {
         Route::get('/bersihkanfoto', 'index')->name('bersihkanfoto.index')->can('bersihkanfoto.index');
         Route::post('/bersihkanfoto', 'destroy')->name('bersihkanfoto.destroy')->can('bersihkanfoto.delete');
+    });
+
+    // Backup & Restore Routes
+    Route::middleware('role:super admin')->controller(BackupRestoreController::class)->group(function () {
+        Route::get('/backuprestore', 'index')->name('backuprestore.index')->can('backuprestore.index');
+        Route::post('/backuprestore/create', 'create')->name('backuprestore.create')->can('backuprestore.create');
+        Route::get('/backuprestore/download/{filename}', 'download')->name('backuprestore.download')->can('backuprestore.index');
+        Route::post('/backuprestore/restore', 'restore')->name('backuprestore.restore')->can('backuprestore.restore');
+        Route::delete('/backuprestore/{filename}', 'destroy')->name('backuprestore.destroy')->can('backuprestore.delete');
     });
 
     // Tracking Presensi Routes

@@ -339,22 +339,31 @@
 
 
             {{-- Header: Maintenance --}}
-            @can('bersihkanfoto.index')
+            @if(auth()->user()->can('bersihkanfoto.index') || auth()->user()->can('backuprestore.index'))
                 <li
-                    class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*']) ? 'open' : '' }}">
+                    class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*', 'backuprestore', 'backuprestore/*']) ? 'open' : '' }}">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                         <i class="menu-icon tf-icons ti ti-tool"></i>
                         <div>Maintenance</div>
                     </a>
                     <ul class="menu-sub">
-                        <li class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*']) ? 'active' : '' }}">
-                            <a href="{{ route('bersihkanfoto.index') }}" class="menu-link">
-                                <div>Bersihkan Foto</div>
-                            </a>
-                        </li>
+                        @can('bersihkanfoto.index')
+                            <li class="menu-item {{ request()->is(['bersihkanfoto', 'bersihkanfoto/*']) ? 'active' : '' }}">
+                                <a href="{{ route('bersihkanfoto.index') }}" class="menu-link">
+                                    <div>Bersihkan Foto</div>
+                                </a>
+                            </li>
+                        @endcan
+                        @can('backuprestore.index')
+                            <li class="menu-item {{ request()->is(['backuprestore', 'backuprestore/*']) ? 'active' : '' }}">
+                                <a href="{{ route('backuprestore.index') }}" class="menu-link">
+                                    <div>Backup & Restore</div>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
-            @endcan
+            @endif
 
             {{-- Header: Akses User --}}
             @if (auth()->user()->hasRole(['super admin']))
