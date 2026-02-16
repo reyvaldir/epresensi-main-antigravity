@@ -520,6 +520,7 @@
                 let faceMatchState = 0; // 0: No Face, 1: Matched, 2: Unknown/Not Matched
                 // Mengambil nilai face recognition dari variabel $general_setting->face_recognition
                 let faceRecognition = "{{ $general_setting->face_recognition }}";
+                let faceThreshold = {{ $general_setting->face_threshold ?? 0.6 }};
 
                 // --- Tambahkan deteksi device mobile di awal script ---
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -933,7 +934,7 @@
                     async function startFaceRecognition() {
                         try {
                             const labeledFaceDescriptors = await getLabeledFaceDescriptions();
-                            const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, 0.6);
+                            const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, faceThreshold);
 
                             const video = document.querySelector('.webcam-capture video');
 
@@ -1129,7 +1130,7 @@
 
                                                         const box = detection.detection.box;
                                                         const isUnknown = match.toString().includes("unknown");
-                                                        const isNotRecognized = match.distance > 0.55;
+                                                        const isNotRecognized = match.distance > faceThreshold;
 
                                                         // Menentukan warna berdasarkan kondisi
                                                         let boxColor, labelColor, labelText;

@@ -46,6 +46,7 @@ class GeneralsettingController extends Controller
                 'total_jam_bulan' => $request->total_jam_bulan,
                 'denda' => $request->has('denda') ? true : false,
                 'face_recognition' => $request->has('face_recognition') ? true : false,
+                'face_threshold' => $request->face_threshold / 100,
                 'periode_laporan_dari' => $request->periode_laporan_dari,
                 'periode_laporan_sampai' => $request->periode_laporan_sampai,
                 'periode_laporan_next_bulan' => $request->has('periode_laporan_next_bulan') ? true : false,

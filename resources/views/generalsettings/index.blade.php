@@ -9,149 +9,117 @@
         use Illuminate\Support\Facades\Storage;
     @endphp
     <style>
-        .checkbox-wrapper-55 input[type="checkbox"] {
-            visibility: hidden;
+        .tgl {
             display: none;
         }
 
-        .checkbox-wrapper-55 *,
-        .checkbox-wrapper-55 ::after,
-        .checkbox-wrapper-55 ::before {
+        .tgl,
+        .tgl:after,
+        .tgl:before,
+        .tgl *,
+        .tgl *:after,
+        .tgl *:before,
+        .tgl+.tgl-btn {
             box-sizing: border-box;
         }
 
-        .checkbox-wrapper-55 .rocker {
-            display: inline-block;
+        .tgl::selection {
+            background: none;
+        }
+
+        .tgl+.tgl-btn {
+            outline: 0;
+            display: block;
+            width: 4em;
+            height: 2em;
             position: relative;
-            /*
-              SIZE OF SWITCH
-              ==============
-              All sizes are in em - therefore
-              changing the font-size here
-              will change the size of the switch.
-              See .rocker-small below as example.
-              */
-            font-size: 2em;
-            font-weight: bold;
-            text-align: center;
-            text-transform: uppercase;
-            color: #888;
-            width: 7em;
-            height: 4em;
-            overflow: hidden;
-            border-bottom: 0.5em solid #eee;
-        }
-
-        .checkbox-wrapper-55 .rocker-small {
-            font-size: 0.75em;
-        }
-
-        .checkbox-wrapper-55 .rocker::before {
-            content: "";
-            position: absolute;
-            top: 0.5em;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #999;
-            border: 0.5em solid #eee;
-            border-bottom: 0;
-        }
-
-        .checkbox-wrapper-55 .switch-left,
-        .checkbox-wrapper-55 .switch-right {
             cursor: pointer;
-            position: absolute;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 2.5em;
-            width: 3em;
-            transition: 0.2s;
             user-select: none;
         }
 
-        .checkbox-wrapper-55 .switch-left {
-            height: 2.4em;
-            width: 2.75em;
-            left: 0.85em;
-            bottom: 0.4em;
-            background-color: #ddd;
-            transform: rotate(15deg) skewX(15deg);
-        }
-
-        .checkbox-wrapper-55 .switch-right {
-            right: 0.5em;
-            bottom: 0;
-            background-color: #bd5757;
-            color: #fff;
-        }
-
-        .checkbox-wrapper-55 .switch-left::before,
-        .checkbox-wrapper-55 .switch-right::before {
+        .tgl+.tgl-btn:after,
+        .tgl+.tgl-btn:before {
+            position: relative;
+            display: block;
             content: "";
-            position: absolute;
-            width: 0.4em;
-            height: 2.45em;
-            bottom: -0.45em;
-            background-color: #ccc;
-            transform: skewY(-65deg);
+            width: 50%;
+            height: 100%;
         }
 
-        .checkbox-wrapper-55 .switch-left::before {
-            left: -0.4em;
+        .tgl+.tgl-btn:after {
+            left: 0;
         }
 
-        .checkbox-wrapper-55 .switch-right::before {
-            right: -0.375em;
-            background-color: transparent;
-            transform: skewY(65deg);
+        .tgl+.tgl-btn:before {
+            display: none;
         }
 
-        .checkbox-wrapper-55 input:checked+.switch-left {
-            background-color: #0084d0;
-            color: #fff;
-            bottom: 0px;
-            left: 0.5em;
-            height: 2.5em;
-            width: 3em;
-            transform: rotate(0deg) skewX(0deg);
+        .tgl:checked+.tgl-btn:after {
+            left: 50%;
         }
 
-        .checkbox-wrapper-55 input:checked+.switch-left::before {
-            background-color: transparent;
-            width: 3.0833em;
+        .tgl-ios+.tgl-btn {
+            background: #e9ecef;
+            border-radius: 2em;
+            padding: 2px;
+            transition: all .4s ease;
+            border: 1px solid #d1d3e2;
         }
 
-        .checkbox-wrapper-55 input:checked+.switch-left+.switch-right {
-            background-color: #ddd;
-            color: #888;
-            bottom: 0.4em;
-            right: 0.8em;
-            height: 2.4em;
-            width: 2.75em;
-            transform: rotate(-15deg) skewX(-15deg);
+        .tgl-ios+.tgl-btn:after {
+            border-radius: 2em;
+            background: #fbfbfb;
+            transition: left .3s cubic-bezier(0.175, 0.885, 0.320, 1.275), padding .3s ease, margin .3s ease;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, .1), 0 4px 0 rgba(0, 0, 0, .08);
         }
 
-        .checkbox-wrapper-55 input:checked+.switch-left+.switch-right::before {
-            background-color: #ccc;
+        .tgl-ios+.tgl-btn:active {
+            box-shadow: inset 0 0 0 2em #e8eae9;
         }
 
-        /* Keyboard Users */
-        .checkbox-wrapper-55 input:focus+.switch-left {
-            color: #333;
+        .tgl-ios+.tgl-btn:active:after {
+            padding-right: .8em;
         }
 
-        .checkbox-wrapper-55 input:checked:focus+.switch-left {
-            color: #fff;
+        .tgl-ios:checked+.tgl-btn {
+            background: #86d993;
         }
 
-        .checkbox-wrapper-55 input:focus+.switch-left+.switch-right {
-            color: #fff;
+        .tgl-ios:checked+.tgl-btn:active {
+            box-shadow: none;
         }
 
-        .checkbox-wrapper-55 input:checked:focus+.switch-left+.switch-right {
-            color: #333;
+        .tgl-ios:checked+.tgl-btn:active:after {
+            margin-left: -.8em;
+        }
+
+        /* Custom Range Slider Styling */
+        #face_threshold {
+            height: 25px;
+            /* Increase overall height */
+        }
+
+        #face_threshold::-webkit-slider-runnable-track {
+            height: 5px;
+            /* Thicker track */
+            border-radius: 5px;
+            background: #e9ecef;
+        }
+
+        #face_threshold::-webkit-slider-thumb {
+            width: 25px;
+            /* Bigger thumb */
+            height: 25px;
+            /* Bigger thumb */
+            margin-top: -10px;
+            /* Center thumb on track */
+            background-color: #0d6efd;
+            border: 2px solid #fff;
+            box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+        }
+
+        #face_threshold:focus::-webkit-slider-thumb {
+            box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25);
         }
     </style>
     <div class="row">
@@ -204,13 +172,9 @@
                             </div>
                         </div>
                         <label for="" style="font-weight: 600" class="form-label">Periode Laporan Lintas Bulan</label>
-                        <div class="checkbox-wrapper-55">
-                            <label class="rocker rocker-small">
-                                <input type="checkbox" name="periode_laporan_next_bulan"
-                                    @checked($setting->periode_laporan_next_bulan ?? false)>
-                                <span class="switch-left">Yes</span>
-                                <span class="switch-right">No</span>
-                            </label>
+                        <div class="form-group">
+                            <input class="tgl tgl-ios" id="periode_laporan_next_bulan" name="periode_laporan_next_bulan" type="checkbox" @checked($setting->periode_laporan_next_bulan ?? false)/>
+                            <label class="tgl-btn" for="periode_laporan_next_bulan"></label>
                         </div>
                     </div>
                 </div>
@@ -233,36 +197,40 @@
                         <x-input-with-icon-label label="Total Jam Kerja dalam 1 Bulan" name="total_jam_bulan"
                             icon="ti ti-clock" :value="$setting->total_jam_bulan ?? ''" />
                         <label for="" style="font-weight: 600" class="form-label">Denda</label>
-                        <div class="checkbox-wrapper-55 mb-2">
-                            <label class="rocker rocker-small">
-                                <input type="checkbox" name="denda" @checked($setting->denda ?? false)>
-                                <span class="switch-left">Yes</span>
-                                <span class="switch-right">No</span>
-                            </label>
+                        <div class="form-group mb-2">
+                            <input class="tgl tgl-ios" id="denda" name="denda" type="checkbox" @checked($setting->denda ?? false)/>
+                            <label class="tgl-btn" for="denda"></label>
                         </div>
                         <label for="" style="font-weight: 600" class="form-label">Face Recognition</label>
-                        <div class="checkbox-wrapper-55 mb-2">
-                            <label class="rocker rocker-small">
-                                <input type="checkbox" name="face_recognition" @checked($setting->face_recognition ?? false)>
-                                <span class="switch-left">Yes</span>
-                                <span class="switch-right">No</span>
-                            </label>
+                        <div class="form-group mb-2">
+                            <input class="tgl tgl-ios" id="face_recognition" name="face_recognition" type="checkbox" @checked($setting->face_recognition ?? false)/>
+                            <label class="tgl-btn" for="face_recognition"></label>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label" style="font-weight: 600">Face Recognition Threshold (Sensitivitas)</label>
+                            <div class="d-flex align-items-center">
+                                <input type="range" class="form-range" name="face_threshold" id="face_threshold"
+                                    min="0" max="100" step="1"
+                                    value="{{ ($setting->face_threshold ?? 0.6) * 100 }}"
+                                    oninput="document.getElementById('threshold_value').innerText = this.value + '%'">
+                                <span id="threshold_value" class="ms-2 badge bg-primary">
+                                    {{ ($setting->face_threshold ?? 0.6) * 100 }}%
+                                </span>
+                            </div>
+                            <small class="text-muted d-block mt-1">
+                                Semakin kecil persentase, semakin ketat/akurat pencocokan wajah (Default: 60%).<br>
+                                <span class="text-danger">*Disarankan 60% - 80%</span>
+                            </small>
                         </div>
                         <label for="" style="font-weight: 600" class="form-label">Multi Lokasi</label>
-                        <div class="checkbox-wrapper-55 mb-2">
-                            <label class="rocker rocker-small">
-                                <input type="checkbox" name="multi_lokasi" @checked($setting->multi_lokasi ?? false)>
-                                <span class="switch-left">Yes</span>
-                                <span class="switch-right">No</span>
-                            </label>
+                        <div class="form-group mb-2">
+                            <input class="tgl tgl-ios" id="multi_lokasi" name="multi_lokasi" type="checkbox" @checked($setting->multi_lokasi ?? false)/>
+                            <label class="tgl-btn" for="multi_lokasi"></label>
                         </div>
                         <label for="" style="font-weight: 600" class="form-label">Batasi Jam Presensi</label>
-                        <div class="checkbox-wrapper-55 mb-2">
-                            <label class="rocker rocker-small">
-                                <input type="checkbox" name="batasi_absen" @checked($setting->batasi_absen ?? false)>
-                                <span class="switch-left">Yes</span>
-                                <span class="switch-right">No</span>
-                            </label>
+                        <div class="form-group mb-2">
+                            <input class="tgl tgl-ios" id="batasi_absen" name="batasi_absen" type="checkbox" @checked($setting->batasi_absen ?? false)/>
+                            <label class="tgl-btn" for="batasi_absen"></label>
                         </div>
                         <x-input-with-icon-label label="Batas Jam Presensi Masuk (Dalam Jam) Sebelum Jam Masuk"
                             name="batas_jam_absen" icon="ti ti-clock" :value="$setting->batas_jam_absen ?? ''" />
@@ -273,12 +241,9 @@
                             <small class="text-muted">Wajib Diisi Jika Batasi Jam Presensi Diaktifkan</small>
                         </div>
                         <label for="" style="font-weight: 600" class="form-label">Batasi Hari Izin</label>
-                        <div class="checkbox-wrapper-55 mb-2">
-                            <label class="rocker rocker-small">
-                                <input type="checkbox" name="batasi_hari_izin" @checked($setting->batasi_hari_izin ?? false)>
-                                <span class="switch-left">Yes</span>
-                                <span class="switch-right">No</span>
-                            </label>
+                        <div class="form-group mb-2">
+                            <input class="tgl tgl-ios" id="batasi_hari_izin" name="batasi_hari_izin" type="checkbox" @checked($setting->batasi_hari_izin ?? false)/>
+                            <label class="tgl-btn" for="batasi_hari_izin"></label>
                         </div>
                         <x-input-with-icon-label label="Batas Hari Izin (Dalam Hari)" name="jml_hari_izin_max"
                             icon="ti ti-clock" :value="$setting->jml_hari_izin_max ?? ''" />
